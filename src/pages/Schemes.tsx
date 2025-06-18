@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,7 +56,11 @@ const Schemes = () => {
         telugu: ['పంట బీమా', 'వ్యవసాయ సబ్సిడీ', 'ఉచిత కరెంట్'],
         english: ['Crop insurance', 'Agricultural subsidy', 'Free electricity']
       },
-      status: 'active'
+      status: 'active',
+      applicationProcess: {
+        english: 'Apply online at rytubandhu.telangana.gov.in or visit local agricultural officer',
+        telugu: 'rytubandhu.telangana.gov.in లో ఆన్‌లైన్‌లో దరఖాస్తు చేయండి లేదా స్థానిక వ్యవసాయ అధికారిని సంప్రదించండి'
+      }
     },
     {
       id: 3,
@@ -71,7 +76,11 @@ const Schemes = () => {
         telugu: ['3 వందల వాయిదాలు', 'DBT ద్వారా చెల్లింపు', 'పంట సాగు సహాయం'],
         english: ['3 installments', 'DBT payments', 'Crop cultivation support']
       },
-      status: 'active'
+      status: 'active',
+      applicationProcess: {
+        english: 'Apply online at pmkisan.gov.in or visit Common Service Center',
+        telugu: 'pmkisan.gov.in లో ఆన్‌లైన్‌లో దరఖాస్తు చేయండి లేదా కామన్ సర్వీస్ సెంటర్‌ను సంప్రదించండి'
+      }
     },
     {
       id: 4,
@@ -87,7 +96,11 @@ const Schemes = () => {
         telugu: ['పంట నష్టం భర్తీ', 'సహజ విపత్తుల కవరేజ్', 'తక్కువ ప్రీమియం'],
         english: ['Crop loss compensation', 'Natural disaster coverage', 'Low premium']
       },
-      status: 'active'
+      status: 'active',
+      applicationProcess: {
+        english: 'Apply through banks or insurance companies, visit pmfby.gov.in for details',
+        telugu: 'బ్యాంకులు లేదా భీమా కంపెనీల ద్వారా దరఖాస్తు చేయండి, వివరాలకు pmfby.gov.in చూడండి'
+      }
     }
   ];
 
@@ -228,14 +241,16 @@ const Schemes = () => {
                 </div>
 
                 {/* Application Process */}
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-2 text-sm">
-                    {text.howToApply[selectedLanguage]}
-                  </h4>
-                  <p className="text-xs text-gray-600">
-                    {scheme.applicationProcess[selectedLanguage]}
-                  </p>
-                </div>
+                {scheme.applicationProcess && (
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <h4 className="font-semibold text-gray-800 mb-2 text-sm">
+                      {text.howToApply[selectedLanguage]}
+                    </h4>
+                    <p className="text-xs text-gray-600">
+                      {scheme.applicationProcess[selectedLanguage]}
+                    </p>
+                  </div>
+                )}
 
                 {/* Apply Button */}
                 <Button className="w-full bg-green-600 hover:bg-green-700">
