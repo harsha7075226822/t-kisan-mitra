@@ -1,18 +1,35 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mic, Globe, Settings } from 'lucide-react';
+import { Menu, X, Mic, Globe, Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('తెలుగు');
   const location = useLocation();
+  const isDashboard = location.pathname === '/dashboard';
+
+  // Get user data from localStorage if on dashboard
+  const userData = isDashboard ? JSON.parse(localStorage.getItem('kisanUser') || '{}') : null;
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '🌾' },
     { name: 'Weather', path: '/weather', icon: '🌤️' },
     { name: 'Analytics', path: '/analytics', icon: '📊' },
     { name: 'Voice Assistant', path: '/voice', icon: '🎤' },
+  ];
+
+  const languages = [
+    { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
+    { code: 'en', name: 'English', flag: '🇺🇸' }
   ];
 
   return (
@@ -45,13 +62,70 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm" className="text-green-700 border-green-300">
-              <Globe className="w-4 h-4 mr-2" />
-              తెలుగు
-            </Button>
+            {/* Language Selector - Show only on dashboard */}
+            {isDashboard && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-green-700 border-green-300">
+                    <Globe className="w-4 h-4 mr-2" />
+                    {selectedLanguage}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white">
+                  {languages.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onClick={() => setSelectedLanguage(lang.name)}
+                      className="cursor-pointer"
+                    >
+                      <span className="mr-2">{lang.flag}</span>
+                      {lang.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {/* Voice Assistant Button */}
             <Button variant="outline" size="sm">
               <Mic className="w-4 h-4" />
             </Button>
+
+            {/* Profile Section - Show only on dashboard */}
+            {isDashboard && userData.name && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center space-x-2 p-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={userData.profilePhoto || ''} />
+                      <AvatarFallback className="bg-green-100 text-green-800">
+                        {userData.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium text-gray-700">{userData.name}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white" align="end">
+                  <DropdownMenuItem>
+                    <User className="w-4 h-4 mr-2" />
+                    View Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Settings className="w-4 h-4 mr-2" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      localStorage.removeItem('kisanUser');
+                      window.location.href = '/login';
+                    }}
+                    className="text-red-600"
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -86,6 +160,59 @@ const Navbar = () => {
                 <span>{item.name}</span>
               </Link>
             ))}
+            
+            {/* Mobile Language and Profile Options */}
+            {isDashboard && (
+              <>
+                <div className="border-t border-gray-200 mt-2 pt-2">
+                  <div className="px-3 py-2 text-sm font-medium text-gray-500">Language</div>
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setSelectedLanguage(lang.name);
+                        setIsOpen(false);
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
+                    >
+                      <span className="mr-2">{lang.flag}</span>
+                      {lang.name}
+                    </button>
+                  ))}
+                </div>
+                
+                {userData.name && (
+                  <div className="border-t border-gray-200 mt-2 pt-2">
+                    <div className="flex items-center px-3 py-2">
+                      <Avatar className="h-8 w-8 mr-3">
+                        <AvatarImage src={userData.profilePhoto || ''} />
+                        <AvatarFallback className="bg-green-100 text-green-800">
+                          {userData.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium text-gray-700">{userData.name}</span>
+                    </div>
+                    <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
+                      <User className="w-4 h-4 mr-2" />
+                      View Profile
+                    </button>
+                    <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Settings
+                    </button>
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('kisanUser');
+                        window.location.href = '/login';
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-red-600 hover:bg-red-50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       )}

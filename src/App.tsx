@@ -25,10 +25,30 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/weather" element={<Weather />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/voice" element={<Voice />} />
+            <Route path="/dashboard" element={
+              <>
+                <Navbar />
+                <Dashboard />
+              </>
+            } />
+            <Route path="/weather" element={
+              <>
+                <Navbar />
+                <Weather />
+              </>
+            } />
+            <Route path="/analytics" element={
+              <>
+                <Navbar />
+                <Analytics />
+              </>
+            } />
+            <Route path="/voice" element={
+              <>
+                <Navbar />
+                <Voice />
+              </>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
