@@ -11,6 +11,11 @@ import Dashboard from "./pages/Dashboard";
 import Weather from "./pages/Weather";
 import Analytics from "./pages/Analytics";
 import Voice from "./pages/Voice";
+import Market from "./pages/Market";
+import Education from "./pages/Education";
+import Schemes from "./pages/Schemes";
+import Mandi from "./pages/Mandi";
+import Scanner from "./pages/Scanner";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +52,36 @@ const App = () => (
               <>
                 <Navbar />
                 <Voice />
+              </>
+            } />
+            <Route path="/market" element={
+              <>
+                <Navbar />
+                <Market />
+              </>
+            } />
+            <Route path="/education" element={
+              <>
+                <Navbar />
+                <Education />
+              </>
+            } />
+            <Route path="/schemes" element={
+              <>
+                <Navbar />
+                <Schemes />
+              </>
+            } />
+            <Route path="/mandi" element={
+              <>
+                <Navbar />
+                <Mandi />
+              </>
+            } />
+            <Route path="/scanner" element={
+              <>
+                <Navbar />
+                <Scanner />
               </>
             } />
             <Route path="*" element={<NotFound />} />

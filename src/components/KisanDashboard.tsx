@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +19,7 @@ import {
 
 const KisanDashboard = () => {
   const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Get user data from localStorage
@@ -92,6 +94,10 @@ const KisanDashboard = () => {
     { label: 'नई योजना', value: '3', subtitle: 'Available', icon: '📋' },
     { label: 'मंडी दूरी', value: '12 km', subtitle: 'Nearest', icon: '🚜' }
   ];
+
+  const handleModuleClick = (path: string) => {
+    navigate(path);
+  };
 
   if (!user) {
     return (
@@ -181,6 +187,7 @@ const KisanDashboard = () => {
               <Card 
                 key={index} 
                 className="hover:shadow-lg transition-shadow cursor-pointer border-gray-200 hover:border-green-300"
+                onClick={() => handleModuleClick(module.path)}
               >
                 <CardContent className="p-6 text-center">
                   <div className={`w-16 h-16 ${module.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
