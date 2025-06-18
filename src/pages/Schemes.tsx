@@ -75,6 +75,13 @@ const Schemes = () => {
     }
   ];
 
+  const getAmount = (amount) => {
+    if (typeof amount === 'string') {
+      return amount;
+    }
+    return amount[selectedLanguage];
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-cream-50 p-6">
       <div className="max-w-6xl mx-auto">
@@ -128,7 +135,7 @@ const Schemes = () => {
                 </CardTitle>
                 <div className="flex items-center space-x-2 text-lg font-bold text-green-600">
                   <Banknote className="w-5 h-5" />
-                  <span>{scheme.amount}</span>
+                  <span>{getAmount(scheme.amount)}</span>
                   <span className="text-sm text-gray-600">{scheme.period[selectedLanguage]}</span>
                 </div>
               </CardHeader>
