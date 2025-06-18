@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Mic, Globe, Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,23 +13,34 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('తెలుగు');
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
   const location = useLocation();
   const isDashboard = location.pathname === '/dashboard';
 
   // Get user data from localStorage if on dashboard
   const userData = isDashboard ? JSON.parse(localStorage.getItem('kisanUser') || '{}') : null;
 
+  // Set global language in localStorage for other components to use
+  useEffect(() => {
+    localStorage.setItem('appLanguage', selectedLanguage.toLowerCase());
+    // Dispatch custom event to notify other components of language change
+    window.dispatchEvent(new CustomEvent('languageChange', { detail: selectedLanguage.toLowerCase() }));
+  }, [selectedLanguage]);
+
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '🌾' },
     { name: 'Weather', path: '/weather', icon: '🌤️' },
-    { name: 'Analytics', path: '/analytics', icon: '📊' },
+    { name: 'Market Insights', path: '/market', icon: '📊' },
+    { name: 'Education', path: '/education', icon: '📚' },
+    { name: 'Government Schemes', path: '/schemes', icon: '🏛️' },
+    { name: 'Online Mandi', path: '/mandi', icon: '🛒' },
     { name: 'Voice Assistant', path: '/voice', icon: '🎤' },
+    { name: 'Crop Scanner', path: '/scanner', icon: '📷' },
   ];
 
   const languages = [
-    { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
-    { code: 'en', name: 'English', flag: '🇺🇸' }
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'te', name: 'Telugu', flag: '🇮🇳' }
   ];
 
   return (
@@ -44,8 +55,8 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+          <div className="hidden md:flex items-center space-x-6">
+            {navItems.slice(0, 4).map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
@@ -62,34 +73,34 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            {/* Language Selector - Show only on dashboard */}
-            {isDashboard && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="text-green-700 border-green-300">
-                    <Globe className="w-4 h-4 mr-2" />
-                    {selectedLanguage}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white">
-                  {languages.map((lang) => (
-                    <DropdownMenuItem
-                      key={lang.code}
-                      onClick={() => setSelectedLanguage(lang.name)}
-                      className="cursor-pointer"
-                    >
-                      <span className="mr-2">{lang.flag}</span>
-                      {lang.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            {/* Global Language Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="text-green-700 border-green-300">
+                  <Globe className="w-4 h-4 mr-2" />
+                  {selectedLanguage}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white">
+                {languages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => setSelectedLanguage(lang.name)}
+                    className="cursor-pointer"
+                  >
+                    <span className="mr-2">{lang.flag}</span>
+                    {lang.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Voice Assistant Button */}
-            <Button variant="outline" size="sm">
-              <Mic className="w-4 h-4" />
-            </Button>
+            <Link to="/voice">
+              <Button variant="outline" size="sm">
+                <Mic className="w-4 h-4" />
+              </Button>
+            </Link>
 
             {/* Profile Section - Show only on dashboard */}
             {isDashboard && userData.name && (
@@ -161,57 +172,53 @@ const Navbar = () => {
               </Link>
             ))}
             
-            {/* Mobile Language and Profile Options */}
-            {isDashboard && (
-              <>
-                <div className="border-t border-gray-200 mt-2 pt-2">
-                  <div className="px-3 py-2 text-sm font-medium text-gray-500">Language</div>
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        setSelectedLanguage(lang.name);
-                        setIsOpen(false);
-                      }}
-                      className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
-                    >
-                      <span className="mr-2">{lang.flag}</span>
-                      {lang.name}
-                    </button>
-                  ))}
+            {/* Mobile Language Options */}
+            <div className="border-t border-gray-200 mt-2 pt-2">
+              <div className="px-3 py-2 text-sm font-medium text-gray-500">Language</div>
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setSelectedLanguage(lang.name);
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
+                >
+                  <span className="mr-2">{lang.flag}</span>
+                  {lang.name}
+                </button>
+              ))}
+            </div>
+            
+            {isDashboard && userData.name && (
+              <div className="border-t border-gray-200 mt-2 pt-2">
+                <div className="flex items-center px-3 py-2">
+                  <Avatar className="h-8 w-8 mr-3">
+                    <AvatarImage src={userData.profilePhoto || ''} />
+                    <AvatarFallback className="bg-green-100 text-green-800">
+                      {userData.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-gray-700">{userData.name}</span>
                 </div>
-                
-                {userData.name && (
-                  <div className="border-t border-gray-200 mt-2 pt-2">
-                    <div className="flex items-center px-3 py-2">
-                      <Avatar className="h-8 w-8 mr-3">
-                        <AvatarImage src={userData.profilePhoto || ''} />
-                        <AvatarFallback className="bg-green-100 text-green-800">
-                          {userData.name.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium text-gray-700">{userData.name}</span>
-                    </div>
-                    <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
-                      <User className="w-4 h-4 mr-2" />
-                      View Profile
-                    </button>
-                    <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Settings
-                    </button>
-                    <button
-                      onClick={() => {
-                        localStorage.removeItem('kisanUser');
-                        window.location.href = '/login';
-                      }}
-                      className="flex items-center w-full px-3 py-2 text-red-600 hover:bg-red-50"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </>
+                <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
+                  <User className="w-4 h-4 mr-2" />
+                  View Profile
+                </button>
+                <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('kisanUser');
+                    window.location.href = '/login';
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-red-600 hover:bg-red-50"
+                >
+                  Logout
+                </button>
+              </div>
             )}
           </div>
         </div>
