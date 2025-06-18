@@ -1,5 +1,6 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useNavigate } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useForm } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,9 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { ShoppingCart, Plus, Minus, Package, Check, CreditCard, Smartphone, Banknote } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useForm } from 'react-hook-form';
+import { ShoppingCart, Plus, Minus, Package, Check, CreditCard, Smartphone, Banknote, ArrowLeft } from 'lucide-react';
 
 interface Seed {
   id: string;
@@ -34,6 +33,7 @@ interface DeliveryForm {
 }
 
 const Seeds = () => {
+  const navigate = useNavigate();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [orderStep, setOrderStep] = useState<'cart' | 'aadhaar' | 'otp' | 'address' | 'payment' | 'success'>('cart');
@@ -278,6 +278,17 @@ const Seeds = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/dashboard')}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>

@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Users, Banknote, ExternalLink, FileText, Phone } from 'lucide-react';
+import { Building2, Users, Banknote, ExternalLink, FileText, Phone, ArrowLeft } from 'lucide-react';
 
 const Schemes = () => {
+  const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState('english');
 
   // Listen for global language changes
@@ -157,6 +159,17 @@ const Schemes = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-cream-50 p-6">
       <div className="max-w-6xl mx-auto">
+        <div className="mb-6">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/dashboard')}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-green-800 mb-2">

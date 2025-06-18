@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Minus, RefreshCw } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, RefreshCw, ArrowLeft } from 'lucide-react';
 
 const Market = () => {
+  const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState('english');
   const [marketData, setMarketData] = useState([]);
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -155,6 +157,17 @@ const Market = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-cream-50 p-6">
       <div className="max-w-6xl mx-auto">
+        <div className="mb-6">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate('/dashboard')}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
