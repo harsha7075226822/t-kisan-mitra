@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload } from 'lucide-react';
@@ -7,11 +8,17 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +28,7 @@ const Navbar = () => {
   const [showProfileUpload, setShowProfileUpload] = useState(false);
   const [trackingId, setTrackingId] = useState('');
   const [profileImage, setProfileImage] = useState('');
+  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const location = useLocation();
   const isDashboard = location.pathname === '/dashboard';
   const { toast } = useToast();
@@ -71,7 +79,6 @@ const Navbar = () => {
     }
   ];
 
-  // Mock tracking data
   const getTrackingInfo = (orderId: string) => {
     const trackingSteps = [
       { status: 'Ordered', date: '2024-01-18', completed: true },
@@ -197,77 +204,87 @@ const Navbar = () => {
               </Button>
             </Link>
 
-            {/* New Features - Show only when logged in */}
+            {/* Hamburger Menu for logged-in users */}
             {isDashboard && userData.name && (
-              <>
-                {/* My Orders Button */}
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowMyOrders(true)}
-                  className="text-green-700 border-green-300"
-                >
-                  <Package className="w-4 h-4 mr-2" />
-                  My Orders
-                </Button>
-
-                {/* Track Order Button */}
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowTrackOrder(true)}
-                  className="text-green-700 border-green-300"
-                >
-                  <Truck className="w-4 h-4 mr-2" />
-                  Track Order
-                </Button>
-
-                {/* Profile Picture Upload */}
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setShowProfileUpload(true)}
-                  className="p-1"
-                >
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={profileImage || userData.profilePhoto || ''} />
-                    <AvatarFallback className="bg-green-100 text-green-800">
-                      {userData.name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </>
-            )}
-
-            {/* Profile Section - Show only on dashboard */}
-            {isDashboard && userData.name && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2 p-2">
-                    <Settings className="w-4 h-4" />
-                    <span className="text-sm font-medium text-gray-700">Settings</span>
+              <Popover open={isHamburgerOpen} onOpenChange={setIsHamburgerOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="text-green-700 border-green-300">
+                    <Menu className="w-4 h-4" />
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white" align="end">
-                  <DropdownMenuItem>
-                    <User className="w-4 h-4 mr-2" />
-                    View Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      localStorage.removeItem('kisanUser');
-                      window.location.href = '/login';
-                    }}
-                    className="text-red-600"
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 bg-white shadow-lg border border-gray-200 z-50" align="end">
+                  <div className="space-y-2">
+                    {/* Profile Section */}
+                    <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={profileImage || userData.profilePhoto || ''} />
+                        <AvatarFallback className="bg-green-100 text-green-800">
+                          {userData.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">{userData.name}</p>
+                        <button
+                          onClick={() => {
+                            setShowProfileUpload(true);
+                            setIsHamburgerOpen(false);
+                          }}
+                          className="text-xs text-green-600 hover:text-green-800"
+                        >
+                          Change Photo
+                        </button>
+                      </div>
+                    </div>
+
+                    <DropdownMenuSeparator />
+
+                    {/* Menu Items */}
+                    <button
+                      onClick={() => {
+                        setShowMyOrders(true);
+                        setIsHamburgerOpen(false);
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md"
+                    >
+                      <Package className="w-4 h-4 mr-3" />
+                      My Orders
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowTrackOrder(true);
+                        setIsHamburgerOpen(false);
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md"
+                    >
+                      <Truck className="w-4 h-4 mr-3" />
+                      Track Order
+                    </button>
+
+                    <button className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md">
+                      <User className="w-4 h-4 mr-3" />
+                      View Profile
+                    </button>
+
+                    <DropdownMenuSeparator />
+
+                    <button className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md">
+                      <Settings className="w-4 h-4 mr-3" />
+                      Settings
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem('kisanUser');
+                        window.location.href = '/login';
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 rounded-md"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             )}
           </div>
 
@@ -322,8 +339,19 @@ const Navbar = () => {
               ))}
             </div>
             
+            {/* Mobile User Menu */}
             {isDashboard && userData.name && (
               <div className="border-t border-gray-200 mt-2 pt-2">
+                <div className="flex items-center px-3 py-2 bg-green-50 rounded-lg mx-2 mb-2">
+                  <Avatar className="h-8 w-8 mr-3">
+                    <AvatarImage src={profileImage || userData.profilePhoto || ''} />
+                    <AvatarFallback className="bg-green-100 text-green-800">
+                      {userData.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-gray-700">{userData.name}</span>
+                </div>
+                
                 <button 
                   onClick={() => {
                     setShowMyOrders(true);
@@ -344,15 +372,16 @@ const Navbar = () => {
                   <Truck className="w-4 h-4 mr-2" />
                   Track Order
                 </button>
-                <div className="flex items-center px-3 py-2">
-                  <Avatar className="h-8 w-8 mr-3">
-                    <AvatarImage src={profileImage || userData.profilePhoto || ''} />
-                    <AvatarFallback className="bg-green-100 text-green-800">
-                      {userData.name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium text-gray-700">{userData.name}</span>
-                </div>
+                <button
+                  onClick={() => {
+                    setShowProfileUpload(true);
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Change Photo
+                </button>
                 <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
                   <User className="w-4 h-4 mr-2" />
                   View Profile
