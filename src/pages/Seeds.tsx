@@ -3,8 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Plus, Minus, Package } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { ShoppingCart, Plus, Minus, Package, Check, CreditCard, Smartphone, Banknote } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useForm } from 'react-hook-form';
 
 interface Seed {
   id: string;
@@ -19,10 +24,34 @@ interface CartItem extends Seed {
   quantity: number;
 }
 
+interface DeliveryForm {
+  name: string;
+  village: string;
+  mandal: string;
+  district: string;
+  pincode: string;
+  phone: string;
+}
+
 const Seeds = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [orderStep, setOrderStep] = useState<'cart' | 'aadhaar' | 'otp' | 'address' | 'payment' | 'success'>('cart');
+  const [aadhaarNumber, setAadhaarNumber] = useState('');
+  const [otpValue, setOtpValue] = useState('');
+  const [selectedPayment, setSelectedPayment] = useState('');
   const { toast } = useToast();
+
+  const form = useForm<DeliveryForm>({
+    defaultValues: {
+      name: '',
+      village: '',
+      mandal: '',
+      district: '',
+      pincode: '',
+      phone: ''
+    }
+  });
 
   const seedsData: Seed[] = [
     {
@@ -75,23 +104,25 @@ const Seeds = () => {
     }
   ];
 
-  const addToCart = (seed: Seed) => {
+  const addToCart = (seed: Seed, quantity: number) => {
+    if (quantity <= 0) return;
+    
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === seed.id);
       if (existingItem) {
         return prevCart.map(item =>
           item.id === seed.id 
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-        return [...prevCart, { ...seed, quantity: 1 }];
+        return [...prevCart, { ...seed, quantity }];
       }
     });
     
     toast({
       title: "Added to Cart",
-      description: `${seed.name} added successfully`,
+      description: `${quantity} bag(s) of ${seed.name} added successfully`,
     });
   };
 
@@ -115,13 +146,133 @@ const Seeds = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const placeOrder = () => {
+  const handlePlaceOrder = () => {
+    if (cart.length === 0) {
+      toast({
+        title: "Cart Empty",
+        description: "Please add items to cart before placing order",
+      });
+      return;
+    }
+    setOrderStep('aadhaar');
+  };
+
+  const handleAadhaarSubmit = () => {
+    if (aadhaarNumber.length !== 12) {
+      toast({
+        title: "Invalid Aadhaar",
+        description: "Please enter a valid 12-digit Aadhaar number",
+      });
+      return;
+    }
+    setOrderStep('otp');
     toast({
-      title: "Order Placed",
-      description: `Order for ${getTotalItems()} items worth ₹${getTotalPrice()} placed successfully!`,
+      title: "OTP Sent",
+      description: "Verification code sent to your registered mobile",
     });
-    setCart([]);
-    setIsCartOpen(false);
+  };
+
+  const handleOtpVerify = () => {
+    if (otpValue.length !== 6) {
+      toast({
+        title: "Invalid OTP",
+        description: "Please enter the 6-digit verification code",
+      });
+      return;
+    }
+    setOrderStep('address');
+    toast({
+      title: "Aadhaar Verified",
+      description: "Identity verification successful",
+    });
+  };
+
+  const handleAddressSubmit = (data: DeliveryForm) => {
+    setOrderStep('payment');
+  };
+
+  const handlePaymentConfirm = () => {
+    if (!selectedPayment) {
+      toast({
+        title: "Select Payment Method",
+        description: "Please choose a payment option to continue",
+      });
+      return;
+    }
+    
+    setOrderStep('success');
+    toast({
+      title: "Order Placed Successfully!",
+      description: `Order for ${getTotalItems()} items worth ₹${getTotalPrice()} confirmed`,
+    });
+    
+    // Reset after success
+    setTimeout(() => {
+      setCart([]);
+      setOrderStep('cart');
+      setIsCartOpen(false);
+      setAadhaarNumber('');
+      setOtpValue('');
+      setSelectedPayment('');
+      form.reset();
+    }, 3000);
+  };
+
+  const SeedCard = ({ seed }: { seed: Seed }) => {
+    const [quantity, setQuantity] = useState(1);
+
+    return (
+      <Card className="hover:shadow-lg transition-shadow">
+        <CardHeader className="text-center">
+          <div className="text-4xl mb-2">{seed.image}</div>
+          <CardTitle className="text-lg">{seed.name}</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center">
+          <p className="text-sm text-gray-600 mb-4">{seed.description}</p>
+          <div className="space-y-2 mb-4">
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Weight per bag:</span>
+              <span className="font-medium">{seed.weight} kg</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Price per bag:</span>
+              <span className="font-bold text-green-600">₹{seed.price}</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+            >
+              <Minus className="w-3 h-3" />
+            </Button>
+            <span className="font-medium">{quantity} bags</span>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => setQuantity(quantity + 1)}
+            >
+              <Plus className="w-3 h-3" />
+            </Button>
+          </div>
+          
+          <div className="mb-4 p-2 bg-gray-50 rounded">
+            <span className="text-sm text-gray-600">Total: </span>
+            <span className="font-bold text-green-600">₹{seed.price * quantity}</span>
+          </div>
+          
+          <Button 
+            onClick={() => addToCart(seed, quantity)}
+            className="w-full bg-green-600 hover:bg-green-700"
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            Add to Cart
+          </Button>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
@@ -132,15 +283,15 @@ const Seeds = () => {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center">
               <Package className="w-8 h-8 mr-3 text-green-600" />
-              Seeds Container
+              Seeds Services
             </h1>
-            <p className="text-gray-600 mt-2">Quality seeds for better harvest</p>
+            <p className="text-gray-600 mt-2">Purchase certified seeds with full details</p>
           </div>
           
           {/* Cart Icon */}
           <div className="relative">
             <Button 
-              onClick={() => setIsCartOpen(!isCartOpen)}
+              onClick={() => setIsCartOpen(true)}
               className="bg-green-600 hover:bg-green-700"
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
@@ -155,56 +306,41 @@ const Seeds = () => {
         </div>
 
         {/* Seeds Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {seedsData.map((seed) => (
-            <Card key={seed.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
-                <div className="text-4xl mb-2">{seed.image}</div>
-                <CardTitle className="text-lg">{seed.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-sm text-gray-600 mb-4">{seed.description}</p>
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Weight:</span>
-                    <span className="font-medium">{seed.weight} kg</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Price:</span>
-                    <span className="font-bold text-green-600">₹{seed.price}</span>
-                  </div>
-                </div>
-                <Button 
-                  onClick={() => addToCart(seed)}
-                  className="w-full bg-green-600 hover:bg-green-700"
-                >
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add to Cart
-                </Button>
-              </CardContent>
-            </Card>
+            <SeedCard key={seed.id} seed={seed} />
           ))}
         </div>
 
-        {/* Cart Sidebar */}
-        {isCartOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setIsCartOpen(false)}>
-            <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-bold">Shopping Cart</h2>
-                  <Button variant="ghost" onClick={() => setIsCartOpen(false)}>×</Button>
-                </div>
+        {/* Order Flow Dialog */}
+        <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {orderStep === 'cart' && 'Shopping Cart'}
+                {orderStep === 'aadhaar' && 'Aadhaar Verification'}
+                {orderStep === 'otp' && 'OTP Verification'}
+                {orderStep === 'address' && 'Delivery Address'}
+                {orderStep === 'payment' && 'Payment Method'}
+                {orderStep === 'success' && 'Order Confirmed'}
+              </DialogTitle>
+            </DialogHeader>
 
+            {/* Cart Step */}
+            {orderStep === 'cart' && (
+              <div className="space-y-4">
                 {cart.length === 0 ? (
-                  <p className="text-gray-500 text-center">Your cart is empty</p>
+                  <p className="text-gray-500 text-center py-8">Your cart is empty</p>
                 ) : (
                   <>
-                    <div className="space-y-4 mb-6">
+                    <div className="space-y-3">
                       {cart.map((item) => (
-                        <div key={item.id} className="border-b pb-4">
+                        <div key={item.id} className="border-b pb-3">
                           <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-medium text-sm">{item.name}</h3>
+                            <div>
+                              <h3 className="font-medium">{item.name}</h3>
+                              <p className="text-sm text-gray-600">{item.weight} kg per bag</p>
+                            </div>
                             <span className="font-bold">₹{item.price * item.quantity}</span>
                           </div>
                           <div className="flex justify-between items-center">
@@ -216,7 +352,7 @@ const Seeds = () => {
                               >
                                 <Minus className="w-3 h-3" />
                               </Button>
-                              <span className="font-medium">{item.quantity}</span>
+                              <span className="font-medium">{item.quantity} bags</span>
                               <Button 
                                 size="sm" 
                                 variant="outline"
@@ -225,7 +361,7 @@ const Seeds = () => {
                                 <Plus className="w-3 h-3" />
                               </Button>
                             </div>
-                            <span className="text-sm text-gray-600">₹{item.price} each</span>
+                            <span className="text-sm text-gray-600">₹{item.price} per bag</span>
                           </div>
                         </div>
                       ))}
@@ -237,7 +373,7 @@ const Seeds = () => {
                         <span className="font-bold text-lg text-green-600">₹{getTotalPrice()}</span>
                       </div>
                       <Button 
-                        onClick={placeOrder}
+                        onClick={handlePlaceOrder}
                         className="w-full bg-green-600 hover:bg-green-700"
                       >
                         Place Order
@@ -246,9 +382,238 @@ const Seeds = () => {
                   </>
                 )}
               </div>
-            </div>
-          </div>
-        )}
+            )}
+
+            {/* Aadhaar Step */}
+            {orderStep === 'aadhaar' && (
+              <div className="space-y-4">
+                <p className="text-gray-600">Please enter your Aadhaar number for verification</p>
+                <Input
+                  placeholder="Enter 12-digit Aadhaar number"
+                  value={aadhaarNumber}
+                  onChange={(e) => setAadhaarNumber(e.target.value.replace(/\D/g, '').slice(0, 12))}
+                  maxLength={12}
+                />
+                <div className="flex space-x-2">
+                  <Button variant="outline" onClick={() => setOrderStep('cart')}>
+                    Back
+                  </Button>
+                  <Button onClick={handleAadhaarSubmit} className="flex-1">
+                    Send OTP
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* OTP Step */}
+            {orderStep === 'otp' && (
+              <div className="space-y-4 text-center">
+                <p className="text-gray-600">Enter the 6-digit OTP sent to your registered mobile</p>
+                <div className="flex justify-center">
+                  <InputOTP maxLength={6} value={otpValue} onChange={setOtpValue}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+                <div className="flex space-x-2">
+                  <Button variant="outline" onClick={() => setOrderStep('aadhaar')}>
+                    Back
+                  </Button>
+                  <Button onClick={handleOtpVerify} className="flex-1">
+                    Verify OTP
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Address Step */}
+            {orderStep === 'address' && (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleAddressSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your full name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="village"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Village</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Village name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="mandal"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mandal</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Mandal name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="district"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>District</FormLabel>
+                          <FormControl>
+                            <Input placeholder="District name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="pincode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>PIN Code</FormLabel>
+                          <FormControl>
+                            <Input placeholder="6-digit PIN code" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="10-digit mobile number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="flex space-x-2">
+                    <Button type="button" variant="outline" onClick={() => setOrderStep('otp')}>
+                      Back
+                    </Button>
+                    <Button type="submit" className="flex-1">
+                      Continue to Payment
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            )}
+
+            {/* Payment Step */}
+            {orderStep === 'payment' && (
+              <div className="space-y-4">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="font-medium mb-2">Order Summary</h3>
+                  <div className="text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>Total Items:</span>
+                      <span>{getTotalItems()} bags</span>
+                    </div>
+                    <div className="flex justify-between font-bold">
+                      <span>Total Amount:</span>
+                      <span>₹{getTotalPrice()}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <h3 className="font-medium">Select Payment Method</h3>
+                  
+                  <div className="space-y-2">
+                    <Button
+                      variant={selectedPayment === 'upi' ? 'default' : 'outline'}
+                      className="w-full justify-start"
+                      onClick={() => setSelectedPayment('upi')}
+                    >
+                      <Smartphone className="w-4 h-4 mr-2" />
+                      UPI (PhonePe, GPay, Paytm)
+                    </Button>
+                    
+                    <Button
+                      variant={selectedPayment === 'cod' ? 'default' : 'outline'}
+                      className="w-full justify-start"
+                      onClick={() => setSelectedPayment('cod')}
+                    >
+                      <Banknote className="w-4 h-4 mr-2" />
+                      Cash on Delivery (COD)
+                    </Button>
+                    
+                    <Button
+                      variant={selectedPayment === 'card' ? 'default' : 'outline'}
+                      className="w-full justify-start"
+                      onClick={() => setSelectedPayment('card')}
+                    >
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Card Payment
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-2">
+                  <Button variant="outline" onClick={() => setOrderStep('address')}>
+                    Back
+                  </Button>
+                  <Button onClick={handlePaymentConfirm} className="flex-1">
+                    Confirm Order
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Success Step */}
+            {orderStep === 'success' && (
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                  <Check className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-bold text-green-600">Order Confirmed!</h3>
+                <p className="text-gray-600">
+                  Your order for {getTotalItems()} items worth ₹{getTotalPrice()} has been placed successfully.
+                </p>
+                <p className="text-sm text-gray-500">
+                  You will receive delivery updates on your registered mobile number.
+                </p>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
