@@ -16,6 +16,7 @@ import Education from "./pages/Education";
 import Schemes from "./pages/Schemes";
 import Mandi from "./pages/Mandi";
 import Scanner from "./pages/Scanner";
+import Seeds from "./pages/Seeds";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -82,6 +83,12 @@ const App = () => (
               <>
                 <Navbar />
                 <Scanner />
+              </>
+            } />
+            <Route path="/seeds" element={
+              <>
+                <Navbar />
+                <Seeds />
               </>
             } />
             <Route path="*" element={<NotFound />} />

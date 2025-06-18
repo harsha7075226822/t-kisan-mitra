@@ -14,7 +14,8 @@ import {
   Camera,
   Phone,
   LogOut,
-  Bell
+  Bell,
+  Sprout
 } from 'lucide-react';
 
 const KisanDashboard = () => {
@@ -85,6 +86,14 @@ const KisanDashboard = () => {
       icon: Camera,
       color: 'bg-indigo-500',
       path: '/scanner'
+    },
+    {
+      title: 'बीज भंडार',
+      subtitle: 'Seeds Container',
+      description: 'Quality seeds with pricing',
+      icon: Sprout,
+      color: 'bg-emerald-500',
+      path: '/seeds'
     }
   ];
 

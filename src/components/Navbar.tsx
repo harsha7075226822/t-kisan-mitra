@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mic, Globe, Settings, User } from 'lucide-react';
+import { Menu, X, Mic, Globe, Settings, User, Sprout } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -36,6 +35,7 @@ const Navbar = () => {
     { name: 'Online Mandi', path: '/mandi', icon: '🛒' },
     { name: 'Voice Assistant', path: '/voice', icon: '🎤' },
     { name: 'Crop Scanner', path: '/scanner', icon: '📷' },
+    { name: 'Seeds Container', path: '/seeds', icon: '🌱' },
   ];
 
   const languages = [
@@ -99,6 +99,13 @@ const Navbar = () => {
             <Link to="/voice">
               <Button variant="outline" size="sm">
                 <Mic className="w-4 h-4" />
+              </Button>
+            </Link>
+
+            {/* Seeds Container Button */}
+            <Link to="/seeds">
+              <Button variant="outline" size="sm">
+                <Sprout className="w-4 h-4" />
               </Button>
             </Link>
 
