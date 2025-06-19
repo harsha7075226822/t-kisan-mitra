@@ -1,17 +1,25 @@
-
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Camera, Upload, Loader2, AlertTriangle, CheckCircle, Info, ArrowLeft } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Camera, Upload, Loader2, AlertTriangle, CheckCircle, Info, ArrowLeft, RotateCcw } from 'lucide-react';
 
 const Scanner = () => {
   const navigate = useNavigate();
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [showCameraDialog, setShowCameraDialog] = useState(false);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [showPermissionAlert, setShowPermissionAlert] = useState(false);
+  const [permissionDenied, setPermissionDenied] = useState(false);
   const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   const mockDiseases = [
     {
@@ -30,35 +38,6 @@ const Scanner = () => {
     }
   ];
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setSelectedImage(e.target.result);
-        scanImage();
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCameraCapture = () => {
-    // In a real app, this would access the camera
-    alert('Download mobile app to use camera feature');
-  };
-
-  const scanImage = () => {
-    setIsScanning(true);
-    setScanResult(null);
-    
-    // Simulate scanning process
-    setTimeout(() => {
-      const randomDisease = mockDiseases[Math.floor(Math.random() * mockDiseases.length)];
-      setScanResult(randomDisease);
-      setIsScanning(false);
-    }, 3000);
-  };
-
   const getSeverityColor = (severity) => {
     switch (severity) {
       case 'high': return 'bg-red-100 text-red-800 border-red-300';
@@ -75,6 +54,100 @@ const Scanner = () => {
       case 'low': return <CheckCircle className="w-4 h-4" />;
       default: return <Info className="w-4 h-4" />;
     }
+  };
+
+  const requestCameraAccess = async () => {
+    try {
+      setShowPermissionAlert(true);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'environment' // Use back camera for crop scanning
+        } 
+      });
+      
+      setCameraStream(stream);
+      setShowCameraDialog(true);
+      setShowPermissionAlert(false);
+      setPermissionDenied(false);
+      
+      // Set video stream
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error('Camera access denied:', error);
+      setPermissionDenied(true);
+      setShowPermissionAlert(false);
+      alert('Please enable camera access to use this feature.');
+    }
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      setCapturedImage(imageDataUrl);
+    }
+  };
+
+  const confirmCapture = () => {
+    if (capturedImage) {
+      setSelectedImage(capturedImage);
+      closeCameraDialog();
+      scanImage();
+    }
+  };
+
+  const retryCapture = () => {
+    setCapturedImage(null);
+  };
+
+  const closeCameraDialog = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setShowCameraDialog(false);
+    setCapturedImage(null);
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+        scanImage();
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const scanImage = () => {
+    setIsScanning(true);
+    setScanResult(null);
+    
+    // Simulate scanning process
+    setTimeout(() => {
+      const randomDisease = mockDiseases[Math.floor(Math.random() * mockDiseases.length)];
+      setScanResult(randomDisease);
+      setIsScanning(false);
+    }, 3000);
+  };
+
+  const retryPermission = () => {
+    setPermissionDenied(false);
+    requestCameraAccess();
   };
 
   return (
@@ -101,6 +174,37 @@ const Scanner = () => {
           </p>
         </div>
 
+        {/* Permission Alert */}
+        {showPermissionAlert && (
+          <Alert className="mb-6 border-orange-200 bg-orange-50">
+            <Camera className="h-4 w-4" />
+            <AlertDescription className="text-orange-800">
+              <strong>⚠️ Kisan Mitra AI needs camera access to continue.</strong>
+              <br />
+              Please allow camera access to scan your crop or verify your identity.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Permission Denied Alert */}
+        {permissionDenied && (
+          <Alert className="mb-6 border-red-200 bg-red-50">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="text-red-800">
+              Camera access was denied. Please enable camera access in your browser settings to use this feature.
+              <Button 
+                onClick={retryPermission}
+                variant="outline"
+                size="sm"
+                className="ml-2 mt-2"
+              >
+                <RotateCcw className="w-4 h-4 mr-1" />
+                Retry
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Upload Section */}
         <Card className="border-green-200 mb-6">
           <CardHeader>
@@ -111,11 +215,11 @@ const Scanner = () => {
           <CardContent className="text-center space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <Button
-                onClick={handleCameraCapture}
+                onClick={requestCameraAccess}
                 className="h-24 bg-blue-600 hover:bg-blue-700 flex flex-col items-center justify-center"
               >
                 <Camera className="w-8 h-8 mb-2" />
-                Camera
+                Capture Image
               </Button>
               
               <Button
@@ -140,6 +244,66 @@ const Scanner = () => {
             </p>
           </CardContent>
         </Card>
+
+        {/* Camera Dialog */}
+        <Dialog open={showCameraDialog} onOpenChange={closeCameraDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Capture Crop Photo</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              {!capturedImage ? (
+                <div className="relative bg-black rounded-lg overflow-hidden">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    className="w-full h-64 object-cover"
+                  />
+                  <canvas ref={canvasRef} className="hidden" />
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                    <Button
+                      onClick={capturePhoto}
+                      size="lg"
+                      className="rounded-full w-16 h-16 bg-white hover:bg-gray-100 text-black"
+                    >
+                      <Camera className="w-8 h-8" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <img 
+                    src={capturedImage} 
+                    alt="Captured crop" 
+                    className="w-full h-64 object-cover rounded-lg"
+                  />
+                  <p className="text-center text-sm text-gray-600">
+                    Preview your captured image
+                  </p>
+                </div>
+              )}
+            </div>
+            <DialogFooter className="space-x-2">
+              {!capturedImage ? (
+                <Button variant="outline" onClick={closeCameraDialog}>
+                  Cancel
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" onClick={retryCapture}>
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Retake
+                  </Button>
+                  <Button onClick={confirmCapture} className="bg-green-600 hover:bg-green-700">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Use This Photo
+                  </Button>
+                </>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Selected Image */}
         {selectedImage && (
