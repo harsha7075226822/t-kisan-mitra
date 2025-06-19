@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload } from 'lucide-react';

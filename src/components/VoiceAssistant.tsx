@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Mic, MicOff, Volume2, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,6 @@ const VoiceAssistant = () => {
 
   const languages = [
     { code: 'telugu', name: 'తెలుగు', flag: '🇮🇳' },
-    { code: 'urdu', name: 'اردو', flag: '🇵🇰' },
     { code: 'english', name: 'English', flag: '🇺🇸' }
   ];
 
@@ -66,7 +64,7 @@ const VoiceAssistant = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {languages.map((lang) => (
               <Button
                 key={lang.code}

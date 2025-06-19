@@ -10,7 +10,7 @@ const Index = () => {
     {
       icon: Mic,
       title: "Voice Assistant",
-      description: "AI-powered voice support in Telugu, Urdu & English",
+      description: "AI-powered voice support in Telugu & English",
       badge: "Multilingual"
     },
     {
@@ -60,7 +60,7 @@ const Index = () => {
             
             <p className="text-lg text-gray-500 mb-8 max-w-3xl mx-auto">
               <span className="font-semibold">కృషి में तकनीक का साथ</span> • 
-              Voice-enabled farming assistance in Telugu & Urdu with real-time IoT monitoring
+              Voice-enabled farming assistance in Telugu & English with real-time IoT monitoring
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -172,10 +172,8 @@ const Index = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Languages</h3>
               <div className="space-y-2 text-gray-400">
-                <p>🗣️ Telugu / तेలुगु</p>
-                <p>🗣️ Urdu / اردو</p>
+                <p>🗣️ Telugu / తెలుగు</p>
                 <p>🗣️ English</p>
-                <p>🗣️ Hindi / हिंदी</p>
               </div>
             </div>
           </div>
