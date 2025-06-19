@@ -5,10 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Camera, Upload, Loader2, AlertTriangle, CheckCircle, Info, ArrowLeft, RotateCcw } from 'lucide-react';
+import { Camera, Upload, Loader2, AlertTriangle, CheckCircle, Info, ArrowLeft, RotateCcw, Settings, Zap, ZapOff, Grid3X3, RotateCw, ZoomIn, Sun } from 'lucide-react';
+import { AdvancedCameraInterface } from '@/components/scanner/AdvancedCameraInterface';
+import { ImagePreview } from '@/components/scanner/ImagePreview';
+import { useToast } from '@/components/ui/use-toast';
 
 const Scanner = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -17,6 +21,12 @@ const Scanner = () => {
   const [capturedImage, setCapturedImage] = useState(null);
   const [showPermissionAlert, setShowPermissionAlert] = useState(false);
   const [permissionDenied, setPermissionDenied] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [cameraSettings, setCameraSettings] = useState({
+    flash: 'auto', // 'on', 'off', 'auto'
+    quality: 'HD', // 'Low', 'Medium', 'HD'
+    gridLines: false
+  });
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -24,17 +34,23 @@ const Scanner = () => {
   const mockDiseases = [
     {
       name: 'Leaf Blight',
+      nameInTelugu: 'ఆకు దహనం',
       severity: 'high',
       confidence: 85,
       solution: 'Apply copper-based fungicide spray',
-      prevention: 'Reduce watering and improve air circulation'
+      solutionInTelugu: 'రాగి ఆధారిత శిలీంద్ర నాశిని స్ప్రే చేయండి',
+      prevention: 'Reduce watering and improve air circulation',
+      preventionInTelugu: 'నీటిపారుదల తగ్గించి గాలి ప్రసరణ మెరుగుపరచండి'
     },
     {
       name: 'Leaf Spots',
+      nameInTelugu: 'ఆకు మచ్చలు',
       severity: 'medium',
       confidence: 92,
       solution: 'Apply Mancozeb treatment',
-      prevention: 'Water only in the morning to avoid evening moisture'
+      solutionInTelugu: 'మాంకోజెబ్ చికిత్స చేయండి',
+      prevention: 'Water only in the morning to avoid evening moisture',
+      preventionInTelugu: 'సాయంత్రం తేమను నివారించడానికి ఉదయం మాత్రమే నీరు పోయండి'
     }
   ];
 
@@ -61,9 +77,9 @@ const Scanner = () => {
       setShowPermissionAlert(true);
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'environment' // Use back camera for crop scanning
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          facingMode: 'environment'
         } 
       });
       
@@ -72,7 +88,6 @@ const Scanner = () => {
       setShowPermissionAlert(false);
       setPermissionDenied(false);
       
-      // Set video stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
@@ -80,7 +95,11 @@ const Scanner = () => {
       console.error('Camera access denied:', error);
       setPermissionDenied(true);
       setShowPermissionAlert(false);
-      alert('Please enable camera access to use this feature.');
+      toast({
+        title: "Camera Access Required",
+        description: "Please enable camera access to use this feature.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -95,7 +114,9 @@ const Scanner = () => {
       
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      const quality = cameraSettings.quality === 'HD' ? 0.9 : 
+                     cameraSettings.quality === 'Medium' ? 0.7 : 0.5;
+      const imageDataUrl = canvas.toDataURL('image/jpeg', quality);
       setCapturedImage(imageDataUrl);
     }
   };
@@ -104,7 +125,10 @@ const Scanner = () => {
     if (capturedImage) {
       setSelectedImage(capturedImage);
       closeCameraDialog();
-      scanImage();
+      toast({
+        title: "Image Captured",
+        description: "Preview your crop image below. Make sure it's clear and in good lighting."
+      });
     }
   };
 
@@ -127,27 +151,33 @@ const Scanner = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target.result);
-        scanImage();
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const scanImage = () => {
+  const startScanning = () => {
     setIsScanning(true);
     setScanResult(null);
     
-    // Simulate scanning process
     setTimeout(() => {
       const randomDisease = mockDiseases[Math.floor(Math.random() * mockDiseases.length)];
       setScanResult(randomDisease);
       setIsScanning(false);
+      toast({
+        title: "Analysis Complete",
+        description: "Crop disease detected. Check the results below."
+      });
     }, 3000);
   };
 
   const retryPermission = () => {
     setPermissionDenied(false);
     requestCameraAccess();
+  };
+
+  const updateCameraSettings = (newSettings) => {
+    setCameraSettings(prev => ({ ...prev, ...newSettings }));
   };
 
   return (
@@ -166,12 +196,24 @@ const Scanner = () => {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-green-800 mb-2">
-            Crop Scanner
-          </h1>
-          <p className="text-green-600">
-            Crop disease identification and treatment
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-green-800 mb-2">
+                Crop Scanner
+              </h1>
+              <p className="text-green-600">
+                Advanced crop disease identification and treatment
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setShowSettings(true)}
+              className="border-green-300"
+            >
+              <Settings className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Permission Alert */}
@@ -209,7 +251,7 @@ const Scanner = () => {
         <Card className="border-green-200 mb-6">
           <CardHeader>
             <CardTitle className="text-center">
-              Upload Crop Photo
+              Capture Crop Photo
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
@@ -219,7 +261,7 @@ const Scanner = () => {
                 className="h-24 bg-blue-600 hover:bg-blue-700 flex flex-col items-center justify-center"
               >
                 <Camera className="w-8 h-8 mb-2" />
-                Capture Image
+                Open Camera
               </Button>
               
               <Button
@@ -227,7 +269,7 @@ const Scanner = () => {
                 className="h-24 bg-green-600 hover:bg-green-700 flex flex-col items-center justify-center"
               >
                 <Upload className="w-8 h-8 mb-2" />
-                Gallery
+                Upload Photo
               </Button>
             </div>
             
@@ -240,80 +282,114 @@ const Scanner = () => {
             />
             
             <p className="text-sm text-gray-600">
-              Take a clear photo of crop leaves or stem
+              Take a clear photo of crop leaves or stem for accurate disease detection
             </p>
           </CardContent>
         </Card>
 
-        {/* Camera Dialog */}
+        {/* Advanced Camera Dialog */}
         <Dialog open={showCameraDialog} onOpenChange={closeCameraDialog}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
             <DialogHeader>
-              <DialogTitle>Capture Crop Photo</DialogTitle>
+              <DialogTitle>Advanced Camera Interface</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               {!capturedImage ? (
-                <div className="relative bg-black rounded-lg overflow-hidden">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    className="w-full h-64 object-cover"
-                  />
-                  <canvas ref={canvasRef} className="hidden" />
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                    <Button
-                      onClick={capturePhoto}
-                      size="lg"
-                      className="rounded-full w-16 h-16 bg-white hover:bg-gray-100 text-black"
-                    >
-                      <Camera className="w-8 h-8" />
-                    </Button>
-                  </div>
-                </div>
+                <AdvancedCameraInterface
+                  videoRef={videoRef}
+                  canvasRef={canvasRef}
+                  cameraSettings={cameraSettings}
+                  onCapture={capturePhoto}
+                  onSettingsChange={updateCameraSettings}
+                />
               ) : (
-                <div className="space-y-4">
-                  <img 
-                    src={capturedImage} 
-                    alt="Captured crop" 
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
-                  <p className="text-center text-sm text-gray-600">
-                    Preview your captured image
-                  </p>
-                </div>
+                <ImagePreview
+                  image={capturedImage}
+                  onRetake={retryCapture}
+                  onConfirm={confirmCapture}
+                />
               )}
             </div>
-            <DialogFooter className="space-x-2">
-              {!capturedImage ? (
-                <Button variant="outline" onClick={closeCameraDialog}>
-                  Cancel
-                </Button>
-              ) : (
-                <>
-                  <Button variant="outline" onClick={retryCapture}>
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Retake
-                  </Button>
-                  <Button onClick={confirmCapture} className="bg-green-600 hover:bg-green-700">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Use This Photo
-                  </Button>
-                </>
-              )}
+            <DialogFooter>
+              <Button variant="outline" onClick={closeCameraDialog}>
+                Cancel
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
 
-        {/* Selected Image */}
-        {selectedImage && (
+        {/* Settings Dialog */}
+        <Dialog open={showSettings} onOpenChange={setShowSettings}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Camera Settings</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span>Grid Lines</span>
+                <Button
+                  variant={cameraSettings.gridLines ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => updateCameraSettings({ gridLines: !cameraSettings.gridLines })}
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Flash Control</span>
+                <div className="flex space-x-2">
+                  {['off', 'auto', 'on'].map((mode) => (
+                    <Button
+                      key={mode}
+                      variant={cameraSettings.flash === mode ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => updateCameraSettings({ flash: mode })}
+                    >
+                      {mode === 'off' ? <ZapOff className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+                      {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Image Quality</span>
+                <div className="flex space-x-2">
+                  {['Low', 'Medium', 'HD'].map((quality) => (
+                    <Button
+                      key={quality}
+                      variant={cameraSettings.quality === quality ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => updateCameraSettings({ quality })}
+                    >
+                      {quality}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Selected Image Preview */}
+        {selectedImage && !isScanning && !scanResult && (
           <Card className="border-green-200 mb-6">
             <CardContent className="p-4">
               <img 
                 src={selectedImage} 
                 alt="Selected crop" 
-                className="w-full max-h-64 object-contain rounded-lg"
+                className="w-full max-h-64 object-contain rounded-lg mb-4"
               />
+              <div className="text-center">
+                <p className="text-green-600 mb-4">
+                  Preview your crop image below. Make sure it's clear and in good lighting.
+                </p>
+                <Button 
+                  onClick={startScanning}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  Use Photo - Begin Analysis
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -324,22 +400,22 @@ const Scanner = () => {
             <CardContent className="p-6 text-center">
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
               <h3 className="text-lg font-semibold text-blue-800 mb-2">
-                Scanning...
+                Analyzing...
               </h3>
               <p className="text-blue-600">
-                AI model is analyzing your crop photo
+                AI model is analyzing your crop photo for disease detection
               </p>
             </CardContent>
           </Card>
         )}
 
-        {/* Scan Results */}
+        {/* Scan Results with Telugu + English */}
         {scanResult && (
           <Card className="border-green-200">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl text-green-800">
-                  Scan Results
+                  Scan Results / స్కాన్ ఫలితాలు
                 </CardTitle>
                 <Badge className="bg-blue-100 text-blue-800">
                   {scanResult.confidence}% Confidence
@@ -347,40 +423,39 @@ const Scanner = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Disease Identification */}
               <div>
                 <div className="flex items-center space-x-2 mb-3">
                   <Badge className={getSeverityColor(scanResult.severity)}>
                     {getSeverityIcon(scanResult.severity)}
-                    <span className="ml-1">
-                      Detected
-                    </span>
+                    <span className="ml-1">Detected</span>
                   </Badge>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">
                   {scanResult.name}
                 </h3>
+                <h4 className="text-md text-gray-600 mb-2">
+                  {scanResult.nameInTelugu}
+                </h4>
               </div>
 
-              {/* Solution */}
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h4 className="font-semibold text-green-800 mb-2 flex items-center">
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Treatment:
+                  Treatment / చికిత్స:
                 </h4>
-                <p className="text-green-700">{scanResult.solution}</p>
+                <p className="text-green-700 mb-2">{scanResult.solution}</p>
+                <p className="text-green-600 text-sm">{scanResult.solutionInTelugu}</p>
               </div>
 
-              {/* Prevention */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="font-semibold text-blue-800 mb-2 flex items-center">
                   <Info className="w-4 h-4 mr-2" />
-                  Prevention:
+                  Prevention / నివారణ:
                 </h4>
-                <p className="text-blue-700">{scanResult.prevention}</p>
+                <p className="text-blue-700 mb-2">{scanResult.prevention}</p>
+                <p className="text-blue-600 text-sm">{scanResult.preventionInTelugu}</p>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex space-x-4">
                 <Button className="flex-1 bg-green-600 hover:bg-green-700">
                   Consult Expert
