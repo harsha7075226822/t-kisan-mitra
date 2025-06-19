@@ -81,7 +81,60 @@ const translations = {
     
     // Language options
     'lang.english': 'English',
-    'lang.telugu': 'Telugu'
+    'lang.telugu': 'Telugu',
+
+    // Common
+    'common.backToDashboard': 'Back to Dashboard',
+    'common.loading': 'Loading...',
+    'common.error': 'Error',
+    'common.success': 'Success',
+
+    // Voice Assistant
+    'voice.title': 'Voice Assistant',
+    'voice.subtitle': 'Get farming advice in your preferred language - Telugu, Urdu, or English',
+
+    // Weather
+    'weather.title': 'Weather & IoT Monitoring',
+    'weather.subtitle': 'Real-time weather data and soil monitoring for informed farming decisions',
+
+    // Analytics
+    'analytics.title': 'Government Analytics Dashboard',
+    'analytics.subtitle': 'State-wide agricultural insights for policy making and resource allocation',
+
+    // Orders
+    'orders.title': 'My Orders',
+    'orders.noOrders': 'No Orders Yet',
+    'orders.noOrdersDesc': 'Your orders will appear here once you make a purchase',
+    'orders.orderId': 'Order ID',
+    'orders.quantity': 'Quantity',
+    'orders.total': 'Total',
+    'orders.orderDate': 'Order Date',
+    'orders.deliveryAddress': 'Delivery Address',
+    'orders.viewDetails': 'View Details',
+    'orders.trackOrder': 'Track Order',
+    'orders.status.pending': 'Pending',
+    'orders.status.dispatched': 'Dispatched',
+    'orders.status.delivered': 'Delivered',
+
+    // Login
+    'login.title': 'Farmer Registration',
+    'login.otpTitle': 'OTP Verification',
+    'login.fullName': 'Full Name',
+    'login.fullNamePlaceholder': 'Enter your full name',
+    'login.mobile': 'Mobile Number',
+    'login.mobilePlaceholder': '10-digit mobile number',
+    'login.sendOtp': 'Send OTP',
+    'login.sending': 'Sending...',
+    'login.otpSent': 'OTP sent to',
+    'login.enterOtp': 'Enter 6-digit OTP',
+    'login.verifyOtp': 'Verify OTP',
+    'login.verifying': 'Verifying...',
+    'login.goBack': 'Go Back',
+    'login.fillAllFields': 'Please fill all fields',
+    'login.enterValidOtp': 'Please enter 6-digit OTP',
+    'login.otpSentSuccess': 'OTP sent to {mobile}',
+    'login.helpline': 'Helpline: 1800-XXX-XXXX',
+    'login.supportEmail': 'For support: support@smartagriconnect.telangana.gov.in'
   },
   te: {
     // Header
@@ -115,7 +168,7 @@ const translations = {
     'features.iot.badge': 'స్మార్ట్ వ్యవసాయం',
     
     // CTA
-    'cta.title': 'మీ వ్యవసాయాన్ని మార్చడానికి సిద్धంగా ఉన్నారా?',
+    'cta.title': 'మీ వ్యవసాయాన్ని మార్చడానికి సిద్దంగా ఉన్నారా?',
     'cta.subtitle': 'ఇప్పటికే స్మార్ట్ అగ్రికనెక్ట్ ఉపయోగిస్తున్న వేలాది మంది రైతులతో చేరండి',
     
     // Footer
@@ -143,7 +196,60 @@ const translations = {
     
     // Language options
     'lang.english': 'ఇంగ్లీష్',
-    'lang.telugu': 'తెలుగు'
+    'lang.telugu': 'తెలుగు',
+
+    // Common
+    'common.backToDashboard': 'డాష్‌బోర్డ్‌కు తిరిగి వెళ్లండి',
+    'common.loading': 'లోడ్ చేస్తోంది...',
+    'common.error': 'లోపం',
+    'common.success': 'విజయం',
+
+    // Voice Assistant
+    'voice.title': 'వాయిస్ అసిస్టెంట్',
+    'voice.subtitle': 'మీ ఇష్టమైన భాషలో వ్యవసాయ సలహాలు పొందండి - తెలుగు, ఉర్దూ లేదా ఇంగ్లీష్',
+
+    // Weather
+    'weather.title': 'వాతావరణం & IoT మానిటరింగ్',
+    'weather.subtitle': 'సమాచార వ్యవసాయ నిర్ణయాల కోసం రియల్-టైమ్ వాతావరణ డేటా మరియు మట్టి పర్యవేక్షణ',
+
+    // Analytics
+    'analytics.title': 'ప్రభుత్వ అనలిటిక్స్ డాష్‌బోర్డ్',
+    'analytics.subtitle': 'విధాన రూపకల్పన మరియు వనరుల కేటాయింపు కోసం రాష్ట్రవ్యాప్త వ్యవసాయ అంతర్దృష్టులు',
+
+    // Orders
+    'orders.title': 'నా ఆర్డర్లు',
+    'orders.noOrders': 'ఇంకా ఆర్డర్లు లేవు',
+    'orders.noOrdersDesc': 'మీరు కొనుగోలు చేసిన తర్వాత మీ ఆర్డర్లు ఇక్కడ కనిపిస్తాయి',
+    'orders.orderId': 'ఆర్డర్ ID',
+    'orders.quantity': 'పరిమాణం',
+    'orders.total': 'మొత్తం',
+    'orders.orderDate': 'ఆర్డర్ తేదీ',
+    'orders.deliveryAddress': 'డెలివరీ చిరునామా',
+    'orders.viewDetails': 'వివరాలు చూడండి',
+    'orders.trackOrder': 'ఆర్డర్ ట్రాక్ చేయండి',
+    'orders.status.pending': 'పెండింగ్',
+    'orders.status.dispatched': 'పంపబడింది',
+    'orders.status.delivered': 'డెలివరీ అయింది',
+
+    // Login
+    'login.title': 'రైతు నమోదు',
+    'login.otpTitle': 'OTP ధృవీకరణ',
+    'login.fullName': 'పూర్తి పేరు',
+    'login.fullNamePlaceholder': 'మీ పూర్తి పేరు నమోదు చేయండి',
+    'login.mobile': 'మొబైల్ నంబర్',
+    'login.mobilePlaceholder': '10-అంకెల మొబైల్ నంబర్',
+    'login.sendOtp': 'OTP పంపండి',
+    'login.sending': 'పంపుతోంది...',
+    'login.otpSent': 'OTP పంపబడింది',
+    'login.enterOtp': '6-అంకెల OTP నమోదు చేయండి',
+    'login.verifyOtp': 'OTP ధృవీకరించండి',
+    'login.verifying': 'ధృవీకరిస్తోంది...',
+    'login.goBack': 'వెనుకకు వెళ్లండి',
+    'login.fillAllFields': 'దయచేసి అన్ని ఫీల్డ్‌లను పూరించండి',
+    'login.enterValidOtp': 'దయచేసి 6-అంకెల OTP నమోదు చేయండి',
+    'login.otpSentSuccess': '{mobile}కు OTP పంపబడింది',
+    'login.helpline': 'హెల్ప్‌లైన్: 1800-XXX-XXXX',
+    'login.supportEmail': 'మద్దతు కోసం: support@smartagriconnect.telangana.gov.in'
   }
 };
 
