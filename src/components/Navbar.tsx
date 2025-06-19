@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload } from 'lucide-react';
+import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload, Home, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,16 +18,102 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import MyOrders from './MyOrders';
+import MyAddress from './MyAddress';
+import MyWallet from './MyWallet';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('English');
   const [showMyOrders, setShowMyOrders] = useState(false);
+  const [showMyAddress, setShowMyAddress] = useState(false);
+  const [showMyWallet, setShowMyWallet] = useState(false);
   const [showTrackOrder, setShowTrackOrder] = useState(false);
   const [showProfileUpload, setShowProfileUpload] = useState(false);
   const [trackingId, setTrackingId] = useState('');
   const [profileImage, setProfileImage] = useState('');
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
+  
+  // Mock data states
+  const [orders, setOrders] = useState([
+    {
+      id: 'KM001',
+      productName: 'Paddy Seeds 1010',
+      quantity: 2,
+      orderDate: '2024-01-15T10:30:00Z',
+      deliveryAddress: 'Village: Kompally, Mandal: Quthbullapur, District: Rangareddy, PIN: 500014',
+      totalAmount: 900,
+      status: 'Delivered' as const,
+      productType: 'seeds' as const
+    },
+    {
+      id: 'KM002',
+      productName: 'Cotton Seeds RCH659',
+      quantity: 1,
+      orderDate: '2024-01-18T14:20:00Z',
+      deliveryAddress: 'Village: KPHB, Mandal: Kukatpally, District: Hyderabad, PIN: 500072',
+      totalAmount: 700,
+      status: 'Dispatched' as const,
+      productType: 'seeds' as const
+    },
+    {
+      id: 'KM003',
+      productName: 'Groundnut Seeds TMV7',
+      quantity: 3,
+      orderDate: '2024-01-20T09:15:00Z',
+      deliveryAddress: 'Village: Shamirpet, Mandal: Shamirpet, District: Rangareddy, PIN: 500078',
+      totalAmount: 1560,
+      status: 'Pending' as const,
+      productType: 'seeds' as const
+    }
+  ]);
+
+  const [addresses, setAddresses] = useState([
+    {
+      id: '1',
+      name: 'Ravi Kumar',
+      village: 'Kompally',
+      mandal: 'Quthbullapur',
+      district: 'Rangareddy',
+      pincode: '500014',
+      landmark: 'Near Government School',
+      mobile: '9876543210',
+      isDefault: true
+    }
+  ]);
+
+  const [walletData, setWalletData] = useState({
+    balance: 15750,
+    pendingPayments: 2400,
+    transactions: [
+      {
+        id: '1',
+        type: 'credit' as const,
+        amount: 2850,
+        description: 'Payment for Paddy sale',
+        date: '2024-01-15T10:30:00Z',
+        status: 'completed' as const,
+        orderId: 'KM001'
+      },
+      {
+        id: '2',
+        type: 'debit' as const,
+        amount: 500,
+        description: 'Withdrawal to UPI',
+        date: '2024-01-12T16:45:00Z',
+        status: 'completed' as const
+      },
+      {
+        id: '3',
+        type: 'credit' as const,
+        amount: 1200,
+        description: 'Government subsidy credit',
+        date: '2024-01-10T11:20:00Z',
+        status: 'completed' as const
+      }
+    ]
+  });
+
   const location = useLocation();
   const isDashboard = location.pathname === '/dashboard';
   const { toast } = useToast();
@@ -49,34 +135,6 @@ const Navbar = () => {
     // Dispatch custom event to notify other components of language change
     window.dispatchEvent(new CustomEvent('languageChange', { detail: selectedLanguage.toLowerCase() }));
   }, [selectedLanguage]);
-
-  // Mock orders data
-  const mockOrders = [
-    {
-      id: 'KM001',
-      seedName: 'Paddy Seeds 1010',
-      quantity: 2,
-      date: '2024-01-15',
-      status: 'Delivered',
-      total: 900
-    },
-    {
-      id: 'KM002',
-      seedName: 'Cotton Seeds RCH659',
-      quantity: 1,
-      date: '2024-01-18',
-      status: 'In Transit',
-      total: 700
-    },
-    {
-      id: 'KM003',
-      seedName: 'Groundnut Seeds TMV7',
-      quantity: 3,
-      date: '2024-01-20',
-      status: 'Pending',
-      total: 1560
-    }
-  ];
 
   const getTrackingInfo = (orderId: string) => {
     const trackingSteps = [
@@ -118,6 +176,64 @@ const Navbar = () => {
       title: "Order Found",
       description: `Tracking order ${trackingId}`,
     });
+  };
+
+  // Address management functions
+  const handleAddAddress = (address: any) => {
+    const newAddress = {
+      ...address,
+      id: Date.now().toString()
+    };
+    setAddresses(prev => prev.map(addr => ({ ...addr, isDefault: false })).concat(newAddress));
+  };
+
+  const handleEditAddress = (id: string, updatedAddress: any) => {
+    setAddresses(prev => prev.map(addr => 
+      addr.id === id ? { ...updatedAddress, id } : addr
+    ));
+  };
+
+  const handleDeleteAddress = (id: string) => {
+    setAddresses(prev => prev.filter(addr => addr.id !== id));
+  };
+
+  const handleSetDefaultAddress = (id: string) => {
+    setAddresses(prev => prev.map(addr => ({
+      ...addr,
+      isDefault: addr.id === id
+    })));
+  };
+
+  // Wallet functions
+  const handleWithdraw = (withdrawalData: any) => {
+    const newTransaction = {
+      id: Date.now().toString(),
+      type: 'debit' as const,
+      amount: Number(withdrawalData.amount),
+      description: `Withdrawal via ${withdrawalData.method.toUpperCase()}`,
+      date: new Date().toISOString(),
+      status: 'pending' as const
+    };
+
+    setWalletData(prev => ({
+      ...prev,
+      balance: prev.balance - Number(withdrawalData.amount),
+      transactions: [newTransaction, ...prev.transactions]
+    }));
+  };
+
+  // Order functions
+  const handleViewOrderDetails = (orderId: string) => {
+    toast({
+      title: "Order Details",
+      description: `Viewing details for order ${orderId}`,
+    });
+  };
+
+  const handleTrackOrderFromList = (orderId: string) => {
+    setTrackingId(orderId);
+    setShowMyOrders(false);
+    setShowTrackOrder(true);
   };
 
   const navItems = [
@@ -251,6 +367,28 @@ const Navbar = () => {
 
                     <button
                       onClick={() => {
+                        setShowMyAddress(true);
+                        setIsHamburgerOpen(false);
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md"
+                    >
+                      <Home className="w-4 h-4 mr-3" />
+                      My Address
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowMyWallet(true);
+                        setIsHamburgerOpen(false);
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md"
+                    >
+                      <Wallet className="w-4 h-4 mr-3" />
+                      My Wallet
+                    </button>
+
+                    <button
+                      onClick={() => {
                         setShowTrackOrder(true);
                         setIsHamburgerOpen(false);
                       }}
@@ -361,6 +499,29 @@ const Navbar = () => {
                   <Package className="w-4 h-4 mr-2" />
                   My Orders
                 </button>
+                
+                <button 
+                  onClick={() => {
+                    setShowMyAddress(true);
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
+                >
+                  <Home className="w-4 h-4 mr-2" />
+                  My Address
+                </button>
+                
+                <button 
+                  onClick={() => {
+                    setShowMyWallet(true);
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
+                >
+                  <Wallet className="w-4 h-4 mr-2" />
+                  My Wallet
+                </button>
+                
                 <button 
                   onClick={() => {
                     setShowTrackOrder(true);
@@ -406,54 +567,46 @@ const Navbar = () => {
 
       {/* My Orders Dialog */}
       <Dialog open={showMyOrders} onOpenChange={setShowMyOrders}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>My Orders</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 max-h-96 overflow-y-auto">
-            {mockOrders.map((order) => (
-              <div key={order.id} className="border rounded-lg p-4 space-y-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-medium">{order.seedName}</h3>
-                    <p className="text-sm text-gray-600">Order ID: {order.id}</p>
-                  </div>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                    order.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {order.status}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-600">Quantity:</span>
-                    <p className="font-medium">{order.quantity} bags</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Date:</span>
-                    <p className="font-medium">{order.date}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Total:</span>
-                    <p className="font-medium">₹{order.total}</p>
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    setTrackingId(order.id);
-                    setShowMyOrders(false);
-                    setShowTrackOrder(true);
-                  }}
-                >
-                  Track Order
-                </Button>
-              </div>
-            ))}
-          </div>
+          <MyOrders
+            orders={orders}
+            onViewDetails={handleViewOrderDetails}
+            onTrackOrder={handleTrackOrderFromList}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* My Address Dialog */}
+      <Dialog open={showMyAddress} onOpenChange={setShowMyAddress}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>My Addresses</DialogTitle>
+          </DialogHeader>
+          <MyAddress
+            addresses={addresses}
+            onAddAddress={handleAddAddress}
+            onEditAddress={handleEditAddress}
+            onDeleteAddress={handleDeleteAddress}
+            onSetDefault={handleSetDefaultAddress}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* My Wallet Dialog */}
+      <Dialog open={showMyWallet} onOpenChange={setShowMyWallet}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>My Wallet</DialogTitle>
+          </DialogHeader>
+          <MyWallet
+            balance={walletData.balance}
+            transactions={walletData.transactions}
+            pendingPayments={walletData.pendingPayments}
+            onWithdraw={handleWithdraw}
+          />
         </DialogContent>
       </Dialog>
 
