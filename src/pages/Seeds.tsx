@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -354,7 +355,7 @@ const Seeds = () => {
               className="bg-green-600 hover:bg-green-700"
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
-              Cart
+              View Cart
               {getTotalItems() > 0 && (
                 <Badge className="ml-2 bg-red-500 text-white">
                   {getTotalItems()}

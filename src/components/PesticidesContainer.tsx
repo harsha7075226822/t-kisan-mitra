@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Beaker, 
-  ShoppingCart, 
   Plus, 
   Minus, 
   Package,
@@ -30,7 +28,6 @@ interface Pesticide {
 }
 
 const PesticidesContainer = () => {
-  const [cart, setCart] = useState<{[key: string]: number}>({});
   const [selectedPesticide, setSelectedPesticide] = useState<Pesticide | null>(null);
   const [quantity, setQuantity] = useState(1);
 
@@ -155,12 +152,6 @@ const PesticidesContainer = () => {
       // Save to localStorage
       localStorage.setItem('farmCart', JSON.stringify(existingCart));
       
-      // Update local cart state
-      setCart(prev => ({
-        ...prev,
-        [selectedPesticide.id]: (prev[selectedPesticide.id] || 0) + quantity
-      }));
-      
       setSelectedPesticide(null);
       setQuantity(1);
       
@@ -169,43 +160,19 @@ const PesticidesContainer = () => {
     }
   };
 
-  const getTotalItems = () => {
-    return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
-  };
-
-  const getTotalAmount = () => {
-    return Object.entries(cart).reduce((total, [id, qty]) => {
-      const pesticide = pesticides.find(p => p.id === id);
-      return total + (pesticide ? pesticide.price * qty : 0);
-    }, 0);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-orange-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center mr-4">
-                <Beaker className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Pesticides Store</h1>
-                <p className="text-gray-600">Quality pesticides for crop protection</p>
-              </div>
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center mr-4">
+              <Beaker className="w-6 h-6 text-white" />
             </div>
-            {getTotalItems() > 0 && (
-              <div className="bg-white rounded-lg p-4 shadow-md">
-                <div className="flex items-center text-sm text-gray-600 mb-2">
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Cart: {getTotalItems()} items
-                </div>
-                <div className="font-bold text-rose-600">
-                  Total: ₹{getTotalAmount().toLocaleString()}
-                </div>
-              </div>
-            )}
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Pesticides Store</h1>
+              <p className="text-gray-600">Quality pesticides for crop protection</p>
+            </div>
           </div>
         </div>
 
@@ -331,34 +298,6 @@ const PesticidesContainer = () => {
             </Card>
           ))}
         </div>
-
-        {/* Cart Summary */}
-        {getTotalItems() > 0 && (
-          <div className="mt-8 bg-white rounded-xl p-6 shadow-md border border-rose-200">
-            <h3 className="text-lg font-semibold mb-4">Cart Summary</h3>
-            <div className="space-y-2 mb-4">
-              {Object.entries(cart).map(([id, qty]) => {
-                const pesticide = pesticides.find(p => p.id === id);
-                if (!pesticide) return null;
-                return (
-                  <div key={id} className="flex justify-between text-sm">
-                    <span>{pesticide.name} x {qty}</span>
-                    <span>₹{(pesticide.price * qty).toLocaleString()}</span>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="border-t pt-4">
-              <div className="flex justify-between font-semibold text-lg">
-                <span>Total Amount:</span>
-                <span className="text-rose-600">₹{getTotalAmount().toLocaleString()}</span>
-              </div>
-            </div>
-            <Button className="w-full mt-4 bg-rose-600 hover:bg-rose-700">
-              Proceed to Checkout
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
