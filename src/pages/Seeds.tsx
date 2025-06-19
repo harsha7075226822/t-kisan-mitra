@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ShoppingCart, Plus, Minus, Package, ArrowLeft } from 'lucide-react';
 import { CartManager } from '@/utils/cartManager';
 
@@ -19,6 +20,9 @@ interface Seed {
 const Seeds = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [selectedSeed, setSelectedSeed] = useState<Seed | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [showQuantityDialog, setShowQuantityDialog] = useState(false);
 
   const seedsData: Seed[] = [
     {
@@ -71,29 +75,36 @@ const Seeds = () => {
     }
   ];
 
-  const addToCart = (seed: Seed, quantity: number) => {
-    if (quantity <= 0) return;
-    
-    CartManager.addToCart({
-      id: `seed_${seed.id}`,
-      type: 'seeds',
-      name: seed.name,
-      weight: `${seed.weight} kg`,
-      price: seed.price,
-      quantity: quantity,
-      image: seed.image,
-      description: seed.description
-    });
-    
-    toast({
-      title: "Added to Cart",
-      description: `${quantity} bag(s) of ${seed.name} added successfully`,
-    });
+  const handleAddToCartClick = (seed: Seed) => {
+    setSelectedSeed(seed);
+    setQuantity(1);
+    setShowQuantityDialog(true);
+  };
+
+  const confirmAddToCart = () => {
+    if (selectedSeed && quantity > 0) {
+      CartManager.addToCart({
+        id: `seed_${selectedSeed.id}`,
+        type: 'seeds',
+        name: selectedSeed.name,
+        weight: `${selectedSeed.weight} kg`,
+        price: selectedSeed.price,
+        quantity: quantity,
+        image: selectedSeed.image,
+        description: selectedSeed.description
+      });
+      
+      toast({
+        title: "Added to Cart",
+        description: `${quantity} bag(s) of ${selectedSeed.name} added successfully`,
+      });
+      
+      setShowQuantityDialog(false);
+      setSelectedSeed(null);
+    }
   };
 
   const SeedCard = ({ seed }: { seed: Seed }) => {
-    const [quantity, setQuantity] = useState(1);
-
     return (
       <Card className="hover:shadow-lg transition-shadow">
         <CardHeader className="text-center">
@@ -113,31 +124,8 @@ const Seeds = () => {
             </div>
           </div>
           
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-            >
-              <Minus className="w-3 h-3" />
-            </Button>
-            <span className="font-medium">{quantity} bags</span>
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={() => setQuantity(quantity + 1)}
-            >
-              <Plus className="w-3 h-3" />
-            </Button>
-          </div>
-          
-          <div className="mb-4 p-2 bg-gray-50 rounded">
-            <span className="text-sm text-gray-600">Total: </span>
-            <span className="font-bold text-green-600">₹{seed.price * quantity}</span>
-          </div>
-          
           <Button 
-            onClick={() => addToCart(seed, quantity)}
+            onClick={() => handleAddToCartClick(seed)}
             className="w-full bg-green-600 hover:bg-green-700"
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
@@ -177,6 +165,70 @@ const Seeds = () => {
             <SeedCard key={seed.id} seed={seed} />
           ))}
         </div>
+
+        {/* Quantity Selection Dialog */}
+        <Dialog open={showQuantityDialog} onOpenChange={setShowQuantityDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Select Quantity</DialogTitle>
+            </DialogHeader>
+            
+            {selectedSeed && (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="text-3xl mb-2">{selectedSeed.image}</div>
+                  <h3 className="font-semibold text-lg">{selectedSeed.name}</h3>
+                  <p className="text-sm text-gray-600">{selectedSeed.weight} kg per bag</p>
+                  <p className="text-green-600 font-bold">₹{selectedSeed.price} per bag</p>
+                </div>
+                
+                <div className="flex items-center justify-center space-x-4">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">{quantity}</div>
+                    <div className="text-sm text-gray-600">bags</div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4 text-center">
+                  <div className="text-sm text-gray-600">Total Weight: {selectedSeed.weight * quantity} kg</div>
+                  <div className="text-lg font-bold text-green-600">Total: ₹{selectedSeed.price * quantity}</div>
+                </div>
+                
+                <div className="flex space-x-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowQuantityDialog(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={confirmAddToCart}
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add to Cart
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   Beaker, 
   Package,
@@ -10,7 +11,9 @@ import {
   Droplets,
   Box,
   Circle,
-  ShoppingCart
+  ShoppingCart,
+  Plus,
+  Minus
 } from 'lucide-react';
 import { CartManager } from '@/utils/cartManager';
 import { useToast } from '@/hooks/use-toast';
@@ -30,6 +33,9 @@ interface Pesticide {
 
 const PesticidesContainer = () => {
   const { toast } = useToast();
+  const [selectedPesticide, setSelectedPesticide] = useState<Pesticide | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [showQuantityDialog, setShowQuantityDialog] = useState(false);
 
   const pesticides: Pesticide[] = [
     {
@@ -118,24 +124,35 @@ const PesticidesContainer = () => {
     }
   };
 
-  const handleAddToCart = (pesticide: Pesticide) => {
-    CartManager.addToCart({
-      id: `pesticide_${pesticide.id}`,
-      type: 'pesticides',
-      name: pesticide.name,
-      weight: pesticide.weight,
-      price: pesticide.price,
-      quantity: 1,
-      image: '🧪',
-      description: pesticide.description,
-      category: pesticide.packagingType,
-      brand: pesticide.activeIngredient
-    });
-    
-    toast({
-      title: "Added to Cart",
-      description: `${pesticide.name} has been added to your cart`,
-    });
+  const handleAddToCartClick = (pesticide: Pesticide) => {
+    setSelectedPesticide(pesticide);
+    setQuantity(1);
+    setShowQuantityDialog(true);
+  };
+
+  const confirmAddToCart = () => {
+    if (selectedPesticide && quantity > 0) {
+      CartManager.addToCart({
+        id: `pesticide_${selectedPesticide.id}`,
+        type: 'pesticides',
+        name: selectedPesticide.name,
+        weight: selectedPesticide.weight,
+        price: selectedPesticide.price,
+        quantity: quantity,
+        image: '🧪',
+        description: selectedPesticide.description,
+        category: selectedPesticide.packagingType,
+        brand: selectedPesticide.activeIngredient
+      });
+      
+      toast({
+        title: "Added to Cart",
+        description: `${quantity} unit(s) of ${selectedPesticide.name} added to your cart`,
+      });
+      
+      setShowQuantityDialog(false);
+      setSelectedPesticide(null);
+    }
   };
 
   return (
@@ -218,7 +235,7 @@ const PesticidesContainer = () => {
                 {/* Add to Cart Button */}
                 <Button 
                   className="w-full bg-rose-600 hover:bg-rose-700"
-                  onClick={() => handleAddToCart(pesticide)}
+                  onClick={() => handleAddToCartClick(pesticide)}
                   disabled={pesticide.stock === 0}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
@@ -228,6 +245,75 @@ const PesticidesContainer = () => {
             </Card>
           ))}
         </div>
+
+        {/* Quantity Selection Dialog */}
+        <Dialog open={showQuantityDialog} onOpenChange={setShowQuantityDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Select Quantity</DialogTitle>
+            </DialogHeader>
+            
+            {selectedPesticide && (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="text-3xl mb-2">🧪</div>
+                  <h3 className="font-semibold text-lg">{selectedPesticide.name}</h3>
+                  <p className="text-sm text-gray-600">{selectedPesticide.weight} per unit</p>
+                  <p className="text-rose-600 font-bold">₹{selectedPesticide.price} per unit</p>
+                  <Badge className={`text-xs mt-1 ${getPackagingColor(selectedPesticide.packagingType)}`}>
+                    {getPackagingIcon(selectedPesticide.packagingType)}
+                    <span className="ml-1">{selectedPesticide.packagingType}</span>
+                  </Badge>
+                </div>
+                
+                <div className="flex items-center justify-center space-x-4">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </Button>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">{quantity}</div>
+                    <div className="text-sm text-gray-600">units</div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => setQuantity(quantity + 1)}
+                    disabled={quantity >= selectedPesticide.stock}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4 text-center">
+                  <div className="text-sm text-gray-600">Available Stock: {selectedPesticide.stock} units</div>
+                  <div className="text-lg font-bold text-rose-600">Total: ₹{selectedPesticide.price * quantity}</div>
+                </div>
+                
+                <div className="flex space-x-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowQuantityDialog(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={confirmAddToCart}
+                    className="flex-1 bg-rose-600 hover:bg-rose-700"
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add to Cart
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
