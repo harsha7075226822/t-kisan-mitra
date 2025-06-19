@@ -9,37 +9,36 @@ import { Phone, MapPin, User, Package, Plus, ArrowLeft } from 'lucide-react';
 
 const Mandi = () => {
   const navigate = useNavigate();
-  const [selectedLanguage, setSelectedLanguage] = useState('telugu');
   const [activeTab, setActiveTab] = useState('buyers');
 
   const buyers = [
     {
       id: 1,
-      name: 'రామేష్ ట్రేడర్స్',
-      crop: { telugu: 'వరి', english: 'Paddy' },
-      quantity: '100 క్వింటల్స్',
+      name: 'Ramesh Traders',
+      crop: 'Paddy',
+      quantity: '100 Quintals',
       price: '₹2,800-2,900',
-      location: 'హైదరాబాద్',
+      location: 'Hyderabad',
       mobile: '+91 98765-43210',
       verified: true
     },
     {
       id: 2,
-      name: 'కృష్ణ కమర్షియల్',
-      crop: { telugu: 'పత్తి', english: 'Cotton' },
-      quantity: '50 క్వింటల్స్',
+      name: 'Krishna Commercial',
+      crop: 'Cotton',
+      quantity: '50 Quintals',
       price: '₹6,100-6,200',
-      location: 'వరంగల్',
+      location: 'Warangal',
       mobile: '+91 98765-43211',
       verified: true
     },
     {
       id: 3,
-      name: 'లక్ష్మీ ఎగ్రో',
-      crop: { telugu: 'పసుపు', english: 'Turmeric' },
-      quantity: '25 క్వింటల్స్',
+      name: 'Lakshmi Agro',
+      crop: 'Turmeric',
+      quantity: '25 Quintals',
       price: '₹14,400-14,600',
-      location: 'నిజామాబాద్',
+      location: 'Nizamabad',
       mobile: '+91 98765-43212',
       verified: false
     }
@@ -48,23 +47,23 @@ const Mandi = () => {
   const sellers = [
     {
       id: 1,
-      name: 'వెంకట్ రెడ్డి',
-      crop: { telugu: 'వరి', english: 'Paddy' },
-      quantity: '80 క్వింటల్స్',
+      name: 'Venkat Reddy',
+      crop: 'Paddy',
+      quantity: '80 Quintals',
       price: '₹2,850',
-      location: 'కరీంనగర్',
+      location: 'Karimnagar',
       mobile: '+91 98765-54321',
-      quality: 'A గ్రేడ్'
+      quality: 'A Grade'
     },
     {
       id: 2,
-      name: 'అనిల్ కుమార్',
-      crop: { telugu: 'మొక్కజొన్న', english: 'Maize' },
-      quantity: '60 క్వింటల్స్',
+      name: 'Anil Kumar',
+      crop: 'Maize',
+      quantity: '60 Quintals',
       price: '₹2,200',
-      location: 'మహబూబ్‌నగర్',
+      location: 'Mahabubnagar',
       mobile: '+91 98765-54322',
-      quality: 'B గ్రేడ్'
+      quality: 'B Grade'
     }
   ];
 
@@ -89,32 +88,11 @@ const Mandi = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-green-800 mb-2">
-            {selectedLanguage === 'telugu' ? 'ఆన్‌లైన్ మండి' : 'Online Mandi'}
+            Online Mandi
           </h1>
           <p className="text-green-600">
-            {selectedLanguage === 'telugu' 
-              ? 'కొనుగోలుదారులు మరియు అమ్మకందారులను కనెక్ట్ చేయడం'
-              : 'Connecting buyers and sellers directly'
-            }
+            Connecting buyers and sellers directly
           </p>
-        </div>
-
-        {/* Language Toggle */}
-        <div className="flex space-x-2 mb-6">
-          <Button
-            variant={selectedLanguage === 'telugu' ? 'default' : 'outline'}
-            onClick={() => setSelectedLanguage('telugu')}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            తెలుగు
-          </Button>
-          <Button
-            variant={selectedLanguage === 'english' ? 'default' : 'outline'}
-            onClick={() => setSelectedLanguage('english')}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            English
-          </Button>
         </div>
 
         {/* Tabs */}
@@ -125,7 +103,7 @@ const Mandi = () => {
             className={activeTab === 'buyers' ? 'bg-blue-600 hover:bg-blue-700' : 'border-blue-300'}
           >
             <User className="w-4 h-4 mr-2" />
-            {selectedLanguage === 'telugu' ? 'కొనుగోలుదారులు' : 'Buyers'}
+            Buyers
           </Button>
           <Button
             variant={activeTab === 'sellers' ? 'default' : 'outline'}
@@ -133,7 +111,7 @@ const Mandi = () => {
             className={activeTab === 'sellers' ? 'bg-green-600 hover:bg-green-700' : 'border-green-300'}
           >
             <Package className="w-4 h-4 mr-2" />
-            {selectedLanguage === 'telugu' ? 'అమ్మకందారులు' : 'Sellers'}
+            Sellers
           </Button>
         </div>
 
@@ -142,8 +120,8 @@ const Mandi = () => {
           <Button className="bg-orange-600 hover:bg-orange-700">
             <Plus className="w-4 h-4 mr-2" />
             {activeTab === 'buyers' 
-              ? (selectedLanguage === 'telugu' ? 'కొత్త కొనుగోలు అవసరం' : 'Add Buying Requirement')
-              : (selectedLanguage === 'telugu' ? 'పంట అమ్మకానికి పోస్ట్ చేయండి' : 'Post Crop for Sale')
+              ? 'Add Buying Requirement'
+              : 'Post Crop for Sale'
             }
           </Button>
         </div>
@@ -156,11 +134,11 @@ const Mandi = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-2">
                     <Badge variant="outline" className="text-blue-700 border-blue-300">
-                      {selectedLanguage === 'telugu' ? 'కొనుగోలుదారుడు' : 'Buyer'}
+                      Buyer
                     </Badge>
                     {buyer.verified && (
                       <Badge className="bg-green-100 text-green-800 text-xs">
-                        ✓ {selectedLanguage === 'telugu' ? 'వెరిఫైడ్' : 'Verified'}
+                        ✓ Verified
                       </Badge>
                     )}
                   </div>
@@ -168,23 +146,17 @@ const Mandi = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      {selectedLanguage === 'telugu' ? 'పంట:' : 'Crop:'}
-                    </span>
-                    <span className="font-medium">{buyer.crop[selectedLanguage]}</span>
+                    <span className="text-sm text-gray-600">Crop:</span>
+                    <span className="font-medium">{buyer.crop}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      {selectedLanguage === 'telugu' ? 'పరిమాణం:' : 'Quantity:'}
-                    </span>
+                    <span className="text-sm text-gray-600">Quantity:</span>
                     <span className="font-medium">{buyer.quantity}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      {selectedLanguage === 'telugu' ? 'ధర:' : 'Price:'}
-                    </span>
+                    <span className="text-sm text-gray-600">Price:</span>
                     <span className="font-medium text-green-600">{buyer.price}</span>
                   </div>
                   
@@ -198,7 +170,7 @@ const Mandi = () => {
                     onClick={() => handleCall(buyer.mobile)}
                   >
                     <Phone className="w-4 h-4 mr-2" />
-                    {selectedLanguage === 'telugu' ? 'కాల్ చేయండి' : 'Call Now'}
+                    Call Now
                   </Button>
                 </CardContent>
               </Card>
@@ -211,7 +183,7 @@ const Mandi = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-2">
                     <Badge variant="outline" className="text-green-700 border-green-300">
-                      {selectedLanguage === 'telugu' ? 'అమ్మకందారుడు' : 'Seller'}
+                      Seller
                     </Badge>
                     <Badge className="bg-blue-100 text-blue-800 text-xs">
                       {seller.quality}
@@ -221,23 +193,17 @@ const Mandi = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      {selectedLanguage === 'telugu' ? 'పంట:' : 'Crop:'}
-                    </span>
-                    <span className="font-medium">{seller.crop[selectedLanguage]}</span>
+                    <span className="text-sm text-gray-600">Crop:</span>
+                    <span className="font-medium">{seller.crop}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      {selectedLanguage === 'telugu' ? 'పరిమాణం:' : 'Quantity:'}
-                    </span>
+                    <span className="text-sm text-gray-600">Quantity:</span>
                     <span className="font-medium">{seller.quantity}</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      {selectedLanguage === 'telugu' ? 'ధర:' : 'Price:'}
-                    </span>
+                    <span className="text-sm text-gray-600">Price:</span>
                     <span className="font-medium text-green-600">{seller.price}</span>
                   </div>
                   
@@ -251,7 +217,7 @@ const Mandi = () => {
                     onClick={() => handleCall(seller.mobile)}
                   >
                     <Phone className="w-4 h-4 mr-2" />
-                    {selectedLanguage === 'telugu' ? 'కాల్ చేయండి' : 'Call Now'}
+                    Call Now
                   </Button>
                 </CardContent>
               </Card>
