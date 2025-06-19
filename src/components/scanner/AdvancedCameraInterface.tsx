@@ -23,16 +23,48 @@ export const AdvancedCameraInterface: React.FC<AdvancedCameraInterfaceProps> = (
   onSettingsChange
 }) => {
   const [isReady, setIsReady] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
+      
       const handleLoadedMetadata = () => {
+        console.log('Video metadata loaded');
+        setIsReady(true);
+        setHasError(false);
+      };
+
+      const handleError = (e) => {
+        console.error('Video error:', e);
+        setHasError(true);
+      };
+
+      const handleLoadStart = () => {
+        console.log('Video load started');
+      };
+
+      const handleCanPlay = () => {
+        console.log('Video can play');
         setIsReady(true);
       };
       
       video.addEventListener('loadedmetadata', handleLoadedMetadata);
-      return () => video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.addEventListener('error', handleError);
+      video.addEventListener('loadstart', handleLoadStart);
+      video.addEventListener('canplay', handleCanPlay);
+      
+      // Ensure video plays
+      if (video.srcObject) {
+        video.play().catch(console.error);
+      }
+      
+      return () => {
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        video.removeEventListener('error', handleError);
+        video.removeEventListener('loadstart', handleLoadStart);
+        video.removeEventListener('canplay', handleCanPlay);
+      };
     }
   }, [videoRef]);
 
@@ -44,12 +76,35 @@ export const AdvancedCameraInterface: React.FC<AdvancedCameraInterfaceProps> = (
           ref={videoRef}
           autoPlay
           playsInline
+          muted
           className="w-full h-96 object-cover"
+          style={{ transform: 'scaleX(-1)' }}
         />
         <canvas ref={canvasRef} className="hidden" />
         
+        {/* Error State */}
+        {hasError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+            <div className="text-white text-center">
+              <Camera className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg mb-2">Camera Error</p>
+              <p className="text-sm opacity-75">Please check camera permissions</p>
+            </div>
+          </div>
+        )}
+        
+        {/* Loading State */}
+        {!isReady && !hasError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+            <div className="text-white text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+              <p className="text-lg">Starting Camera...</p>
+            </div>
+          </div>
+        )}
+        
         {/* Grid Lines Overlay */}
-        {cameraSettings.gridLines && (
+        {cameraSettings.gridLines && isReady && (
           <div className="absolute inset-0 pointer-events-none">
             <div className="w-full h-full grid grid-cols-3 grid-rows-3">
               {Array.from({ length: 9 }).map((_, i) => (
@@ -104,14 +159,16 @@ export const AdvancedCameraInterface: React.FC<AdvancedCameraInterfaceProps> = (
         </div>
         
         {/* Focus Frame */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-48 h-48 border-2 border-green-400 rounded-lg shadow-lg">
-            <div className="absolute -top-1 -left-1 w-6 h-6 border-l-2 border-t-2 border-green-400"></div>
-            <div className="absolute -top-1 -right-1 w-6 h-6 border-r-2 border-t-2 border-green-400"></div>
-            <div className="absolute -bottom-1 -left-1 w-6 h-6 border-l-2 border-b-2 border-green-400"></div>
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 border-r-2 border-b-2 border-green-400"></div>
+        {isReady && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-48 h-48 border-2 border-green-400 rounded-lg shadow-lg">
+              <div className="absolute -top-1 -left-1 w-6 h-6 border-l-2 border-t-2 border-green-400"></div>
+              <div className="absolute -top-1 -right-1 w-6 h-6 border-r-2 border-t-2 border-green-400"></div>
+              <div className="absolute -bottom-1 -left-1 w-6 h-6 border-l-2 border-b-2 border-green-400"></div>
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 border-r-2 border-b-2 border-green-400"></div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       
       {/* Instruction Text */}

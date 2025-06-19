@@ -75,24 +75,46 @@ const Scanner = () => {
   const requestCameraAccess = async () => {
     try {
       setShowPermissionAlert(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      
+      // Stop any existing stream first
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+      
+      const constraints = {
         video: { 
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-          facingMode: 'environment'
-        } 
-      });
+          width: { ideal: 1920, max: 1920 },
+          height: { ideal: 1080, max: 1080 },
+          facingMode: 'environment',
+          frameRate: { ideal: 30 }
+        },
+        audio: false
+      };
+      
+      console.log('Requesting camera access with constraints:', constraints);
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log('Camera stream obtained:', stream);
       
       setCameraStream(stream);
       setShowCameraDialog(true);
       setShowPermissionAlert(false);
       setPermissionDenied(false);
       
+      // Set up video element
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        console.log('Video srcObject set');
+        
+        // Ensure video plays
+        try {
+          await videoRef.current.play();
+          console.log('Video playing');
+        } catch (playError) {
+          console.error('Video play error:', playError);
+        }
       }
     } catch (error) {
-      console.error('Camera access denied:', error);
+      console.error('Camera access error:', error);
       setPermissionDenied(true);
       setShowPermissionAlert(false);
       toast({
@@ -109,15 +131,22 @@ const Scanner = () => {
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
       
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      console.log('Capturing photo with dimensions:', canvas.width, canvas.height);
+      
+      // Flip the image horizontally to match the mirrored video
+      context.scale(-1, 1);
+      context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      context.scale(-1, 1); // Reset scale
       
       const quality = cameraSettings.quality === 'HD' ? 0.9 : 
                      cameraSettings.quality === 'Medium' ? 0.7 : 0.5;
       const imageDataUrl = canvas.toDataURL('image/jpeg', quality);
       setCapturedImage(imageDataUrl);
+      console.log('Photo captured successfully');
     }
   };
 
