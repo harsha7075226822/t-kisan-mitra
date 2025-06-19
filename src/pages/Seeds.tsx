@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
@@ -21,8 +20,15 @@ interface Seed {
   image: string;
 }
 
-interface CartItem extends Seed {
+interface CartItem {
+  id: string;
+  type: string;
+  name: string;
+  weight: string | number;
+  price: number;
   quantity: number;
+  image: string;
+  description: string;
 }
 
 interface DeliveryForm {
@@ -54,6 +60,24 @@ const Seeds = () => {
       phone: ''
     }
   });
+
+  // Load cart from localStorage on component mount
+  useEffect(() => {
+    const loadCart = () => {
+      const savedCart = JSON.parse(localStorage.getItem('farmCart') || '[]');
+      setCart(savedCart);
+    };
+
+    loadCart();
+
+    // Listen for cart updates from other components
+    const handleCartUpdate = () => {
+      loadCart();
+    };
+
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
+  }, []);
 
   const seedsData: Seed[] = [
     {
@@ -109,18 +133,36 @@ const Seeds = () => {
   const addToCart = (seed: Seed, quantity: number) => {
     if (quantity <= 0) return;
     
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === seed.id);
-      if (existingItem) {
-        return prevCart.map(item =>
-          item.id === seed.id 
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevCart, { ...seed, quantity }];
-      }
-    });
+    // Get existing cart from localStorage
+    const existingCart = JSON.parse(localStorage.getItem('farmCart') || '[]');
+    
+    // Add new item to cart
+    const cartItem: CartItem = {
+      id: `seed_${seed.id}`,
+      type: 'seed',
+      name: seed.name,
+      weight: `${seed.weight} kg`,
+      price: seed.price,
+      quantity: quantity,
+      image: seed.image,
+      description: seed.description
+    };
+    
+    // Check if item already exists
+    const existingItemIndex = existingCart.findIndex((item: CartItem) => item.id === cartItem.id);
+    
+    if (existingItemIndex >= 0) {
+      existingCart[existingItemIndex].quantity += quantity;
+    } else {
+      existingCart.push(cartItem);
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('farmCart', JSON.stringify(existingCart));
+    setCart(existingCart);
+    
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
     
     toast({
       title: "Added to Cart",
@@ -129,15 +171,17 @@ const Seeds = () => {
   };
 
   const updateQuantity = (id: string, change: number) => {
-    setCart(prevCart => {
-      return prevCart.map(item => {
-        if (item.id === id) {
-          const newQuantity = item.quantity + change;
-          return newQuantity > 0 ? { ...item, quantity: newQuantity } : item;
-        }
-        return item;
-      }).filter(item => item.quantity > 0);
-    });
+    const updatedCart = cart.map(item => {
+      if (item.id === id) {
+        const newQuantity = item.quantity + change;
+        return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
+      }
+      return item;
+    }).filter(Boolean) as CartItem[];
+    
+    setCart(updatedCart);
+    localStorage.setItem('farmCart', JSON.stringify(updatedCart));
+    window.dispatchEvent(new CustomEvent('cartUpdated'));
   };
 
   const getTotalItems = () => {
@@ -211,12 +255,14 @@ const Seeds = () => {
     // Reset after success
     setTimeout(() => {
       setCart([]);
+      localStorage.setItem('farmCart', JSON.stringify([]));
       setOrderStep('cart');
       setIsCartOpen(false);
       setAadhaarNumber('');
       setOtpValue('');
       setSelectedPayment('');
       form.reset();
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
     }, 3000);
   };
 
@@ -350,9 +396,12 @@ const Seeds = () => {
                       {cart.map((item) => (
                         <div key={item.id} className="border-b pb-3">
                           <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h3 className="font-medium">{item.name}</h3>
-                              <p className="text-sm text-gray-600">{item.weight} kg per bag</p>
+                            <div className="flex items-center">
+                              <span className="text-2xl mr-2">{item.image}</span>
+                              <div>
+                                <h3 className="font-medium">{item.name}</h3>
+                                <p className="text-sm text-gray-600">{item.weight} • {item.type}</p>
+                              </div>
                             </div>
                             <span className="font-bold">₹{item.price * item.quantity}</span>
                           </div>
@@ -365,7 +414,7 @@ const Seeds = () => {
                               >
                                 <Minus className="w-3 h-3" />
                               </Button>
-                              <span className="font-medium">{item.quantity} bags</span>
+                              <span className="font-medium">{item.quantity} units</span>
                               <Button 
                                 size="sm" 
                                 variant="outline"
@@ -374,7 +423,7 @@ const Seeds = () => {
                                 <Plus className="w-3 h-3" />
                               </Button>
                             </div>
-                            <span className="text-sm text-gray-600">₹{item.price} per bag</span>
+                            <span className="text-sm text-gray-600">₹{item.price} per unit</span>
                           </div>
                         </div>
                       ))}
@@ -557,7 +606,7 @@ const Seeds = () => {
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between">
                       <span>Total Items:</span>
-                      <span>{getTotalItems()} bags</span>
+                      <span>{getTotalItems()} items</span>
                     </div>
                     <div className="flex justify-between font-bold">
                       <span>Total Amount:</span>

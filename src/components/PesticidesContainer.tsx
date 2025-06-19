@@ -12,8 +12,8 @@ import {
   Package,
   IndianRupee,
   Droplets,
-  Powder,
-  Grain
+  Box,
+  Circle
 } from 'lucide-react';
 
 interface Pesticide {
@@ -106,8 +106,8 @@ const PesticidesContainer = () => {
   const getPackagingIcon = (type: string) => {
     switch (type) {
       case 'Liquid': return <Droplets className="w-4 h-4" />;
-      case 'Powder': return <Powder className="w-4 h-4" />;
-      case 'Granule': return <Grain className="w-4 h-4" />;
+      case 'Powder': return <Box className="w-4 h-4" />;
+      case 'Granule': return <Circle className="w-4 h-4" />;
       default: return <Package className="w-4 h-4" />;
     }
   };
@@ -128,12 +128,44 @@ const PesticidesContainer = () => {
 
   const confirmAddToCart = () => {
     if (selectedPesticide) {
+      // Get existing cart from localStorage
+      const existingCart = JSON.parse(localStorage.getItem('farmCart') || '[]');
+      
+      // Add new item to cart
+      const cartItem = {
+        id: `pesticide_${selectedPesticide.id}`,
+        type: 'pesticide',
+        name: selectedPesticide.name,
+        weight: selectedPesticide.weight,
+        price: selectedPesticide.price,
+        quantity: quantity,
+        image: '🧪',
+        description: selectedPesticide.description
+      };
+      
+      // Check if item already exists
+      const existingItemIndex = existingCart.findIndex((item: any) => item.id === cartItem.id);
+      
+      if (existingItemIndex >= 0) {
+        existingCart[existingItemIndex].quantity += quantity;
+      } else {
+        existingCart.push(cartItem);
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('farmCart', JSON.stringify(existingCart));
+      
+      // Update local cart state
       setCart(prev => ({
         ...prev,
         [selectedPesticide.id]: (prev[selectedPesticide.id] || 0) + quantity
       }));
+      
       setSelectedPesticide(null);
       setQuantity(1);
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('cartUpdated'));
     }
   };
 
