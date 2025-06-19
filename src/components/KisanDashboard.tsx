@@ -150,7 +150,7 @@ const KisanDashboard = () => {
     {
       title: 'आवाज सहायक',
       subtitle: 'Voice AI',
-      description: 'Get help using voice (Telugu/Urdu)',
+      description: 'Get help using voice (Telugu/English)',
       icon: Mic,
       color: 'bg-red-500',
       path: '/voice'
@@ -204,35 +204,6 @@ const KisanDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-cream-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-green-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <div className="text-3xl">🌾</div>
-              <div>
-                <h1 className="text-2xl font-bold text-green-800">Kisan Mitra AI</h1>
-                <p className="text-sm text-green-600">कृषि में तकनीक का साथ – Telangana</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Bell className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">अलर्ट</span>
-              </Button>
-              <Button variant="outline" size="sm">
-                <Phone className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">सहायता</span>
-              </Button>
-              <Button variant="ghost" size="sm">
-                <LogOut className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
