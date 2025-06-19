@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +18,8 @@ import {
   Package,
   IndianRupee,
   Clock,
-  QrCode
+  QrCode,
+  Copy
 } from 'lucide-react';
 
 interface Address {
@@ -81,6 +81,12 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
     console.log('CheckoutFlow - Cart length:', cart.length);
   }, [cart]);
 
+  const generateTrackingId = () => {
+    const prefix = 'KM';
+    const timestamp = Date.now().toString().slice(-6);
+    return `${prefix}${timestamp}`;
+  };
+
   const saveAddress = (address: Omit<Address, 'id'>) => {
     const newId = Date.now().toString();
     const addressWithId = { ...address, id: newId };
@@ -132,8 +138,10 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
   };
 
   const completeOrder = () => {
+    const trackingId = generateTrackingId();
+    
     const newOrder: Order = {
-      id: `ORD${Date.now()}`,
+      id: trackingId,
       items: [...cart],
       totalAmount: CartManager.getTotalPrice(),
       address: selectedAddress!,
@@ -145,10 +153,29 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
 
     console.log('Completing order:', newOrder);
 
+    // Save order in the format expected by MyOrders component
+    const orderForMyOrders = {
+      id: trackingId,
+      productName: cart.length === 1 ? cart[0].name : `${cart.length} items`,
+      quantity: cart.reduce((total, item) => total + item.quantity, 0),
+      orderDate: new Date().toISOString(),
+      deliveryAddress: `${selectedAddress!.village}, ${selectedAddress!.mandal}, ${selectedAddress!.district} - ${selectedAddress!.pincode}`,
+      totalAmount: CartManager.getTotalPrice(),
+      status: 'Pending' as const,
+      productType: cart[0]?.type || 'product' as const
+    };
+
+    // Save to existing orders in localStorage
     const existingOrders = localStorage.getItem('myOrders');
     const orders = existingOrders ? JSON.parse(existingOrders) : [];
-    orders.unshift(newOrder);
+    orders.unshift(orderForMyOrders);
     localStorage.setItem('myOrders', JSON.stringify(orders));
+
+    // Also save detailed order data
+    const existingDetailedOrders = localStorage.getItem('detailedOrders');
+    const detailedOrders = existingDetailedOrders ? JSON.parse(existingDetailedOrders) : [];
+    detailedOrders.unshift(newOrder);
+    localStorage.setItem('detailedOrders', JSON.stringify(detailedOrders));
 
     setOrder(newOrder);
     CartManager.clearCart();
@@ -156,14 +183,25 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
 
     toast({
       title: "🎉 Order Placed Successfully!",
-      description: `Order ${newOrder.id} has been confirmed`,
+      description: `Order ${trackingId} has been confirmed and added to your orders`,
     });
+
+    // Dispatch event to update navbar orders
+    window.dispatchEvent(new CustomEvent('orderUpdated'));
   };
 
   const generateUPIQR = () => {
     const amount = CartManager.getTotalPrice();
     const upiString = `upi://pay?pa=${upiId}&pn=FarmService&am=${amount}&cu=INR&tn=Order Payment`;
     return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+  };
+
+  const copyTrackingId = (trackingId: string) => {
+    navigator.clipboard.writeText(trackingId);
+    toast({
+      title: "Copied!",
+      description: "Tracking ID copied to clipboard",
+    });
   };
 
   const handleClose = () => {
@@ -437,9 +475,33 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
         {step === 'confirmation' && order && (
           <div className="text-center space-y-4">
             <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-green-600">Order Submitted Successfully!</h2>
-            <div className="bg-green-50 rounded-lg p-4">
-              <p className="font-medium">Order ID: {order.id}</p>
+            <h2 className="text-2xl font-bold text-green-600">Order Confirmed Successfully!</h2>
+            
+            <div className="bg-green-50 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-medium">Order ID:</span>
+                <div className="flex items-center space-x-2">
+                  <span className="font-bold text-green-600">{order.id}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyTrackingId(order.id)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Copy className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="bg-blue-50 rounded-lg p-3">
+                <p className="text-sm font-medium text-blue-800">
+                  🚚 Tracking ID: {order.id}
+                </p>
+                <p className="text-xs text-blue-600">
+                  Use this ID to track your order in "My Orders" section
+                </p>
+              </div>
+              
               <p className="text-sm text-gray-600">
                 Estimated delivery: {new Date(order.estimatedDelivery).toLocaleDateString()}
               </p>
@@ -457,6 +519,16 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
                 <span>Payment Method:</span>
                 <span className="capitalize">{order.paymentMethod}</span>
               </div>
+              <div className="flex justify-between">
+                <span>Status:</span>
+                <Badge className="bg-green-100 text-green-800">Confirmed</Badge>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-800">
+                📱 Your order has been added to "My Orders" section where you can track its progress.
+              </p>
             </div>
 
             <Button onClick={handleClose} className="w-full bg-green-600 hover:bg-green-700">
