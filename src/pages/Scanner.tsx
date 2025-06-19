@@ -74,54 +74,67 @@ const Scanner = () => {
 
   const requestCameraAccess = async () => {
     try {
-      setShowPermissionAlert(true);
+      console.log('Requesting camera access...');
       
       // Stop any existing stream first
       if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
       }
       
+      // Show dialog first for better UX
+      setShowCameraDialog(true);
+      
       const constraints = {
         video: { 
           width: { ideal: 1920, max: 1920 },
           height: { ideal: 1080, max: 1080 },
-          facingMode: 'environment',
+          facingMode: 'environment', // Use back camera on mobile
           frameRate: { ideal: 30 }
         },
         audio: false
       };
       
-      console.log('Requesting camera access with constraints:', constraints);
+      console.log('Camera constraints:', constraints);
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      console.log('Camera stream obtained:', stream);
+      console.log('Camera stream obtained successfully');
       
       setCameraStream(stream);
-      setShowCameraDialog(true);
-      setShowPermissionAlert(false);
       setPermissionDenied(false);
       
-      // Set up video element
+      // Set up video element immediately
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         console.log('Video srcObject set');
         
-        // Ensure video plays
-        try {
-          await videoRef.current.play();
-          console.log('Video playing');
-        } catch (playError) {
-          console.error('Video play error:', playError);
-        }
+        // Ensure autoplay works
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(console.error);
+        };
       }
     } catch (error) {
       console.error('Camera access error:', error);
       setPermissionDenied(true);
-      setShowPermissionAlert(false);
-      toast({
-        title: "Camera Access Required",
-        description: "Please enable camera access to use this feature.",
-        variant: "destructive"
-      });
+      setShowCameraDialog(false);
+      
+      if (error.name === 'NotAllowedError') {
+        toast({
+          title: "Camera Permission Denied",
+          description: "Please allow camera access to scan your crops. Click retry and allow camera permissions.",
+          variant: "destructive"
+        });
+      } else if (error.name === 'NotFoundError') {
+        toast({
+          title: "No Camera Found",
+          description: "No camera device was found on your device.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Camera Error",
+          description: "Failed to access camera. Please try again.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -131,22 +144,34 @@ const Scanner = () => {
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       
+      if (!context) return;
+      
       // Set canvas dimensions to match video
-      canvas.width = video.videoWidth || 640;
-      canvas.height = video.videoHeight || 480;
+      canvas.width = video.videoWidth || 1920;
+      canvas.height = video.videoHeight || 1080;
       
-      console.log('Capturing photo with dimensions:', canvas.width, canvas.height);
+      console.log('Capturing photo with dimensions:', canvas.width, 'x', canvas.height);
       
-      // Flip the image horizontally to match the mirrored video
+      // Save current transform
+      context.save();
+      
+      // Mirror the image horizontally to match the preview
       context.scale(-1, 1);
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-      context.scale(-1, 1); // Reset scale
+      
+      // Restore transform
+      context.restore();
       
       const quality = cameraSettings.quality === 'HD' ? 0.9 : 
                      cameraSettings.quality === 'Medium' ? 0.7 : 0.5;
       const imageDataUrl = canvas.toDataURL('image/jpeg', quality);
       setCapturedImage(imageDataUrl);
+      
       console.log('Photo captured successfully');
+      toast({
+        title: "Photo Captured!",
+        description: "Review your image and tap 'Use Photo' to continue."
+      });
     }
   };
 
@@ -245,33 +270,23 @@ const Scanner = () => {
           </div>
         </div>
 
-        {/* Permission Alert */}
-        {showPermissionAlert && (
-          <Alert className="mb-6 border-orange-200 bg-orange-50">
-            <Camera className="h-4 w-4" />
-            <AlertDescription className="text-orange-800">
-              <strong>⚠️ Kisan Mitra AI needs camera access to continue.</strong>
-              <br />
-              Please allow camera access to scan your crop or verify your identity.
-            </AlertDescription>
-          </Alert>
-        )}
-
         {/* Permission Denied Alert */}
         {permissionDenied && (
           <Alert className="mb-6 border-red-200 bg-red-50">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="text-red-800">
-              Camera access was denied. Please enable camera access in your browser settings to use this feature.
-              <Button 
-                onClick={retryPermission}
-                variant="outline"
-                size="sm"
-                className="ml-2 mt-2"
-              >
-                <RotateCcw className="w-4 h-4 mr-1" />
-                Retry
-              </Button>
+              <strong>Camera access was denied.</strong> Please enable camera access in your browser settings to scan crops.
+              <div className="mt-2">
+                <Button 
+                  onClick={retryPermission}
+                  variant="outline"
+                  size="sm"
+                  className="border-red-300 text-red-800 hover:bg-red-100"
+                >
+                  <RotateCcw className="w-4 h-4 mr-1" />
+                  Retry Camera Access
+                </Button>
+              </div>
             </AlertDescription>
           </Alert>
         )}
@@ -279,7 +294,8 @@ const Scanner = () => {
         {/* Upload Section */}
         <Card className="border-green-200 mb-6">
           <CardHeader>
-            <CardTitle className="text-center">
+            <CardTitle className="text-center flex items-center justify-center">
+              <Camera className="w-6 h-6 mr-2 text-green-600" />
               Capture Crop Photo
             </CardTitle>
           </CardHeader>
@@ -287,18 +303,20 @@ const Scanner = () => {
             <div className="grid grid-cols-2 gap-4">
               <Button
                 onClick={requestCameraAccess}
-                className="h-24 bg-blue-600 hover:bg-blue-700 flex flex-col items-center justify-center"
+                className="h-24 bg-blue-600 hover:bg-blue-700 flex flex-col items-center justify-center transition-all duration-200 hover:scale-105"
               >
                 <Camera className="w-8 h-8 mb-2" />
-                Open Camera
+                <span className="font-semibold">Open Camera</span>
+                <span className="text-xs opacity-90">Live Preview</span>
               </Button>
               
               <Button
                 onClick={() => fileInputRef.current?.click()}
-                className="h-24 bg-green-600 hover:bg-green-700 flex flex-col items-center justify-center"
+                className="h-24 bg-green-600 hover:bg-green-700 flex flex-col items-center justify-center transition-all duration-200 hover:scale-105"
               >
                 <Upload className="w-8 h-8 mb-2" />
-                Upload Photo
+                <span className="font-semibold">Upload Photo</span>
+                <span className="text-xs opacity-90">From Gallery</span>
               </Button>
             </div>
             
@@ -310,19 +328,30 @@ const Scanner = () => {
               className="hidden"
             />
             
-            <p className="text-sm text-gray-600">
-              Take a clear photo of crop leaves or stem for accurate disease detection
-            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-800 font-medium">
+                📸 For best results:
+              </p>
+              <ul className="text-xs text-blue-700 mt-1 space-y-1">
+                <li>• Use good natural lighting</li>
+                <li>• Focus on diseased leaf areas</li>
+                <li>• Hold camera steady</li>
+                <li>• Fill the frame with the crop</li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
 
         {/* Advanced Camera Dialog */}
         <Dialog open={showCameraDialog} onOpenChange={closeCameraDialog}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-            <DialogHeader>
-              <DialogTitle>Advanced Camera Interface</DialogTitle>
+          <DialogContent className="max-w-4xl max-h-[95vh] overflow-hidden p-0">
+            <DialogHeader className="p-4 pb-0">
+              <DialogTitle className="flex items-center">
+                <Camera className="w-5 h-5 mr-2" />
+                Advanced Camera Interface
+              </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="p-4">
               {!capturedImage ? (
                 <AdvancedCameraInterface
                   videoRef={videoRef}
@@ -339,11 +368,6 @@ const Scanner = () => {
                 />
               )}
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={closeCameraDialog}>
-                Cancel
-              </Button>
-            </DialogFooter>
           </DialogContent>
         </Dialog>
 
