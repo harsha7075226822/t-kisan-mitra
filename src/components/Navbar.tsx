@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload, Home, Wallet } from 'lucide-react';
@@ -46,39 +45,8 @@ const Navbar = () => {
   const [profileImage, setProfileImage] = useState('');
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   
-  // Mock data states
-  const [orders, setOrders] = useState([
-    {
-      id: 'KM001',
-      productName: 'Paddy Seeds 1010',
-      quantity: 2,
-      orderDate: '2024-01-15T10:30:00Z',
-      deliveryAddress: 'Village: Kompally, Mandal: Quthbullapur, District: Rangareddy, PIN: 500014',
-      totalAmount: 900,
-      status: 'Delivered' as const,
-      productType: 'seeds' as const
-    },
-    {
-      id: 'KM002',
-      productName: 'Cotton Seeds RCH659',
-      quantity: 1,
-      orderDate: '2024-01-18T14:20:00Z',
-      deliveryAddress: 'Village: KPHB, Mandal: Kukatpally, District: Hyderabad, PIN: 500072',
-      totalAmount: 700,
-      status: 'Dispatched' as const,
-      productType: 'seeds' as const
-    },
-    {
-      id: 'KM003',
-      productName: 'Groundnut Seeds TMV7',
-      quantity: 3,
-      orderDate: '2024-01-20T09:15:00Z',
-      deliveryAddress: 'Village: Shamirpet, Mandal: Shamirpet, District: Rangareddy, PIN: 500078',
-      totalAmount: 1560,
-      status: 'Pending' as const,
-      productType: 'seeds' as const
-    }
-  ]);
+  // Orders state - load from localStorage
+  const [orders, setOrders] = useState([]);
 
   const [addresses, setAddresses] = useState([
     {
@@ -137,6 +105,36 @@ const Navbar = () => {
   // Get user data from localStorage if on dashboard
   const userData = isDashboard ? JSON.parse(localStorage.getItem('kisanUser') || '{}') : null;
 
+  // Load orders from localStorage
+  const loadOrders = () => {
+    console.log('Loading orders from localStorage...');
+    const savedOrders = localStorage.getItem('myOrders');
+    if (savedOrders) {
+      const parsedOrders = JSON.parse(savedOrders);
+      console.log('Loaded orders:', parsedOrders);
+      setOrders(parsedOrders);
+    } else {
+      console.log('No orders found in localStorage');
+      setOrders([]);
+    }
+  };
+
+  // Load orders on component mount
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  // Listen for order updates
+  useEffect(() => {
+    const handleOrderUpdate = () => {
+      console.log('Order update event received, reloading orders...');
+      loadOrders();
+    };
+
+    window.addEventListener('orderUpdated', handleOrderUpdate);
+    return () => window.removeEventListener('orderUpdated', handleOrderUpdate);
+  }, []);
+
   // Load profile image from localStorage
   useEffect(() => {
     const savedImage = localStorage.getItem('userProfileImage');
@@ -153,11 +151,20 @@ const Navbar = () => {
   }, [selectedLanguage]);
 
   const getTrackingInfo = (orderId: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) {
+      return [
+        { status: 'Order not found', date: '', completed: false }
+      ];
+    }
+
+    // Generate tracking steps based on order status
     const trackingSteps = [
-      { status: 'Ordered', date: '2024-01-18', completed: true },
-      { status: 'Packed', date: '2024-01-19', completed: true },
-      { status: 'Out for Delivery', date: '2024-01-20', completed: false },
-      { status: 'Delivered', date: '', completed: false }
+      { status: 'Order Placed', date: new Date(order.orderDate).toLocaleDateString(), completed: true },
+      { status: 'Order Confirmed', date: new Date(order.orderDate).toLocaleDateString(), completed: true },
+      { status: 'Packed', date: order.status !== 'Pending' ? new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString() : '', completed: order.status !== 'Pending' },
+      { status: 'Out for Delivery', date: order.status === 'Dispatched' || order.status === 'Delivered' ? new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString() : '', completed: order.status === 'Dispatched' || order.status === 'Delivered' },
+      { status: 'Delivered', date: order.status === 'Delivered' ? new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString() : '', completed: order.status === 'Delivered' }
     ];
     return trackingSteps;
   };
@@ -184,14 +191,24 @@ const Navbar = () => {
       toast({
         title: "Enter Order ID",
         description: "Please enter a valid order ID to track",
+        variant: "destructive",
       });
       return;
     }
     
-    toast({
-      title: "Order Found",
-      description: `Tracking order ${trackingId}`,
-    });
+    const order = orders.find(o => o.id === trackingId);
+    if (order) {
+      toast({
+        title: "Order Found",
+        description: `Tracking order ${trackingId} - Status: ${order.status}`,
+      });
+    } else {
+      toast({
+        title: "Order Not Found",
+        description: `No order found with ID: ${trackingId}`,
+        variant: "destructive",
+      });
+    }
   };
 
   // Address management functions
@@ -240,10 +257,13 @@ const Navbar = () => {
 
   // Order functions
   const handleViewOrderDetails = (orderId: string) => {
-    toast({
-      title: "Order Details",
-      description: `Viewing details for order ${orderId}`,
-    });
+    const order = orders.find(o => o.id === orderId);
+    if (order) {
+      toast({
+        title: "Order Details",
+        description: `${order.productName} - ₹${order.totalAmount} - ${order.status}`,
+      });
+    }
   };
 
   const handleTrackOrderFromList = (orderId: string) => {
@@ -282,7 +302,12 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            {navItems.slice(0, 4).map((item) => (
+            {[
+              { name: 'Dashboard', path: '/dashboard', icon: '🌾' },
+              { name: 'Weather', path: '/weather', icon: '🌤️' },
+              { name: 'Market Insights', path: '/market', icon: '📊' },
+              { name: 'Education', path: '/education', icon: '📚' }
+            ].map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
@@ -311,7 +336,10 @@ const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white">
-                {languages.map((lang) => (
+                {[
+                  { code: 'en', name: 'English', flag: '🇺🇸' },
+                  { code: 'te', name: 'Telugu', flag: '🇮🇳' }
+                ].map((lang) => (
                   <DropdownMenuItem
                     key={lang.code}
                     onClick={() => setSelectedLanguage(lang.name)}
@@ -382,6 +410,11 @@ const Navbar = () => {
                     >
                       <Package className="w-4 h-4 mr-3" />
                       My Orders
+                      {orders.length > 0 && (
+                        <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-auto">
+                          {orders.length}
+                        </span>
+                      )}
                     </button>
 
                     <button
@@ -464,7 +497,17 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {navItems.map((item) => (
+            {[
+              { name: 'Dashboard', path: '/dashboard', icon: '🌾' },
+              { name: 'Weather', path: '/weather', icon: '🌤️' },
+              { name: 'Market Insights', path: '/market', icon: '📊' },
+              { name: 'Education', path: '/education', icon: '📚' },
+              { name: 'Government Schemes', path: '/schemes', icon: '🏛️' },
+              { name: 'Online Mandi', path: '/mandi', icon: '🛒' },
+              { name: 'Voice Assistant', path: '/voice', icon: '🎤' },
+              { name: 'Crop Scanner', path: '/scanner', icon: '📷' },
+              { name: 'Seeds Container', path: '/seeds', icon: '🌱' },
+            ].map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
@@ -483,7 +526,10 @@ const Navbar = () => {
             {/* Mobile Language Options */}
             <div className="border-t border-gray-200 mt-2 pt-2">
               <div className="px-3 py-2 text-sm font-medium text-gray-500">Language</div>
-              {languages.map((lang) => (
+              {[
+                { code: 'en', name: 'English', flag: '🇺🇸' },
+                { code: 'te', name: 'Telugu', flag: '🇮🇳' }
+              ].map((lang) => (
                 <button
                   key={lang.code}
                   onClick={() => {
@@ -520,8 +566,14 @@ const Navbar = () => {
                 >
                   <Package className="w-4 h-4 mr-2" />
                   My Orders
+                  {orders.length > 0 && (
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-auto">
+                      {orders.length}
+                    </span>
+                  )}
                 </button>
                 
+                {/* Mobile Address, Wallet, Track Order, and other buttons */}
                 <button 
                   onClick={() => {
                     setShowMyAddress(true);
