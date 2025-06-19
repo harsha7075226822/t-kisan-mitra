@@ -8,7 +8,6 @@ import { Camera, Upload, Loader2, AlertTriangle, CheckCircle, Info, ArrowLeft } 
 
 const Scanner = () => {
   const navigate = useNavigate();
-  const [selectedLanguage, setSelectedLanguage] = useState('telugu');
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -16,30 +15,18 @@ const Scanner = () => {
 
   const mockDiseases = [
     {
-      name: { telugu: 'లీఫ్ బ్లైట్', english: 'Leaf Blight' },
+      name: 'Leaf Blight',
       severity: 'high',
       confidence: 85,
-      solution: {
-        telugu: 'కాపర్ బేస్డ్ ఫంగిసైడ్ స్ప్రే చేయండి',
-        english: 'Apply copper-based fungicide spray'
-      },
-      prevention: {
-        telugu: 'నీటిపారుదల తగ్గించండి మరియు గాలి ప్రసరణ పెంచండి',
-        english: 'Reduce watering and improve air circulation'
-      }
+      solution: 'Apply copper-based fungicide spray',
+      prevention: 'Reduce watering and improve air circulation'
     },
     {
-      name: { telugu: 'పత్రాల మచ్చలు', english: 'Leaf Spots' },
+      name: 'Leaf Spots',
       severity: 'medium',
       confidence: 92,
-      solution: {
-        telugu: 'మాంకోజెబ్ దిద్దుబాటు చేయండి',
-        english: 'Apply Mancozeb treatment'
-      },
-      prevention: {
-        telugu: 'రాత్రి సమయంలో పాలసీకి మునుపు మాత్రమే నీరు పెట్టండి',
-        english: 'Water only in the morning to avoid evening moisture'
-      }
+      solution: 'Apply Mancozeb treatment',
+      prevention: 'Water only in the morning to avoid evening moisture'
     }
   ];
 
@@ -57,10 +44,7 @@ const Scanner = () => {
 
   const handleCameraCapture = () => {
     // In a real app, this would access the camera
-    alert(selectedLanguage === 'telugu' 
-      ? 'కెమెరా ఫీచర్ ఉపయోగించడానికి మొబైల్ యాప్ డౌన్‌లోడ్ చేయండి'
-      : 'Download mobile app to use camera feature'
-    );
+    alert('Download mobile app to use camera feature');
   };
 
   const scanImage = () => {
@@ -110,39 +94,18 @@ const Scanner = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-green-800 mb-2">
-            {selectedLanguage === 'telugu' ? 'పంట స్కానర్' : 'Crop Scanner'}
+            Crop Scanner
           </h1>
           <p className="text-green-600">
-            {selectedLanguage === 'telugu' 
-              ? 'పంట వ్యాధుల గుర్తింపు మరియు చికిత్స'
-              : 'Crop disease identification and treatment'
-            }
+            Crop disease identification and treatment
           </p>
-        </div>
-
-        {/* Language Toggle */}
-        <div className="flex space-x-2 mb-6">
-          <Button
-            variant={selectedLanguage === 'telugu' ? 'default' : 'outline'}
-            onClick={() => setSelectedLanguage('telugu')}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            తెలుగు
-          </Button>
-          <Button
-            variant={selectedLanguage === 'english' ? 'default' : 'outline'}
-            onClick={() => setSelectedLanguage('english')}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            English
-          </Button>
         </div>
 
         {/* Upload Section */}
         <Card className="border-green-200 mb-6">
           <CardHeader>
             <CardTitle className="text-center">
-              {selectedLanguage === 'telugu' ? 'పంట ఫోటో అప్‌లోడ్ చేయండి' : 'Upload Crop Photo'}
+              Upload Crop Photo
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
@@ -152,7 +115,7 @@ const Scanner = () => {
                 className="h-24 bg-blue-600 hover:bg-blue-700 flex flex-col items-center justify-center"
               >
                 <Camera className="w-8 h-8 mb-2" />
-                {selectedLanguage === 'telugu' ? 'కెమెరా' : 'Camera'}
+                Camera
               </Button>
               
               <Button
@@ -160,7 +123,7 @@ const Scanner = () => {
                 className="h-24 bg-green-600 hover:bg-green-700 flex flex-col items-center justify-center"
               >
                 <Upload className="w-8 h-8 mb-2" />
-                {selectedLanguage === 'telugu' ? 'గ్యాలరీ' : 'Gallery'}
+                Gallery
               </Button>
             </div>
             
@@ -173,10 +136,7 @@ const Scanner = () => {
             />
             
             <p className="text-sm text-gray-600">
-              {selectedLanguage === 'telugu' 
-                ? 'పంట యొక్క ఆకులు లేదా కాండం యొక్క స్పష్టమైన ఫోటో తీయండి'
-                : 'Take a clear photo of crop leaves or stem'
-              }
+              Take a clear photo of crop leaves or stem
             </p>
           </CardContent>
         </Card>
@@ -200,13 +160,10 @@ const Scanner = () => {
             <CardContent className="p-6 text-center">
               <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
               <h3 className="text-lg font-semibold text-blue-800 mb-2">
-                {selectedLanguage === 'telugu' ? 'స్కాన్ చేస్తున్నాము...' : 'Scanning...'}
+                Scanning...
               </h3>
               <p className="text-blue-600">
-                {selectedLanguage === 'telugu' 
-                  ? 'AI మోడల్ మీ పంట ఫోటోని విశ్లేషిస్తోంది'
-                  : 'AI model is analyzing your crop photo'
-                }
+                AI model is analyzing your crop photo
               </p>
             </CardContent>
           </Card>
@@ -218,10 +175,10 @@ const Scanner = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl text-green-800">
-                  {selectedLanguage === 'telugu' ? 'స్కాన్ ఫలితాలు' : 'Scan Results'}
+                  Scan Results
                 </CardTitle>
                 <Badge className="bg-blue-100 text-blue-800">
-                  {scanResult.confidence}% {selectedLanguage === 'telugu' ? 'నమ్మకం' : 'Confidence'}
+                  {scanResult.confidence}% Confidence
                 </Badge>
               </div>
             </CardHeader>
@@ -232,12 +189,12 @@ const Scanner = () => {
                   <Badge className={getSeverityColor(scanResult.severity)}>
                     {getSeverityIcon(scanResult.severity)}
                     <span className="ml-1">
-                      {selectedLanguage === 'telugu' ? 'గుర్తించబడింది' : 'Detected'}
+                      Detected
                     </span>
                   </Badge>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  {scanResult.name[selectedLanguage]}
+                  {scanResult.name}
                 </h3>
               </div>
 
@@ -245,27 +202,27 @@ const Scanner = () => {
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h4 className="font-semibold text-green-800 mb-2 flex items-center">
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  {selectedLanguage === 'telugu' ? 'చికిత్స:' : 'Treatment:'}
+                  Treatment:
                 </h4>
-                <p className="text-green-700">{scanResult.solution[selectedLanguage]}</p>
+                <p className="text-green-700">{scanResult.solution}</p>
               </div>
 
               {/* Prevention */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="font-semibold text-blue-800 mb-2 flex items-center">
                   <Info className="w-4 h-4 mr-2" />
-                  {selectedLanguage === 'telugu' ? 'నివారణ:' : 'Prevention:'}
+                  Prevention:
                 </h4>
-                <p className="text-blue-700">{scanResult.prevention[selectedLanguage]}</p>
+                <p className="text-blue-700">{scanResult.prevention}</p>
               </div>
 
               {/* Action Buttons */}
               <div className="flex space-x-4">
                 <Button className="flex-1 bg-green-600 hover:bg-green-700">
-                  {selectedLanguage === 'telugu' ? 'నిపుణుడిని సంప్రదించండి' : 'Consult Expert'}
+                  Consult Expert
                 </Button>
                 <Button variant="outline" className="flex-1 border-green-300">
-                  {selectedLanguage === 'telugu' ? 'మరిన్ని వివరాలు' : 'More Details'}
+                  More Details
                 </Button>
               </div>
             </CardContent>
