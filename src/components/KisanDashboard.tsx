@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -193,7 +194,7 @@ const KisanDashboard = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
           <div className="text-6xl mb-4">🌾</div>
           <h2 className="text-xl text-gray-600">Loading...</h2>
@@ -204,37 +205,37 @@ const KisanDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-cream-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-green-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-green-100">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex-1">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                   स्वागत है, {user.name}! / Welcome, {user.name}!
                 </h2>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                  <span>📱 {user.mobile}</span>
-                  <span>🆔 आधार: {user.aadhaar}</span>
-                  <Badge variant="outline" className="text-green-700 border-green-300">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600">
+                  <span className="flex items-center gap-1">📱 {user.mobile}</span>
+                  <span className="flex items-center gap-1">🆔 आधार: {user.aadhaar}</span>
+                  <Badge variant="outline" className="text-green-700 border-green-300 w-fit">
                     सत्यापित किसान / Verified Farmer
                   </Badge>
                 </div>
               </div>
-              <div className="text-6xl opacity-20">👨‍🌾</div>
+              <div className="text-4xl sm:text-6xl opacity-20 self-center sm:self-auto">👨‍🌾</div>
             </div>
           </div>
         </div>
 
         {/* Nearest Markets Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 flex items-center">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center">
               <Navigation className="w-5 h-5 mr-2 text-green-600" />
               Nearest Agricultural Markets
             </h3>
             {location && (
-              <Badge variant="outline" className="text-green-700 border-green-300">
+              <Badge variant="outline" className="text-green-700 border-green-300 w-fit">
                 📍 Location Enabled
               </Badge>
             )}
@@ -242,88 +243,90 @@ const KisanDashboard = () => {
 
           {locationError ? (
             <Card className="border-orange-200 bg-orange-50">
-              <CardContent className="p-6 text-center">
-                <div className="text-4xl mb-4">📍</div>
-                <p className="text-orange-700 font-medium">{locationError}</p>
-                <p className="text-sm text-orange-600 mt-2">
+              <CardContent className="p-4 sm:p-6 text-center">
+                <div className="text-3xl sm:text-4xl mb-4">📍</div>
+                <p className="text-orange-700 font-medium text-sm sm:text-base">{locationError}</p>
+                <p className="text-xs sm:text-sm text-orange-600 mt-2">
                   Enable location services to see markets sorted by distance
                 </p>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {nearestMarkets.map((market) => (
                 <Card key={market.id} className="border-green-200 hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-lg text-gray-900 mb-1">🏪 {market.name}</CardTitle>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-base sm:text-lg text-gray-900 mb-1 truncate">
+                          🏪 {market.name}
+                        </CardTitle>
                         <div className="flex items-center text-sm text-gray-600 mb-2">
-                          <Navigation className="w-4 h-4 mr-1 text-green-600" />
+                          <Navigation className="w-4 h-4 mr-1 text-green-600 flex-shrink-0" />
                           <span className="font-medium">{market.distance} km away</span>
                         </div>
                       </div>
-                      <Badge variant="outline" className="text-green-700 border-green-300 text-xs">
+                      <Badge variant="outline" className="text-green-700 border-green-300 text-xs flex-shrink-0">
                         Nearest
                       </Badge>
                     </div>
                   </CardHeader>
                   
-                  <CardContent className="pt-0">
-                    <div className="space-y-3">
-                      {/* Crops Available */}
-                      <div>
-                        <div className="text-sm font-medium text-gray-700 mb-1">🌾 Crops Available:</div>
-                        <div className="flex flex-wrap gap-1">
-                          {market.crops.map((crop, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {crop}
-                            </Badge>
-                          ))}
-                        </div>
+                  <CardContent className="pt-0 space-y-3">
+                    {/* Crops Available */}
+                    <div>
+                      <div className="text-sm font-medium text-gray-700 mb-2">🌾 Crops Available:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {market.crops.map((crop, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {crop}
+                          </Badge>
+                        ))}
                       </div>
+                    </div>
 
-                      {/* Latest Price */}
-                      <div className="flex items-center">
+                    {/* Latest Price */}
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <div className="flex items-center mb-1">
                         <IndianRupee className="w-4 h-4 mr-1 text-green-600" />
                         <span className="text-sm font-medium text-gray-700 mr-2">Latest Price:</span>
                         <span className="font-bold text-green-700">{market.latestPrice}</span>
                       </div>
                       <div className="text-xs text-gray-500 ml-5">({market.priceItem})</div>
+                    </div>
 
-                      {/* Address */}
-                      <div className="flex items-start">
-                        <MapPin className="w-4 h-4 mr-1 text-gray-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-gray-600">{market.address}</span>
-                      </div>
+                    {/* Address */}
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-600 leading-relaxed">{market.address}</span>
+                    </div>
 
-                      {/* Contact */}
-                      <div className="flex items-center">
-                        <Phone className="w-4 h-4 mr-1 text-blue-600" />
-                        <span className="text-sm text-gray-600">{market.contact}</span>
-                      </div>
+                    {/* Contact */}
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <span className="text-sm text-gray-600 truncate">{market.contact}</span>
+                    </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex gap-2 pt-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="flex-1 text-xs"
-                          onClick={() => handleMarketCall(market.contact)}
-                        >
-                          <Phone className="w-3 h-3 mr-1" />
-                          Call
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          className="flex-1 text-xs bg-green-600 hover:bg-green-700"
-                          onClick={() => handleGetDirections(market.coordinates)}
-                          disabled={!location}
-                        >
-                          <Navigation className="w-3 h-3 mr-1" />
-                          Directions
-                        </Button>
-                      </div>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 pt-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1 text-xs h-9"
+                        onClick={() => handleMarketCall(market.contact)}
+                      >
+                        <Phone className="w-3 h-3 mr-1" />
+                        Call
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="flex-1 text-xs h-9 bg-green-600 hover:bg-green-700"
+                        onClick={() => handleGetDirections(market.coordinates)}
+                        disabled={!location}
+                      >
+                        <Navigation className="w-3 h-3 mr-1" />
+                        Directions
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -334,23 +337,29 @@ const KisanDashboard = () => {
 
         {/* Main Modules */}
         <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
             सेवाएं / Services
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {modules.map((module, index) => (
               <Card 
                 key={index} 
-                className="hover:shadow-lg transition-shadow cursor-pointer border-gray-200 hover:border-green-300"
+                className="hover:shadow-lg transition-all duration-200 cursor-pointer border-gray-200 hover:border-green-300 hover:scale-105 active:scale-95"
                 onClick={() => handleModuleClick(module.path)}
               >
-                <CardContent className="p-6 text-center">
-                  <div className={`w-16 h-16 ${module.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                    <module.icon className="w-8 h-8 text-white" />
+                <CardContent className="p-4 sm:p-6 text-center">
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 ${module.color} rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4`}>
+                    <module.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-1">{module.title}</h4>
-                  <p className="text-sm text-gray-600 mb-2">{module.subtitle}</p>
-                  <p className="text-xs text-gray-500">{module.description}</p>
+                  <h4 className="font-bold text-gray-900 mb-1 text-sm sm:text-base leading-tight">
+                    {module.title}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
+                    {module.subtitle}
+                  </p>
+                  <p className="text-xs text-gray-500 leading-relaxed hidden sm:block">
+                    {module.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -358,11 +367,19 @@ const KisanDashboard = () => {
         </div>
 
         {/* Footer */}
-        <div className="mt-12 text-center border-t border-gray-200 pt-8">
+        <div className="mt-8 sm:mt-12 text-center border-t border-gray-200 pt-6 sm:pt-8">
           <div className="text-sm text-gray-600 space-y-2">
-            <p>📞 सहायता हेल्पलाइन: 1800-XXX-XXXX (निःशुल्क)</p>
-            <p>🌐 Support: support@kisanmitra.telangana.gov.in</p>
-            <p className="text-xs">तेलंगाना सरकार की एक पहल / An initiative by Government of Telangana</p>
+            <p className="flex items-center justify-center gap-2">
+              <Phone className="w-4 h-4" />
+              सहायता हेल्पलाइन: 1800-XXX-XXXX (निःशुल्क)
+            </p>
+            <p className="flex items-center justify-center gap-2">
+              <span>🌐</span>
+              Support: support@kisanmitra.telangana.gov.in
+            </p>
+            <p className="text-xs text-gray-500 px-4">
+              तेलंगाना सरकार की एक पहल / An initiative by Government of Telangana
+            </p>
           </div>
         </div>
       </div>
