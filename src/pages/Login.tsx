@@ -19,7 +19,7 @@ const Login = () => {
 
   const handleSendOTP = async () => {
     if (!formData.fullName || !formData.mobile) {
-      alert('कृपया सभी फील्ड भरें / Please fill all fields');
+      alert('Please fill all fields');
       return;
     }
     
@@ -34,7 +34,7 @@ const Login = () => {
 
   const handleVerifyOTP = async () => {
     if (formData.otp.length !== 6) {
-      alert('कृपया 6 अंकों का OTP दर्ज करें / Please enter 6-digit OTP');
+      alert('Please enter 6-digit OTP');
       return;
     }
     
@@ -58,25 +58,25 @@ const Login = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🌾</div>
-          <h1 className="text-3xl font-bold text-green-800 mb-2">Kisan Mitra AI</h1>
-          <p className="text-green-600">कृषि में तकनीक का साथ - Telangana</p>
+          <h1 className="text-3xl font-bold text-green-800 mb-2">Smart AgriConnect</h1>
+          <p className="text-green-600">AI-Powered Farming Assistant - Telangana</p>
         </div>
 
         <Card className="shadow-lg border-green-200">
           <CardHeader className="text-center">
             <CardTitle className="text-green-800">
-              {step === 'details' ? 'किसान पंजीकरण / Farmer Registration' : 'OTP सत्यापन / OTP Verification'}
+              {step === 'details' ? 'Farmer Registration' : 'OTP Verification'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {step === 'details' ? (
               <>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">पूरा नाम / Full Name</label>
+                  <label className="text-sm font-medium text-gray-700">Full Name</label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
-                      placeholder="अपना पूरा नाम दर्ज करें"
+                      placeholder="Enter your full name"
                       value={formData.fullName}
                       onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                       className="pl-10"
@@ -85,7 +85,7 @@ const Login = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">मोबाइल नंबर / Mobile Number</label>
+                  <label className="text-sm font-medium text-gray-700">Mobile Number</label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
@@ -103,7 +103,7 @@ const Login = () => {
                   disabled={isLoading}
                   className="w-full bg-green-600 hover:bg-green-700"
                 >
-                  {isLoading ? 'भेजा जा रहा है...' : 'OTP भेजें / Send OTP'}
+                  {isLoading ? 'Sending...' : 'Send OTP'}
                 </Button>
               </>
             ) : (
@@ -115,7 +115,7 @@ const Login = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">6-अंकीय OTP दर्ज करें</label>
+                  <label className="text-sm font-medium text-gray-700">Enter 6-digit OTP</label>
                   <div className="flex justify-center">
                     <InputOTP 
                       maxLength={6} 
@@ -140,7 +140,7 @@ const Login = () => {
                     disabled={isLoading}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    {isLoading ? 'सत्यापित हो रहा है...' : 'OTP सत्यापित करें / Verify OTP'}
+                    {isLoading ? 'Verifying...' : 'Verify OTP'}
                   </Button>
                   
                   <Button 
@@ -148,7 +148,7 @@ const Login = () => {
                     onClick={() => setStep('details')}
                     className="w-full"
                   >
-                    वापस जाएं / Go Back
+                    Go Back
                   </Button>
                 </div>
               </>
@@ -157,8 +157,8 @@ const Login = () => {
         </Card>
 
         <div className="text-center mt-6 text-sm text-gray-500">
-          <p>सहायता के लिए: 1800-XXX-XXXX</p>
-          <p>For support: support@kisanmitra.gov.in</p>
+          <p>Helpline: 1800-XXX-XXXX</p>
+          <p>For support: support@smartagriconnect.telangana.gov.in</p>
         </div>
       </div>
     </div>
