@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -109,64 +108,56 @@ const KisanDashboard = () => {
 
   const modules = [
     {
-      title: 'बाजार जानकारी',
-      subtitle: 'Market Insights',
+      title: 'Market Insights',
       description: 'Crop prices and market trends',
       icon: TrendingUp,
       color: 'bg-blue-500',
       path: '/market'
     },
     {
-      title: 'कृषि शिक्षा',
-      subtitle: 'Education',
+      title: 'Education',
       description: 'Agricultural knowledge and training',
       icon: BookOpen,
       color: 'bg-green-500',
       path: '/education'
     },
     {
-      title: 'मौसम अपडेट',
-      subtitle: 'Weather',
+      title: 'Weather',
       description: 'Localized alerts and forecasts',
       icon: Cloud,
       color: 'bg-sky-500',
       path: '/weather'
     },
     {
-      title: 'सरकारी योजनाएं',
-      subtitle: 'Government Schemes',
+      title: 'Government Schemes',
       description: 'Subsidy & benefits information',
       icon: Building2,
       color: 'bg-purple-500',
       path: '/schemes'
     },
     {
-      title: 'ऑनलाइन मंडी',
-      subtitle: 'Online Mandi',
+      title: 'Online Mandi',
       description: 'Buy and sell crops online',
       icon: ShoppingCart,
       color: 'bg-orange-500',
       path: '/mandi'
     },
     {
-      title: 'आवाज सहायक',
-      subtitle: 'Voice AI',
+      title: 'Voice AI',
       description: 'Get help using voice (Telugu/English)',
       icon: Mic,
       color: 'bg-red-500',
       path: '/voice'
     },
     {
-      title: 'फसल स्कैनर',
-      subtitle: 'Crop Scanner',
+      title: 'Crop Scanner',
       description: 'Diagnose crop diseases via image',
       icon: Camera,
       color: 'bg-indigo-500',
       path: '/scanner'
     },
     {
-      title: 'बीज भंडार',
-      subtitle: 'Seeds Container',
+      title: 'Seeds Container',
       description: 'Quality seeds with pricing',
       icon: Sprout,
       color: 'bg-emerald-500',
@@ -212,13 +203,13 @@ const KisanDashboard = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex-1">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                  स्वागत है, {user.name}! / Welcome, {user.name}!
+                  Welcome, {user.name}!
                 </h2>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600">
                   <span className="flex items-center gap-1">📱 {user.mobile}</span>
-                  <span className="flex items-center gap-1">🆔 आधार: {user.aadhaar}</span>
+                  <span className="flex items-center gap-1">🆔 Aadhaar: {user.aadhaar}</span>
                   <Badge variant="outline" className="text-green-700 border-green-300 w-fit">
-                    सत्यापित किसान / Verified Farmer
+                    Verified Farmer
                   </Badge>
                 </div>
               </div>
@@ -338,7 +329,7 @@ const KisanDashboard = () => {
         {/* Main Modules */}
         <div>
           <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
-            सेवाएं / Services
+            Services
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {modules.map((module, index) => (
@@ -354,9 +345,6 @@ const KisanDashboard = () => {
                   <h4 className="font-bold text-gray-900 mb-1 text-sm sm:text-base leading-tight">
                     {module.title}
                   </h4>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
-                    {module.subtitle}
-                  </p>
                   <p className="text-xs text-gray-500 leading-relaxed hidden sm:block">
                     {module.description}
                   </p>
@@ -371,14 +359,14 @@ const KisanDashboard = () => {
           <div className="text-sm text-gray-600 space-y-2">
             <p className="flex items-center justify-center gap-2">
               <Phone className="w-4 h-4" />
-              सहायता हेल्पलाइन: 1800-XXX-XXXX (निःशुल्क)
+              Help Helpline: 1800-XXX-XXXX (Toll Free)
             </p>
             <p className="flex items-center justify-center gap-2">
               <span>🌐</span>
               Support: support@kisanmitra.telangana.gov.in
             </p>
             <p className="text-xs text-gray-500 px-4">
-              तेलंगाना सरकार की एक पहल / An initiative by Government of Telangana
+              An initiative by Government of Telangana
             </p>
           </div>
         </div>
