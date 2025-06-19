@@ -17,7 +17,8 @@ import {
   Sprout,
   MapPin,
   Navigation,
-  IndianRupee
+  IndianRupee,
+  Beaker
 } from 'lucide-react';
 
 const KisanDashboard = () => {
@@ -162,6 +163,13 @@ const KisanDashboard = () => {
       icon: Sprout,
       color: 'bg-emerald-500',
       path: '/seeds'
+    },
+    {
+      title: 'Pesticides',
+      description: 'Quality pesticides for crop protection',
+      icon: Beaker,
+      color: 'bg-rose-500',
+      path: '/pesticides'
     }
   ];
 
@@ -331,7 +339,7 @@ const KisanDashboard = () => {
           <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
             Services
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {modules.map((module, index) => (
               <Card 
                 key={index} 
