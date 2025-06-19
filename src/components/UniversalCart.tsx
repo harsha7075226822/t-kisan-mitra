@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Plus, Minus, Trash2, ShoppingCart, IndianRupee, Package } from 'lucide-react';
 import { CartManager, CartItem } from '@/utils/cartManager';
 import { useToast } from '@/hooks/use-toast';
+import CheckoutFlow from './CheckoutFlow';
 
 interface UniversalCartProps {
   isMobile?: boolean;
@@ -75,7 +76,7 @@ const UniversalCart: React.FC<UniversalCartProps> = ({ isMobile = false }) => {
   };
 
   const CartTrigger = () => (
-    <Button variant="outline" size="sm" className="relative">
+    <Button variant="outline" size="sm" className="relative" onClick={() => setIsOpen(true)}>
       <ShoppingCart className="w-4 h-4 mr-2" />
       {!isMobile && "Cart"}
       {CartManager.getTotalItems() > 0 && (
@@ -179,7 +180,7 @@ const UniversalCart: React.FC<UniversalCartProps> = ({ isMobile = false }) => {
               size="lg"
             >
               <Package className="w-4 h-4 mr-2" />
-              Place Order
+              📝 Place Order
             </Button>
           </div>
         </>
@@ -204,28 +205,11 @@ const UniversalCart: React.FC<UniversalCartProps> = ({ isMobile = false }) => {
           </SheetContent>
         </Sheet>
 
-        <Dialog open={showCheckout} onOpenChange={setShowCheckout}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Proceed to Checkout</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                You will be redirected to verify your Aadhaar, confirm delivery address, and complete payment.
-              </p>
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <span className="font-medium">Total Amount:</span>
-                <div className="flex items-center font-bold text-green-600">
-                  <IndianRupee className="w-4 h-4" />
-                  <span>{CartManager.getTotalPrice().toLocaleString()}</span>
-                </div>
-              </div>
-              <Button className="w-full bg-green-600 hover:bg-green-700">
-                Continue to Checkout
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <CheckoutFlow
+          isOpen={showCheckout}
+          onClose={() => setShowCheckout(false)}
+          cart={cart}
+        />
       </>
     );
   }
@@ -243,28 +227,11 @@ const UniversalCart: React.FC<UniversalCartProps> = ({ isMobile = false }) => {
 
       <CartTrigger />
 
-      <Dialog open={showCheckout} onOpenChange={setShowCheckout}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Proceed to Checkout</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-gray-600">
-              You will be redirected to verify your Aadhaar, confirm delivery address, and complete payment.
-            </p>
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-              <span className="font-medium">Total Amount:</span>
-              <div className="flex items-center font-bold text-green-600">
-                <IndianRupee className="w-4 h-4" />
-                <span>{CartManager.getTotalPrice().toLocaleString()}</span>
-              </div>
-            </div>
-            <Button className="w-full bg-green-600 hover:bg-green-700">
-              Continue to Checkout
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CheckoutFlow
+        isOpen={showCheckout}
+        onClose={() => setShowCheckout(false)}
+        cart={cart}
+      />
     </>
   );
 };
