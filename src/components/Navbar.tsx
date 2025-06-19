@@ -22,6 +22,16 @@ import MyOrders from './MyOrders';
 import MyAddress from './MyAddress';
 import MyWallet from './MyWallet';
 
+interface Transaction {
+  id: string;
+  type: 'credit' | 'debit';
+  amount: number;
+  description: string;
+  date: string;
+  status: 'completed' | 'pending' | 'failed';
+  orderId?: string;
+}
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('English');
@@ -82,34 +92,38 @@ const Navbar = () => {
     }
   ]);
 
-  const [walletData, setWalletData] = useState({
+  const [walletData, setWalletData] = useState<{
+    balance: number;
+    pendingPayments: number;
+    transactions: Transaction[];
+  }>({
     balance: 15750,
     pendingPayments: 2400,
     transactions: [
       {
         id: '1',
-        type: 'credit' as const,
+        type: 'credit',
         amount: 2850,
         description: 'Payment for Paddy sale',
         date: '2024-01-15T10:30:00Z',
-        status: 'completed' as const,
+        status: 'completed',
         orderId: 'KM001'
       },
       {
         id: '2',
-        type: 'debit' as const,
+        type: 'debit',
         amount: 500,
         description: 'Withdrawal to UPI',
         date: '2024-01-12T16:45:00Z',
-        status: 'completed' as const
+        status: 'completed'
       },
       {
         id: '3',
-        type: 'credit' as const,
+        type: 'credit',
         amount: 1200,
         description: 'Government subsidy credit',
         date: '2024-01-10T11:20:00Z',
-        status: 'completed' as const
+        status: 'completed'
       }
     ]
   });
@@ -206,13 +220,13 @@ const Navbar = () => {
 
   // Wallet functions
   const handleWithdraw = (withdrawalData: any) => {
-    const newTransaction = {
+    const newTransaction: Transaction = {
       id: Date.now().toString(),
-      type: 'debit' as const,
+      type: 'debit',
       amount: Number(withdrawalData.amount),
       description: `Withdrawal via ${withdrawalData.method.toUpperCase()}`,
       date: new Date().toISOString(),
-      status: 'pending' as const
+      status: 'pending'
     };
 
     setWalletData(prev => ({
