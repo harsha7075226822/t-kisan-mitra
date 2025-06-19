@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload, Home, Wallet } from 'lucide-react';
@@ -31,17 +32,6 @@ interface Transaction {
   date: string;
   status: 'completed' | 'pending' | 'failed';
   orderId?: string;
-}
-
-interface CartItem {
-  id: string;
-  type: string;
-  name: string;
-  weight: string | number;
-  price: number;
-  quantity: number;
-  image: string;
-  description: string;
 }
 
 const Navbar = () => {
@@ -146,24 +136,6 @@ const Navbar = () => {
 
   // Get user data from localStorage if on dashboard
   const userData = isDashboard ? JSON.parse(localStorage.getItem('kisanUser') || '{}') : null;
-
-  // Load cart from localStorage
-  useEffect(() => {
-    const loadCart = () => {
-      const savedCart = JSON.parse(localStorage.getItem('farmCart') || '[]');
-      setCart(savedCart);
-    };
-
-    loadCart();
-
-    // Listen for cart updates
-    const handleCartUpdate = () => {
-      loadCart();
-    };
-
-    window.addEventListener('cartUpdated', handleCartUpdate);
-    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
-  }, []);
 
   // Load profile image from localStorage
   useEffect(() => {
@@ -278,35 +250,6 @@ const Navbar = () => {
     setTrackingId(orderId);
     setShowMyOrders(false);
     setShowTrackOrder(true);
-  };
-
-  const getTotalCartItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const getTotalCartPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const updateCartQuantity = (id: string, change: number) => {
-    const updatedCart = cart.map(item => {
-      if (item.id === id) {
-        const newQuantity = item.quantity + change;
-        return newQuantity > 0 ? { ...item, quantity: newQuantity } : null;
-      }
-      return item;
-    }).filter(Boolean) as CartItem[];
-    
-    setCart(updatedCart);
-    localStorage.setItem('farmCart', JSON.stringify(updatedCart));
-    window.dispatchEvent(new CustomEvent('cartUpdated'));
-  };
-
-  const removeFromCart = (id: string) => {
-    const updatedCart = cart.filter(item => item.id !== id);
-    setCart(updatedCart);
-    localStorage.setItem('farmCart', JSON.stringify(updatedCart));
-    window.dispatchEvent(new CustomEvent('cartUpdated'));
   };
 
   const navItems = [
@@ -782,81 +725,6 @@ const Navbar = () => {
             <p className="text-xs text-gray-500">
               Supported formats: JPG, PNG, GIF (Max 5MB)
             </p>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Cart Dialog for Mobile */}
-      <Dialog open={showCart && window.innerWidth < 768} onOpenChange={setShowCart}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Shopping Cart</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            {cart.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">Your cart is empty</p>
-            ) : (
-              <>
-                <div className="space-y-3">
-                  {cart.map((item) => (
-                    <div key={item.id} className="border-b pb-3">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center">
-                          <span className="text-xl mr-2">{item.image}</span>
-                          <div>
-                            <h4 className="font-medium">{item.name}</h4>
-                            <p className="text-sm text-gray-600">{item.weight} • {item.type}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-red-500 hover:text-red-700 text-sm"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => updateCartQuantity(item.id, -1)}
-                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                          >
-                            -
-                          </button>
-                          <span>{item.quantity}</span>
-                          <button
-                            onClick={() => updateCartQuantity(item.id, 1)}
-                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                          >
-                            +
-                          </button>
-                        </div>
-                        <span className="font-bold">₹{(item.price * item.quantity).toLocaleString()}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="border-t pt-3">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="font-bold text-lg">Total:</span>
-                    <span className="font-bold text-lg text-green-600">₹{getTotalCartPrice().toLocaleString()}</span>
-                  </div>
-                  <Button 
-                    className="w-full bg-green-600 hover:bg-green-700"
-                    onClick={() => {
-                      setShowCart(false);
-                      toast({
-                        title: "Checkout",
-                        description: "Proceeding to checkout...",
-                      });
-                    }}
-                  >
-                    Proceed to Checkout
-                  </Button>
-                </div>
-              </>
-            )}
           </div>
         </DialogContent>
       </Dialog>
