@@ -76,6 +76,11 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
     }
   }, []);
 
+  useEffect(() => {
+    console.log('CheckoutFlow - Current cart:', cart);
+    console.log('CheckoutFlow - Cart length:', cart.length);
+  }, [cart]);
+
   const saveAddress = (address: Omit<Address, 'id'>) => {
     const newId = Date.now().toString();
     const addressWithId = { ...address, id: newId };
@@ -86,7 +91,14 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
   };
 
   const handlePlaceOrder = () => {
-    if (cart.length === 0) return;
+    if (cart.length === 0) {
+      toast({
+        title: "Cart is Empty",
+        description: "Please add items to your cart before placing an order",
+        variant: "destructive",
+      });
+      return;
+    }
     setStep('address');
   };
 
@@ -130,6 +142,8 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
       orderDate: new Date().toISOString(),
       estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
     };
+
+    console.log('Completing order:', newOrder);
 
     const existingOrders = localStorage.getItem('myOrders');
     const orders = existingOrders ? JSON.parse(existingOrders) : [];
@@ -196,13 +210,14 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
           <div className="space-y-4">
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {cart.map((item) => (
-                <Card key={item.id} className="p-3">
+                <Card key={`${item.id}-${item.type}`} className="p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <span className="text-2xl">{item.image}</span>
                       <div>
                         <h4 className="font-medium">{item.name}</h4>
                         <p className="text-sm text-gray-600">{item.weight} • Qty: {item.quantity}</p>
+                        <p className="text-xs text-gray-500">{item.description}</p>
                       </div>
                     </div>
                     <div className="flex items-center text-green-600 font-bold">

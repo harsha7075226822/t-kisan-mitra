@@ -26,7 +26,7 @@ const Seeds = () => {
 
   const seedsData: Seed[] = [
     {
-      id: '1',
+      id: 'seed_1',
       name: 'Paddy Seeds 1010',
       weight: 5,
       price: 450,
@@ -34,7 +34,7 @@ const Seeds = () => {
       image: '🌾'
     },
     {
-      id: '2',
+      id: 'seed_2',
       name: 'Cotton Seeds RCH659',
       weight: 2,
       price: 700,
@@ -42,7 +42,7 @@ const Seeds = () => {
       image: '🌸'
     },
     {
-      id: '3',
+      id: 'seed_3',
       name: 'Bajra Hybrid Pearl Millet',
       weight: 3,
       price: 360,
@@ -50,7 +50,7 @@ const Seeds = () => {
       image: '🌾'
     },
     {
-      id: '4',
+      id: 'seed_4',
       name: 'Red Gram (Toor Dal) Seeds',
       weight: 1,
       price: 120,
@@ -58,7 +58,7 @@ const Seeds = () => {
       image: '🫘'
     },
     {
-      id: '5',
+      id: 'seed_5',
       name: 'Groundnut Seeds TMV7',
       weight: 4,
       price: 520,
@@ -66,7 +66,7 @@ const Seeds = () => {
       image: '🥜'
     },
     {
-      id: '6',
+      id: 'seed_6',
       name: 'Maize Hybrid Seeds',
       weight: 2,
       price: 380,
@@ -83,8 +83,14 @@ const Seeds = () => {
 
   const confirmAddToCart = () => {
     if (selectedSeed && quantity > 0) {
+      console.log('Adding to cart:', {
+        id: selectedSeed.id,
+        name: selectedSeed.name,
+        quantity: quantity
+      });
+
       CartManager.addToCart({
-        id: `seed_${selectedSeed.id}`,
+        id: selectedSeed.id,
         type: 'seeds',
         name: selectedSeed.name,
         weight: `${selectedSeed.weight} kg`,
