@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Beaker, 
-  Plus, 
-  Minus, 
   Package,
   IndianRupee,
   Droplets,
@@ -31,8 +29,6 @@ interface Pesticide {
 }
 
 const PesticidesContainer = () => {
-  const [selectedPesticide, setSelectedPesticide] = useState<Pesticide | null>(null);
-  const [quantity, setQuantity] = useState(1);
   const { toast } = useToast();
 
   const pesticides: Pesticide[] = [
@@ -123,33 +119,23 @@ const PesticidesContainer = () => {
   };
 
   const handleAddToCart = (pesticide: Pesticide) => {
-    setSelectedPesticide(pesticide);
-    setQuantity(1);
-  };
-
-  const confirmAddToCart = () => {
-    if (selectedPesticide) {
-      CartManager.addToCart({
-        id: `pesticide_${selectedPesticide.id}`,
-        type: 'pesticides',
-        name: selectedPesticide.name,
-        weight: selectedPesticide.weight,
-        price: selectedPesticide.price,
-        quantity: quantity,
-        image: '🧪',
-        description: selectedPesticide.description,
-        category: selectedPesticide.packagingType,
-        brand: selectedPesticide.activeIngredient
-      });
-      
-      setSelectedPesticide(null);
-      setQuantity(1);
-      
-      toast({
-        title: "Added to Cart",
-        description: `${selectedPesticide.name} has been added to your cart`,
-      });
-    }
+    CartManager.addToCart({
+      id: `pesticide_${pesticide.id}`,
+      type: 'pesticides',
+      name: pesticide.name,
+      weight: pesticide.weight,
+      price: pesticide.price,
+      quantity: 1,
+      image: '🧪',
+      description: pesticide.description,
+      category: pesticide.packagingType,
+      brand: pesticide.activeIngredient
+    });
+    
+    toast({
+      title: "Added to Cart",
+      description: `${pesticide.name} has been added to your cart`,
+    });
   };
 
   return (
@@ -230,62 +216,14 @@ const PesticidesContainer = () => {
                 </div>
 
                 {/* Add to Cart Button */}
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button 
-                      className="w-full bg-rose-600 hover:bg-rose-700"
-                      onClick={() => handleAddToCart(pesticide)}
-                      disabled={pesticide.stock === 0}
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      {pesticide.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add to Cart</DialogTitle>
-                    </DialogHeader>
-                    {selectedPesticide && (
-                      <div className="space-y-4">
-                        <div className="text-center">
-                          <h3 className="font-semibold text-lg">{selectedPesticide.name}</h3>
-                          <p className="text-gray-600">{selectedPesticide.weight} - ₹{selectedPesticide.price}</p>
-                        </div>
-                        
-                        <div className="flex items-center justify-center space-x-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          >
-                            <Minus className="w-4 h-4" />
-                          </Button>
-                          <span className="text-xl font-semibold w-12 text-center">{quantity}</span>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => setQuantity(Math.min(selectedPesticide.stock, quantity + 1))}
-                          >
-                            <Plus className="w-4 h-4" />
-                          </Button>
-                        </div>
-                        
-                        <div className="text-center">
-                          <p className="text-lg font-semibold">
-                            Total: ₹{(selectedPesticide.price * quantity).toLocaleString()}
-                          </p>
-                        </div>
-                        
-                        <Button 
-                          onClick={confirmAddToCart}
-                          className="w-full bg-rose-600 hover:bg-rose-700"
-                        >
-                          Confirm Add to Cart
-                        </Button>
-                      </div>
-                    )}
-                  </DialogContent>
-                </Dialog>
+                <Button 
+                  className="w-full bg-rose-600 hover:bg-rose-700"
+                  onClick={() => handleAddToCart(pesticide)}
+                  disabled={pesticide.stock === 0}
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  {pesticide.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                </Button>
               </CardContent>
             </Card>
           ))}
