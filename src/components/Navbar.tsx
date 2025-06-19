@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload, Home, Wallet, ShoppingCart } from 'lucide-react';
+import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload, Home, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,10 +18,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
 import MyOrders from './MyOrders';
 import MyAddress from './MyAddress';
 import MyWallet from './MyWallet';
+import UniversalCart from './UniversalCart';
 
 interface Transaction {
   id: string;
@@ -52,11 +52,9 @@ const Navbar = () => {
   const [showMyWallet, setShowMyWallet] = useState(false);
   const [showTrackOrder, setShowTrackOrder] = useState(false);
   const [showProfileUpload, setShowProfileUpload] = useState(false);
-  const [showCart, setShowCart] = useState(false);
   const [trackingId, setTrackingId] = useState('');
   const [profileImage, setProfileImage] = useState('');
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
-  const [cart, setCart] = useState<CartItem[]>([]);
   
   // Mock data states
   const [orders, setOrders] = useState([
@@ -358,92 +356,8 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            {/* Cart Button */}
-            <Popover open={showCart} onOpenChange={setShowCart}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="text-green-700 border-green-300 relative">
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  Cart
-                  {getTotalCartItems() > 0 && (
-                    <Badge className="ml-2 bg-red-500 text-white text-xs">
-                      {getTotalCartItems()}
-                    </Badge>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 bg-white shadow-lg border border-gray-200 z-50" align="end">
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-lg">Shopping Cart</h3>
-                  
-                  {cart.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">Your cart is empty</p>
-                  ) : (
-                    <>
-                      <div className="space-y-3 max-h-64 overflow-y-auto">
-                        {cart.map((item) => (
-                          <div key={item.id} className="border-b pb-3">
-                            <div className="flex justify-between items-start mb-2">
-                              <div className="flex items-center">
-                                <span className="text-xl mr-2">{item.image}</span>
-                                <div>
-                                  <h4 className="font-medium text-sm">{item.name}</h4>
-                                  <p className="text-xs text-gray-600">{item.weight} • {item.type}</p>
-                                </div>
-                              </div>
-                              <button
-                                onClick={() => removeFromCart(item.id)}
-                                className="text-red-500 hover:text-red-700 text-xs"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center space-x-2">
-                                <button
-                                  onClick={() => updateCartQuantity(item.id, -1)}
-                                  className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-xs"
-                                >
-                                  -
-                                </button>
-                                <span className="text-sm">{item.quantity}</span>
-                                <button
-                                  onClick={() => updateCartQuantity(item.id, 1)}
-                                  className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center text-xs"
-                                >
-                                  +
-                                </button>
-                              </div>
-                              <span className="font-bold text-sm">₹{(item.price * item.quantity).toLocaleString()}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div className="border-t pt-3">
-                        <div className="flex justify-between items-center mb-3">
-                          <span className="font-bold">Total:</span>
-                          <span className="font-bold text-green-600">₹{getTotalCartPrice().toLocaleString()}</span>
-                        </div>
-                        <Button 
-                          className="w-full bg-green-600 hover:bg-green-700" 
-                          size="sm"
-                          onClick={() => {
-                            setShowCart(false);
-                            // Navigate to checkout or show checkout modal
-                            toast({
-                              title: "Checkout",
-                              description: "Proceeding to checkout...",
-                            });
-                          }}
-                        >
-                          Proceed to Checkout
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
+            {/* Universal Cart Button */}
+            <UniversalCart />
 
             {/* Global Language Selector */}
             <DropdownMenu>
@@ -589,20 +503,8 @@ const Navbar = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
-            {/* Mobile Cart Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowCart(true)}
-              className="relative"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              {getTotalCartItems() > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full p-0 flex items-center justify-center">
-                  {getTotalCartItems()}
-                </Badge>
-              )}
-            </Button>
+            {/* Mobile Universal Cart Button */}
+            <UniversalCart isMobile />
 
             <Button
               variant="ghost"

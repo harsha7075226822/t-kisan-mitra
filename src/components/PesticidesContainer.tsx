@@ -11,8 +11,11 @@ import {
   IndianRupee,
   Droplets,
   Box,
-  Circle
+  Circle,
+  ShoppingCart
 } from 'lucide-react';
+import { CartManager } from '@/utils/cartManager';
+import { useToast } from '@/hooks/use-toast';
 
 interface Pesticide {
   id: string;
@@ -30,6 +33,7 @@ interface Pesticide {
 const PesticidesContainer = () => {
   const [selectedPesticide, setSelectedPesticide] = useState<Pesticide | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const { toast } = useToast();
 
   const pesticides: Pesticide[] = [
     {
@@ -125,38 +129,26 @@ const PesticidesContainer = () => {
 
   const confirmAddToCart = () => {
     if (selectedPesticide) {
-      // Get existing cart from localStorage
-      const existingCart = JSON.parse(localStorage.getItem('farmCart') || '[]');
-      
-      // Add new item to cart
-      const cartItem = {
+      CartManager.addToCart({
         id: `pesticide_${selectedPesticide.id}`,
-        type: 'pesticide',
+        type: 'pesticides',
         name: selectedPesticide.name,
         weight: selectedPesticide.weight,
         price: selectedPesticide.price,
         quantity: quantity,
         image: '🧪',
-        description: selectedPesticide.description
-      };
-      
-      // Check if item already exists
-      const existingItemIndex = existingCart.findIndex((item: any) => item.id === cartItem.id);
-      
-      if (existingItemIndex >= 0) {
-        existingCart[existingItemIndex].quantity += quantity;
-      } else {
-        existingCart.push(cartItem);
-      }
-      
-      // Save to localStorage
-      localStorage.setItem('farmCart', JSON.stringify(existingCart));
+        description: selectedPesticide.description,
+        category: selectedPesticide.packagingType,
+        brand: selectedPesticide.activeIngredient
+      });
       
       setSelectedPesticide(null);
       setQuantity(1);
       
-      // Dispatch custom event to notify other components
-      window.dispatchEvent(new CustomEvent('cartUpdated'));
+      toast({
+        title: "Added to Cart",
+        description: `${selectedPesticide.name} has been added to your cart`,
+      });
     }
   };
 
