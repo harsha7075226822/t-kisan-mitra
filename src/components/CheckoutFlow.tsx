@@ -18,7 +18,8 @@ import {
   ArrowRight,
   Package,
   IndianRupee,
-  Clock
+  Clock,
+  QrCode
 } from 'lucide-react';
 
 interface Address {
@@ -51,7 +52,7 @@ interface CheckoutFlowProps {
 }
 
 const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) => {
-  const [step, setStep] = useState<'cart' | 'address' | 'payment' | 'confirmation'>('cart');
+  const [step, setStep] = useState<'cart' | 'address' | 'payment' | 'qr' | 'confirmation'>('cart');
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [newAddress, setNewAddress] = useState({
     name: '',
@@ -65,10 +66,10 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'cod' | 'wallet'>('cod');
   const [order, setOrder] = useState<Order | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+  const [upiId, setUpiId] = useState('farmer@upi');
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load saved addresses from localStorage
     const addresses = localStorage.getItem('savedAddresses');
     if (addresses) {
       setSavedAddresses(JSON.parse(addresses));
@@ -111,6 +112,14 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
   };
 
   const handlePaymentNext = () => {
+    if (paymentMethod === 'upi') {
+      setStep('qr');
+    } else {
+      completeOrder();
+    }
+  };
+
+  const completeOrder = () => {
     const newOrder: Order = {
       id: `ORD${Date.now()}`,
       items: [...cart],
@@ -122,7 +131,6 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
       estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
     };
 
-    // Save order to localStorage
     const existingOrders = localStorage.getItem('myOrders');
     const orders = existingOrders ? JSON.parse(existingOrders) : [];
     orders.unshift(newOrder);
@@ -136,6 +144,12 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
       title: "🎉 Order Placed Successfully!",
       description: `Order ${newOrder.id} has been confirmed`,
     });
+  };
+
+  const generateUPIQR = () => {
+    const amount = CartManager.getTotalPrice();
+    const upiString = `upi://pay?pa=${upiId}&pn=FarmService&am=${amount}&cu=INR&tn=Order Payment`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
   };
 
   const handleClose = () => {
@@ -157,16 +171,17 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
             {step === 'cart' && <><Package className="w-5 h-5" /> Review Cart</>}
             {step === 'address' && <><MapPin className="w-5 h-5" /> Delivery Address</>}
             {step === 'payment' && <><CreditCard className="w-5 h-5" /> Payment Method</>}
+            {step === 'qr' && <><QrCode className="w-5 h-5" /> UPI Payment</>}
             {step === 'confirmation' && <><CheckCircle className="w-5 h-5 text-green-600" /> Order Confirmed</>}
           </DialogTitle>
         </DialogHeader>
 
         {/* Step Indicator */}
-        <div className="flex items-center justify-center space-x-4 mb-6">
+        <div className="flex items-center justify-center space-x-2 mb-6">
           {['cart', 'address', 'payment', 'confirmation'].map((stepName, index) => (
             <div key={stepName} className="flex items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                step === stepName ? 'bg-green-600 text-white' : 
+                step === stepName || (step === 'qr' && stepName === 'payment') ? 'bg-green-600 text-white' : 
                 ['cart', 'address', 'payment', 'confirmation'].indexOf(step) > index ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'
               }`}>
                 {index + 1}
@@ -362,7 +377,42 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
                 Back to Address
               </Button>
               <Button onClick={handlePaymentNext} className="flex-1 bg-green-600 hover:bg-green-700">
-                Place Order
+                Continue
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* QR Code Step for UPI */}
+        {step === 'qr' && (
+          <div className="text-center space-y-4">
+            <div className="bg-blue-50 rounded-lg p-4">
+              <h3 className="font-medium mb-2">UPI Payment</h3>
+              <p className="text-sm text-gray-600">Scan the QR code with any UPI app to pay</p>
+            </div>
+
+            <div className="flex justify-center">
+              <img 
+                src={generateUPIQR()} 
+                alt="UPI QR Code" 
+                className="border-2 border-gray-300 rounded-lg"
+              />
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-600">Amount to Pay:</p>
+              <div className="flex items-center justify-center font-bold text-xl text-green-600">
+                <IndianRupee className="w-5 h-5" />
+                <span>{totalAmount.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="flex space-x-3">
+              <Button variant="outline" onClick={() => setStep('payment')} className="flex-1">
+                Back
+              </Button>
+              <Button onClick={completeOrder} className="flex-1 bg-green-600 hover:bg-green-700">
+                Payment Done
               </Button>
             </div>
           </div>
@@ -372,7 +422,7 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
         {step === 'confirmation' && order && (
           <div className="text-center space-y-4">
             <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-green-600">Order Placed Successfully!</h2>
+            <h2 className="text-2xl font-bold text-green-600">Order Submitted Successfully!</h2>
             <div className="bg-green-50 rounded-lg p-4">
               <p className="font-medium">Order ID: {order.id}</p>
               <p className="text-sm text-gray-600">
