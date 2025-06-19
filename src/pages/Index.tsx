@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -59,14 +60,13 @@ const Index = () => {
             </p>
             
             <p className="text-lg text-gray-500 mb-8 max-w-3xl mx-auto">
-              <span className="font-semibold">కృషి में तकनीक का साथ</span> • 
               Voice-enabled farming assistance in Telugu & English with real-time IoT monitoring
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/login">
                 <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
-                  किसान लॉगिन / Farmer Login
+                  Farmer Login
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -172,8 +172,8 @@ const Index = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Languages</h3>
               <div className="space-y-2 text-gray-400">
-                <p>🗣️ Telugu / తెలుగు</p>
-                <p>🗣️ English</p>
+                <p>🗣️ Telugu & English</p>
+                <p>🗣️ Voice Support Available</p>
               </div>
             </div>
           </div>
