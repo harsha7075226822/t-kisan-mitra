@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type Language = 'en' | 'te' | 'hi';
 
@@ -75,6 +75,7 @@ const translations = {
     'nav.mandi': 'Online Mandi',
     'nav.voice': 'Voice Assistant',
     'nav.scanner': 'Crop Scanner',
+    'nav.leafScanner': 'Leaf Scanner',
     'nav.seeds': 'Seeds Container',
     'nav.pesticides': 'Pesticides',
     
@@ -158,13 +159,13 @@ const translations = {
     'features.voice.description': 'తెలుగు & ఇంగ్లీష్‌లో AI-శక్తితో కూడిన వాయిస్ మద్దతు',
     'features.voice.badge': 'బహుభాషా',
     'features.analytics.title': 'రియల్-టైమ్ అనలిటిక్స్',
-    'features.analytics.description': 'పంట పర్యవేక్షణ, వాతావరణ అంచనాలు & మార్కెట్ అంతర్దృష్టులు',
+    'features.analytics.description': 'పంట పర్యవేక్షణ, వాతావరण అంచనాలు & మార్కెట్ అంతర్దృష్టులు',
     'features.analytics.badge': 'లైవ్ డేటా',
     'features.government.title': 'ప్రభుత్వ డాష్‌బోర్డ్',
     'features.government.description': 'విధాన రూపకల్పన కోసం రాష్ట్రవ్యాప్త వ్యవసాయ అంతర్దృష్టులు',
     'features.government.badge': 'విధాన సాధనాలు',
     'features.iot.title': 'IoT ఇంటిగ్రేషన్',
-    'features.iot.description': 'మట్టి తేమ & పర్యావరణ పర్యవేక్షణ కోసం స్మార్ట్ సెన్సర్లు',
+    'features.iot.description': 'మట్టి తేమ & పర్యావరण పర్యవేక్షణ కోసం స్మార్ట్ సెన్సర్లు',
     'features.iot.badge': 'స్మార్ట్ వ్యవసాయం',
     
     // CTA
@@ -192,6 +193,7 @@ const translations = {
     'nav.voice': 'వాయిస్ అసిస్టెంట్',
     'nav.seeds': 'విత్తనాల కంటైనర్',
     'nav.pesticides': 'పురుగు మందులు',
+    'nav.leafScanner': 'ఆకు స్కానర్',
     
     // Language options
     'lang.english': 'ఇంగ్లీష్',
@@ -307,6 +309,7 @@ const translations = {
     'nav.voice': 'वॉयस असिस्टेंट',
     'nav.seeds': 'बीज कंटेनर',
     'nav.pesticides': 'कीटनाशक',
+    'nav.leafScanner': 'पत्ती स्कैनर',
     
     // Language options
     'lang.english': 'अंग्रेजी',

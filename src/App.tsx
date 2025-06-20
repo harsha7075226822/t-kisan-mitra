@@ -19,6 +19,7 @@ import Schemes from "./pages/Schemes";
 import Mandi from "./pages/Mandi";
 import Seeds from "./pages/Seeds";
 import Pesticides from "./pages/Pesticides";
+import LeafScanner from "./pages/LeafScanner";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -102,6 +103,12 @@ const App = () => (
                   <>
                     <Navbar />
                     <Pesticides />
+                  </>
+                } />
+                <Route path="/leaf-scanner" element={
+                  <>
+                    <Navbar />
+                    <LeafScanner />
                   </>
                 } />
                 <Route path="*" element={<NotFound />} />

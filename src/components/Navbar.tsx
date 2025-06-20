@@ -276,7 +276,8 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { name: t('nav.dashboard'), path: '/dashboard', icon: '🌾' },
+    { name: t('nav.dashboard'), path: '/dashboard', icon: '🏠' },
+    { name: t('nav.leafScanner'), path: '/leaf-scanner', icon: '🌿' },
     { name: t('nav.weather'), path: '/weather', icon: '🌤️' },
     { name: t('nav.market'), path: '/market', icon: '📊' },
     { name: t('nav.education'), path: '/education', icon: '📚' },
@@ -284,6 +285,7 @@ const Navbar = () => {
     { name: t('nav.mandi'), path: '/mandi', icon: '🛒' },
     { name: t('nav.voice'), path: '/voice', icon: '🎤' },
     { name: t('nav.seeds'), path: '/seeds', icon: '🌱' },
+    { name: t('nav.pesticides'), path: '/pesticides', icon: '🧪' }
   ];
 
   const languages = [
@@ -305,7 +307,7 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             {[
-              { name: t('nav.dashboard'), path: '/dashboard', icon: '🌾' },
+              { name: t('nav.dashboard'), path: '/dashboard', icon: '🏠' },
               { name: t('nav.weather'), path: '/weather', icon: '🌤️' },
               { name: t('nav.market'), path: '/market', icon: '📊' },
               { name: t('nav.education'), path: '/education', icon: '📚' }
@@ -481,7 +483,8 @@ const Navbar = () => {
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {[
-              { name: t('nav.dashboard'), path: '/dashboard', icon: '🌾' },
+              { name: t('nav.dashboard'), path: '/dashboard', icon: '🏠' },
+              { name: t('nav.leafScanner'), path: '/leaf-scanner', icon: '🌿' },
               { name: t('nav.weather'), path: '/weather', icon: '🌤️' },
               { name: t('nav.market'), path: '/market', icon: '📊' },
               { name: t('nav.education'), path: '/education', icon: '📚' },
@@ -489,6 +492,7 @@ const Navbar = () => {
               { name: t('nav.mandi'), path: '/mandi', icon: '🛒' },
               { name: t('nav.voice'), path: '/voice', icon: '🎤' },
               { name: t('nav.seeds'), path: '/seeds', icon: '🌱' },
+              { name: t('nav.pesticides'), path: '/pesticides', icon: '🧪' }
             ].map((item) => (
               <Link
                 key={item.path}
