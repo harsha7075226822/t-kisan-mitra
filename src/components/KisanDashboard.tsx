@@ -16,12 +16,14 @@ import {
   Phone,
   Beaker,
   Sprout,
-  CloudSun
+  CloudSun,
+  Wrench
 } from 'lucide-react';
 
 const KisanDashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showMachineryStore, setShowMachineryStore] = useState(false);
   const navigate = useNavigate();
 
   // Memoized modules data
@@ -74,6 +76,14 @@ const KisanDashboard = () => {
       icon: Beaker,
       color: 'bg-rose-500',
       path: '/pesticides'
+    },
+    {
+      title: 'Machinery Subsidy Store',
+      description: 'Government-subsidized farm machinery',
+      icon: Wrench,
+      color: 'bg-amber-500',
+      path: null, // No navigation, opens modal instead
+      action: 'machinery-store'
     }
   ], []);
 
@@ -106,8 +116,12 @@ const KisanDashboard = () => {
     };
   }, []);
 
-  const handleModuleClick = (path: string) => {
-    navigate(path);
+  const handleModuleClick = (path: string | null, action?: string) => {
+    if (action === 'machinery-store') {
+      setShowMachineryStore(true);
+    } else if (path) {
+      navigate(path);
+    }
   };
 
   if (isLoading) {
@@ -172,7 +186,7 @@ const KisanDashboard = () => {
               <Card 
                 key={index} 
                 className="hover:shadow-lg transition-all duration-200 cursor-pointer border-gray-200 hover:border-green-300 hover:scale-105 active:scale-95"
-                onClick={() => handleModuleClick(module.path)}
+                onClick={() => handleModuleClick(module.path, module.action)}
               >
                 <CardContent className="p-4 sm:p-6 text-center">
                   <div className={`w-12 h-12 sm:w-16 sm:h-16 ${module.color} rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4`}>
@@ -189,9 +203,6 @@ const KisanDashboard = () => {
             ))}
           </div>
         </div>
-
-        {/* Machinery Subsidy Store Section */}
-        <MachinerySubsidyStore />
 
         {/* Agricultural Markets Section */}
         <div className="mb-6 sm:mb-8">
@@ -218,6 +229,27 @@ const KisanDashboard = () => {
 
       {/* Floating Voice Assistant Button */}
       <FloatingVoiceButton />
+
+      {/* Machinery Subsidy Store Modal */}
+      {showMachineryStore && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold">Machinery Subsidy Store</h2>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowMachineryStore(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕ Close
+              </Button>
+            </div>
+            <div className="p-4">
+              <MachinerySubsidyStore />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

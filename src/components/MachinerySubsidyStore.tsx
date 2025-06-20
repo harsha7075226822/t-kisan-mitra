@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
-  Wrench, 
   IndianRupee,
   CheckCircle,
   AlertCircle,
@@ -147,20 +145,7 @@ const MachinerySubsidyStore = () => {
   };
 
   return (
-    <div className="mb-8">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center mb-4">
-          <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mr-4">
-            <Wrench className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Machinery Subsidy Store</h2>
-            <p className="text-gray-600">Explore government-subsidized farm machinery to boost productivity</p>
-          </div>
-        </div>
-      </div>
-
+    <div>
       {/* Machinery Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {machinery.map((machine) => (
