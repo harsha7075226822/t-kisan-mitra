@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, BookOpen, Users, Clock, Download, Volume2, ArrowLeft } from 'lucide-react';
+import { Play, BookOpen, Users, Clock, Download, Volume2, ArrowLeft, ExternalLink } from 'lucide-react';
 
 const Education = () => {
   const navigate = useNavigate();
@@ -38,7 +38,8 @@ const Education = () => {
       instructor: 'Dr. Rajesh Kumar',
       rating: 4.8,
       difficulty: 'Beginner',
-      hasAudio: true
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=hNzBTubwLPg&list=PLsYNGjPcNZjiCml3kSS8i7tuugMWtp-zl'
     },
     {
       id: 2,
@@ -53,7 +54,8 @@ const Education = () => {
       instructor: 'Prof. Sudha Rani',
       rating: 4.9,
       difficulty: 'Intermediate',
-      hasAudio: true
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=wA5_fE5f4Fw&pp=ygUgIFNvaWwgVGVzdGluZyBNZXRob2RzIGFubmFkaGF0aGE%3D'
     },
     {
       id: 3,
@@ -68,25 +70,11 @@ const Education = () => {
       instructor: 'Engineer Ramesh',
       rating: 4.7,
       difficulty: 'Advanced',
-      hasAudio: true
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=L3x_kN6inl4&pp=ygUpIFdhdGVyIE1hbmFnZW1lbnQgJiBJcnJpZ2F0aW9uIGFubmFkaGF0aGE%3D'
     },
     {
       id: 4,
-      title: { telugu: 'కీటక నిర్మూలన', english: 'Natural Pest Control' },
-      description: { 
-        telugu: 'సహజ మార్గాలలో కీటకాలను నియంత్రించడం', 
-        english: 'Eco-friendly methods to control crop pests' 
-      },
-      category: 'pest',
-      duration: '18 min',
-      type: 'article',
-      instructor: 'Dr. Anil Sharma',
-      rating: 4.6,
-      difficulty: 'Beginner',
-      hasAudio: false
-    },
-    {
-      id: 5,
       title: { telugu: 'వరి సాగు', english: 'Modern Paddy Cultivation' },
       description: { 
         telugu: 'వరి పంట సాగులో ఆధునిక పద్ధతులు', 
@@ -98,10 +86,11 @@ const Education = () => {
       instructor: 'Prof. Krishna Reddy',
       rating: 4.8,
       difficulty: 'Intermediate',
-      hasAudio: true
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=208uKVwh2bM&pp=ygUlLiBNb2Rlcm4gUGFkZHkgQ3VsdGl2YXRpb24gYW5uYWRoYXRoYQ%3D%3D'
     },
     {
-      id: 6,
+      id: 5,
       title: { telugu: 'ఎరువుల వాడకం', english: 'Fertilizer Usage Guide' },
       description: { 
         telugu: 'సరైన ఎరువుల వాడకం మరియు మోతాదు', 
@@ -113,7 +102,88 @@ const Education = () => {
       instructor: 'Dr. Priya Sharma',
       rating: 4.5,
       difficulty: 'Beginner',
-      hasAudio: true
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=0Ox9xHpB4ss&pp=ygUlKkZlcnRpbGl6ZXIgVXNhZ2UgR3VpZGUqIGluIGFubmFkYXRoYQ%3D%3D'
+    },
+    {
+      id: 6,
+      title: { telugu: 'పప్పు పంటలు', english: 'Pulses Cultivation' },
+      description: { 
+        telugu: 'పప్పు పంటలను పెంచడం మరియు నిర్వహణ', 
+        english: 'Guides for growing, managing, and harvesting pulses' 
+      },
+      category: 'pulses',
+      duration: '56 videos',
+      type: 'playlist',
+      instructor: 'Category: Pulses',
+      rating: 4.6,
+      difficulty: 'Beginner',
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=hDBI2qIPsYY&list=PLsYNGjPcNZjgFUIjiwby3Mu5wwKILtYHB'
+    },
+    {
+      id: 7,
+      title: { telugu: 'ఆహార పంటలు', english: 'Food Crops' },
+      description: { 
+        telugu: 'పోషకాహార పంటలు మరియు కాలానుసార విత్తనలు', 
+        english: 'Nutritional staples and seasonal sowing practices' 
+      },
+      category: 'food-crops',
+      duration: '226 videos',
+      type: 'playlist',
+      instructor: 'Category: Food Crops',
+      rating: 4.7,
+      difficulty: 'Intermediate',
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=Ian-dlzRvqQ&list=PLsYNGjPcNZjjH3VnuuWmvc4sRc902bhpz'
+    },
+    {
+      id: 8,
+      title: { telugu: 'కూరగాయలు', english: 'Vegetables' },
+      description: { 
+        telugu: 'ఇంటిలో మరియు వాణిజ్య కూరగాయల సాగు', 
+        english: 'Home and commercial vegetable cultivation practices' 
+      },
+      category: 'vegetables',
+      duration: '64 videos',
+      type: 'playlist',
+      instructor: 'Category: Vegetables',
+      rating: 4.5,
+      difficulty: 'Beginner',
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=Ian-dlzRvqQ&list=PLsYNGjPcNZjjH3VnuuWmvc4sRc902bhpz'
+    },
+    {
+      id: 9,
+      title: { telugu: 'పండ్లు', english: 'Fruits' },
+      description: { 
+        telugu: 'మామిడి, అరటి మరియు నిమ్మకాయ తోటల మేనేజ్‌మెంట్', 
+        english: 'Best practices for mango, banana, and citrus orchards' 
+      },
+      category: 'fruits',
+      duration: '136 videos',
+      type: 'playlist',
+      instructor: 'Category: Fruits',
+      rating: 4.8,
+      difficulty: 'Beginner',
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=QBXj9Jmy020&list=PLsYNGjPcNZjhXY3Dyrnp5UyuJyPoDxidR'
+    },
+    {
+      id: 10,
+      title: { telugu: 'పశు పెంపకం', english: 'Animal Husbandry & Allied' },
+      description: { 
+        telugu: 'పశువులు, గొర్రెలు మరియు మేకల పెంపకం', 
+        english: 'Cattle, sheep, and goat farming with dairy practices' 
+      },
+      category: 'livestock',
+      duration: '223 videos',
+      type: 'playlist',
+      instructor: 'Category: Animal Farming',
+      rating: 4.9,
+      difficulty: 'Advanced',
+      hasAudio: true,
+      youtubeUrl: 'https://www.youtube.com/watch?v=kuG_cT6VMZM&list=PLsYNGjPcNZjhCAcTrU4L2xRbNKes1N2yY'
     }
   ];
 
@@ -122,9 +192,13 @@ const Education = () => {
     { id: 'organic', name: { telugu: 'సేంద్రీయ వ్యవసాయం', english: 'Organic Farming' } },
     { id: 'soil', name: { telugu: 'నేల పరీక్ష', english: 'Soil Testing' } },
     { id: 'water', name: { telugu: 'నీటి నిర్వహణ', english: 'Water Management' } },
-    { id: 'pest', name: { telugu: 'కీటక నిర్మూలన', english: 'Pest Control' } },
     { id: 'crops', name: { telugu: 'పంట సాగు', english: 'Crop Cultivation' } },
-    { id: 'fertilizer', name: { telugu: 'ఎరువుల వాడకం', english: 'Fertilizer Usage' } }
+    { id: 'fertilizer', name: { telugu: 'ఎరువుల వాడకం', english: 'Fertilizer Usage' } },
+    { id: 'pulses', name: { telugu: 'పప్పు పంటలు', english: 'Pulses' } },
+    { id: 'food-crops', name: { telugu: 'ఆహార పంటలు', english: 'Food Crops' } },
+    { id: 'vegetables', name: { telugu: 'కూరగాయలు', english: 'Vegetables' } },
+    { id: 'fruits', name: { telugu: 'పండ్లు', english: 'Fruits' } },
+    { id: 'livestock', name: { telugu: 'పశు పెంపకం', english: 'Animal Husbandry' } }
   ];
 
   const filteredContent = selectedCategory === 'all' 
@@ -165,6 +239,10 @@ const Education = () => {
       case 'Advanced': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleWatchNow = (youtubeUrl) => {
+    window.open(youtubeUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -213,7 +291,9 @@ const Education = () => {
                 <div className="flex items-center justify-between mb-2">
                   <Badge variant="outline" className="text-green-700 border-green-300">
                     <BookOpen className="w-3 h-3 mr-1" />
-                    {content.type === 'video' ? (selectedLanguage === 'telugu' ? 'వీడియో' : 'Video') : (selectedLanguage === 'telugu' ? 'వ్యాసం' : 'Article')}
+                    {content.type === 'video' ? (selectedLanguage === 'telugu' ? 'వీడియో' : 'Video') : 
+                     content.type === 'playlist' ? (selectedLanguage === 'telugu' ? 'ప్లేలిస్ట్' : 'Playlist') :
+                     (selectedLanguage === 'telugu' ? 'వ్యాసం' : 'Article')}
                   </Badge>
                   <div className="flex items-center text-sm text-gray-600">
                     <Clock className="w-3 h-3 mr-1" />
@@ -243,9 +323,13 @@ const Education = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    onClick={() => handleWatchNow(content.youtubeUrl)}
+                  >
                     <Play className="w-4 h-4 mr-2" />
-                    {content.type === 'video' ? text.watchNow[selectedLanguage] : text.readNow[selectedLanguage]}
+                    {text.watchNow[selectedLanguage]}
+                    <ExternalLink className="w-4 h-4 ml-2" />
                   </Button>
                   
                   <div className="flex space-x-2">
@@ -297,8 +381,8 @@ const Education = () => {
                   </p>
                   <p className="text-blue-700">
                     {selectedLanguage === 'english' 
-                      ? '• Interactive content with practical examples'
-                      : '• ప్రాక్టికల్ ఉదాహరణలతో ఇంటరాక్టివ్ కంటెంట్'
+                      ? '• Interactive content with practical examples from YouTube'
+                      : '• YouTube నుండి ప్రాక్టికల్ ఉదాహరణలతో ఇంటరాక్టివ్ కంటెంట్'
                     }
                   </p>
                 </div>
