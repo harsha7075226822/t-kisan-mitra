@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -264,6 +265,34 @@ const KisanDashboard = () => {
         {/* Heal Your Crop Section */}
         <HealYourCrop />
 
+        {/* Services Section - Moved here */}
+        <div className="mb-6 sm:mb-8">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+            Services
+          </h3>
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+            {modules.map((module, index) => (
+              <Card 
+                key={index} 
+                className="hover:shadow-lg transition-all duration-200 cursor-pointer border-gray-200 hover:border-green-300 hover:scale-105 active:scale-95"
+                onClick={() => handleModuleClick(module.path)}
+              >
+                <CardContent className="p-4 sm:p-6 text-center">
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 ${module.color} rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4`}>
+                    <module.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-1 text-sm sm:text-base leading-tight">
+                    {module.title}
+                  </h4>
+                  <p className="text-xs text-gray-500 leading-relaxed hidden sm:block">
+                    {module.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
         {/* Nearest Markets Section */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
@@ -370,34 +399,6 @@ const KisanDashboard = () => {
               ))}
             </div>
           )}
-        </div>
-
-        {/* Main Modules */}
-        <div>
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
-            Services
-          </h3>
-          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-            {modules.map((module, index) => (
-              <Card 
-                key={index} 
-                className="hover:shadow-lg transition-all duration-200 cursor-pointer border-gray-200 hover:border-green-300 hover:scale-105 active:scale-95"
-                onClick={() => handleModuleClick(module.path)}
-              >
-                <CardContent className="p-4 sm:p-6 text-center">
-                  <div className={`w-12 h-12 sm:w-16 sm:h-16 ${module.color} rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4`}>
-                    <module.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-1 text-sm sm:text-base leading-tight">
-                    {module.title}
-                  </h4>
-                  <p className="text-xs text-gray-500 leading-relaxed hidden sm:block">
-                    {module.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
 
         {/* Footer */}
