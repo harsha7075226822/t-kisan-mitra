@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Cloud, MapPin, Thermometer, Droplets, Wind, Sun, Search, Heart, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -362,7 +361,7 @@ const WeatherDashboard = () => {
                   <img 
                     src="https://thumbs.dreamstime.com/b/green-field-small-forest-against-cloudy-sky-sunny-weather-193347700.jpg"
                     alt="Green agricultural field with cloudy sky representing weather and farming conditions"
-                    className="w-full h-48 md:h-56 object-cover rounded-t-lg"
+                    className="w-full h-64 md:h-80 lg:h-96 object-cover rounded-t-lg"
                   />
                   <div className="p-6 bg-white">
                     <div className="text-center">
