@@ -6,32 +6,25 @@ import EducationHeader from '@/components/education/EducationHeader';
 import CategoryFilter from '@/components/education/CategoryFilter';
 import EducationCard from '@/components/education/EducationCard';
 import HelpSection from '@/components/education/HelpSection';
+import LanguageSelector from '@/components/LanguageSelector';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Education = () => {
   const navigate = useNavigate();
-  const [selectedLanguage, setSelectedLanguage] = useState('english');
+  const { language, t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Listen for global language changes
-  useEffect(() => {
-    const handleLanguageChange = (event) => {
-      setSelectedLanguage(event.detail);
-    };
-    
-    const savedLanguage = localStorage.getItem('appLanguage') || 'english';
-    setSelectedLanguage(savedLanguage);
-    
-    window.addEventListener('languageChange', handleLanguageChange);
-    return () => window.removeEventListener('languageChange', handleLanguageChange);
-  }, []);
+  // Convert language context format to the format expected by components
+  const selectedLanguage = language === 'en' ? 'english' : language === 'te' ? 'telugu' : 'hindi';
 
   const educationContent = [
     {
       id: 1,
-      title: { telugu: 'సేంద్రీయ వ్యవసాయం', english: 'Organic Farming Techniques' },
+      title: { telugu: 'సేంద్రీయ వ్యవసాయం', english: 'Organic Farming Techniques', hindi: 'जैविक खेती तकनीक' },
       description: { 
         telugu: 'రసాయనాలు లేకుండా పంట పెంచడం', 
-        english: 'Learn sustainable farming without harmful chemicals' 
+        english: 'Learn sustainable farming without harmful chemicals',
+        hindi: 'हानिकारक रसायनों के बिना टिकाऊ खेती सीखें'
       },
       category: 'organic',
       duration: '15 min',
@@ -44,10 +37,11 @@ const Education = () => {
     },
     {
       id: 2,
-      title: { telugu: 'నేల పరీక్ష', english: 'Soil Testing Methods' },
+      title: { telugu: 'నేల పరీక్ష', english: 'Soil Testing Methods', hindi: 'मिट्टी परीक्षण विधियां' },
       description: { 
         telugu: 'మట్టిని ఎలా పరీక్షించాలి', 
-        english: 'Complete guide to soil analysis and pH testing' 
+        english: 'Complete guide to soil analysis and pH testing',
+        hindi: 'मिट्टी विश्लेषण और पीएच परीक्षण की पूरी गाइड'
       },
       category: 'soil',
       duration: '12 min',
@@ -60,10 +54,11 @@ const Education = () => {
     },
     {
       id: 3,
-      title: { telugu: 'నీటి నిర్వహణ', english: 'Water Management & Irrigation' },
+      title: { telugu: 'నీటి నిర్వహణ', english: 'Water Management & Irrigation', hindi: 'जल प्रबंधन और सिंचाई' },
       description: { 
         telugu: 'డ్రిప్ ఇరిగేషన్ మరియు నీటి సేవింగ్', 
-        english: 'Drip irrigation setup and water conservation techniques' 
+        english: 'Drip irrigation setup and water conservation techniques',
+        hindi: 'ड्रिप सिंचाई सेटअप और जल संरक्षण तकनीकें'
       },
       category: 'water',
       duration: '20 min',
@@ -76,10 +71,11 @@ const Education = () => {
     },
     {
       id: 4,
-      title: { telugu: 'వరి సాగు', english: 'Modern Paddy Cultivation' },
+      title: { telugu: 'వరి సాగు', english: 'Modern Paddy Cultivation', hindi: 'आधुनिक धान की खेती' },
       description: { 
         telugu: 'వరి పంట సాగులో ఆధునిక పద్ధతులు', 
-        english: 'Latest techniques in rice farming and yield optimization' 
+        english: 'Latest techniques in rice farming and yield optimization',
+        hindi: 'चावल की खेती और उपज अनुकूलन में नवीनतम तकनीकें'
       },
       category: 'crops',
       duration: '25 min',
@@ -92,10 +88,11 @@ const Education = () => {
     },
     {
       id: 5,
-      title: { telugu: 'ఎరువుల వాడకం', english: 'Fertilizer Usage Guide' },
+      title: { telugu: 'ఎరువుల వాడకం', english: 'Fertilizer Usage Guide', hindi: 'उर्वरक उपयोग गाइड' },
       description: { 
         telugu: 'సరైన ఎరువుల వాడకం మరియు మోతాదు', 
-        english: 'Proper fertilizer application and dosage recommendations' 
+        english: 'Proper fertilizer application and dosage recommendations',
+        hindi: 'उर्वरक अनुप्रयोग और खुराक सिफारिशें'
       },
       category: 'fertilizer',
       duration: '14 min',
@@ -108,10 +105,11 @@ const Education = () => {
     },
     {
       id: 6,
-      title: { telugu: 'పప్పు పంటలు', english: 'Pulses Cultivation' },
+      title: { telugu: 'పప్పు పంటలు', english: 'Pulses Cultivation', hindi: 'दलहन की खेती' },
       description: { 
         telugu: 'పప్పు పంటలను పెంచడం మరియు నిర్వహణ', 
-        english: 'Guides for growing, managing, and harvesting pulses' 
+        english: 'Guides for growing, managing, and harvesting pulses',
+        hindi: 'दलहन उगाने, प्रबंधित करने और कटाई के लिए गाइड'
       },
       category: 'pulses',
       duration: '56 videos',
@@ -124,10 +122,11 @@ const Education = () => {
     },
     {
       id: 7,
-      title: { telugu: 'ఆహార పంటలు', english: 'Food Crops' },
+      title: { telugu: 'ఆహార పంటలు', english: 'Food Crops', hindi: 'खाद्य फसलें' },
       description: { 
         telugu: 'పోషకాహార పంటలు మరియు కాలానుసార విత్తనలు', 
-        english: 'Nutritional staples and seasonal sowing practices' 
+        english: 'Nutritional staples and seasonal sowing practices',
+        hindi: 'पौष्टिक स्टेपल और मौसमी बुवाई प्रथाएं'
       },
       category: 'food-crops',
       duration: '226 videos',
@@ -140,10 +139,11 @@ const Education = () => {
     },
     {
       id: 8,
-      title: { telugu: 'కూరగాయలు', english: 'Vegetables' },
+      title: { telugu: 'కూరగాయలు', english: 'Vegetables', hindi: 'सब्जियां' },
       description: { 
         telugu: 'ఇంటిలో మరియు వాణిజ్య కూరగాయల సాగు', 
-        english: 'Home and commercial vegetable cultivation practices' 
+        english: 'Home and commercial vegetable cultivation practices',
+        hindi: 'घरेलू और वाणिज्यिक सब्जी की खेती के तरीके'
       },
       category: 'vegetables',
       duration: '64 videos',
@@ -156,10 +156,11 @@ const Education = () => {
     },
     {
       id: 9,
-      title: { telugu: 'పండ్లు', english: 'Fruits' },
+      title: { telugu: 'పండ్లు', english: 'Fruits', hindi: 'फल' },
       description: { 
         telugu: 'మామిడి, అరటి మరియు నిమ్మకాయ తోటల మేనేజ్‌మెంట్', 
-        english: 'Best practices for mango, banana, and citrus orchards' 
+        english: 'Best practices for mango, banana, and citrus orchards',
+        hindi: 'आम, केला और खट्टे बागों के लिए सर्वोत्तम प्रथाएं'
       },
       category: 'fruits',
       duration: '136 videos',
@@ -172,10 +173,11 @@ const Education = () => {
     },
     {
       id: 10,
-      title: { telugu: 'పశు పెంపకం', english: 'Animal Husbandry & Allied' },
+      title: { telugu: 'పశు పెంపకం', english: 'Animal Husbandry & Allied', hindi: 'पशुपालन और संबद्ध' },
       description: { 
         telugu: 'పశువులు, గొర్రెలు మరియు మేకల పెంపకం', 
-        english: 'Cattle, sheep, and goat farming with dairy practices' 
+        english: 'Cattle, sheep, and goat farming with dairy practices',
+        hindi: 'डेयरी प्रथाओं के साथ मवेशी, भेड़ और बकरी पालन'
       },
       category: 'livestock',
       duration: '223 videos',
@@ -189,17 +191,17 @@ const Education = () => {
   ];
 
   const categories = [
-    { id: 'all', name: { telugu: 'అన్నీ', english: 'All Topics' } },
-    { id: 'organic', name: { telugu: 'సేంద్రీయ వ్యవసాయం', english: 'Organic Farming' } },
-    { id: 'soil', name: { telugu: 'నేల పరీక్ష', english: 'Soil Testing' } },
-    { id: 'water', name: { telugu: 'నీటి నిర్వహణ', english: 'Water Management' } },
-    { id: 'crops', name: { telugu: 'పంట సాగు', english: 'Crop Cultivation' } },
-    { id: 'fertilizer', name: { telugu: 'ఎరువుల వాడకం', english: 'Fertilizer Usage' } },
-    { id: 'pulses', name: { telugu: 'పప్పు పంటలు', english: 'Pulses' } },
-    { id: 'food-crops', name: { telugu: 'ఆహార పంటలు', english: 'Food Crops' } },
-    { id: 'vegetables', name: { telugu: 'కూరగాయలు', english: 'Vegetables' } },
-    { id: 'fruits', name: { telugu: 'పండ్లు', english: 'Fruits' } },
-    { id: 'livestock', name: { telugu: 'పశు పెంపకం', english: 'Animal Husbandry' } }
+    { id: 'all', name: { telugu: 'అన్నీ', english: 'All Topics', hindi: 'सभी विषय' } },
+    { id: 'organic', name: { telugu: 'సేంద్రీయ వ్యవసాయం', english: 'Organic Farming', hindi: 'जैविक खेती' } },
+    { id: 'soil', name: { telugu: 'నేల పరీక్ష', english: 'Soil Testing', hindi: 'मिट्टी परीक्षण' } },
+    { id: 'water', name: { telugu: 'నీటి నిర్వహణ', english: 'Water Management', hindi: 'जल प्रबंधन' } },
+    { id: 'crops', name: { telugu: 'పంట సాగు', english: 'Crop Cultivation', hindi: 'फसल खेती' } },
+    { id: 'fertilizer', name: { telugu: 'ఎరువుల వాడకం', english: 'Fertilizer Usage', hindi: 'उर्वरक उपयोग' } },
+    { id: 'pulses', name: { telugu: 'పప్పు పంటలు', english: 'Pulses', hindi: 'दलहन' } },
+    { id: 'food-crops', name: { telugu: 'ఆహార పంటలు', english: 'Food Crops', hindi: 'खाद्य फसलें' } },
+    { id: 'vegetables', name: { telugu: 'కూరగాయలు', english: 'Vegetables', hindi: 'सब्जियां' } },
+    { id: 'fruits', name: { telugu: 'పండ్లు', english: 'Fruits', hindi: 'फल' } },
+    { id: 'livestock', name: { telugu: 'పశు పెంపకం', english: 'Animal Husbandry', hindi: 'पशुपालन' } }
   ];
 
   const filteredContent = selectedCategory === 'all' 
@@ -220,11 +222,16 @@ const Education = () => {
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
+            {t('common.backToDashboard')}
           </Button>
         </div>
 
-        <EducationHeader selectedLanguage={selectedLanguage} />
+        {/* Language Selector for Education */}
+        <div className="flex justify-end mb-4">
+          <LanguageSelector showLabel={true} />
+        </div>
+
+        <EducationHeader />
 
         <CategoryFilter 
           categories={categories}

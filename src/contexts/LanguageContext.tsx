@@ -135,7 +135,31 @@ const translations = {
     'login.enterValidOtp': 'Please enter 6-digit OTP',
     'login.otpSentSuccess': 'OTP sent to {mobile}',
     'login.helpline': 'Helpline: 1800-XXX-XXXX',
-    'login.supportEmail': 'For support: support@tkisanmitra.telangana.gov.in'
+    'login.supportEmail': 'For support: support@tkisanmitra.telangana.gov.in',
+    
+    // Education specific translations
+    'education.title': 'Agricultural Education',
+    'education.subtitle': 'Learn modern farming techniques and best practices',
+    'education.allTopics': 'All Topics',
+    'education.organicFarming': 'Organic Farming',
+    'education.soilTesting': 'Soil Testing',
+    'education.waterManagement': 'Water Management',
+    'education.cropCultivation': 'Crop Cultivation',
+    'education.fertilizerUsage': 'Fertilizer Usage',
+    'education.pulses': 'Pulses',
+    'education.foodCrops': 'Food Crops',
+    'education.vegetables': 'Vegetables',
+    'education.fruits': 'Fruits',
+    'education.animalHusbandry': 'Animal Husbandry',
+    'education.watchNow': 'Watch Now',
+    'education.playAudio': 'Play Audio',
+    'education.download': 'Download',
+    'education.video': 'Video',
+    'education.playlist': 'Playlist',
+    'education.article': 'Article',
+    'education.helpTitle': 'Need Help?',
+    'education.helpDescription': 'Learn more about farming techniques and best practices',
+    'education.helpline': 'Helpline: 1800-425-0691'
   },
   te: {
     // Header
@@ -251,7 +275,31 @@ const translations = {
     'login.enterValidOtp': 'దయచేసి 6-అంకెల OTP నమోదు చేయండి',
     'login.otpSentSuccess': '{mobile}కు OTP పంపబడింది',
     'login.helpline': 'హెల్ప్‌లైన్: 1800-XXX-XXXX',
-    'login.supportEmail': 'మద్దతు కోసం: support@tkisanmitra.telangana.gov.in'
+    'login.supportEmail': 'మద్దతు కోసం: support@tkisanmitra.telangana.gov.in',
+    
+    // Education specific translations
+    'education.title': 'వ్యవసాయ విద్య',
+    'education.subtitle': 'ఆధునిక వ్యవసాయ పద్ధతులను నేర్చుకోండి',
+    'education.allTopics': 'అన్నీ',
+    'education.organicFarming': 'సేంద్రీయ వ్యవసాయం',
+    'education.soilTesting': 'నేల పరీక్ష',
+    'education.waterManagement': 'నీటి నిర్వహణ',
+    'education.cropCultivation': 'పంట సాగు',
+    'education.fertilizerUsage': 'ఎరువుల వాడకం',
+    'education.pulses': 'పప్పు పంటలు',
+    'education.foodCrops': 'ఆహార పంటలు',
+    'education.vegetables': 'కూరగాయలు',
+    'education.fruits': 'పండ్లు',
+    'education.animalHusbandry': 'పశు పెంపకం',
+    'education.watchNow': 'ఇప్పుడు చూడండి',
+    'education.playAudio': 'ఆడియో వినండి',
+    'education.download': 'డౌన్‌లోడ్',
+    'education.video': 'వీడియో',
+    'education.playlist': 'ప్లేలిస్ట్',
+    'education.article': 'వ్యాసం',
+    'education.helpTitle': 'సహాయం కావాలా?',
+    'education.helpDescription': 'వ్యవసాయ పద్ధతులు మరియు ఉత్తమ పద్ధతుల గురించి మరింత తెలుసుకోండి',
+    'education.helpline': 'హెల్ప్‌లైన్: 1800-425-0691'
   },
   hi: {
     // Header
@@ -367,7 +415,31 @@ const translations = {
     'login.enterValidOtp': 'कृपया 6-अंकीय OTP दर्ज करें',
     'login.otpSentSuccess': '{mobile} पर OTP भेजा गया',
     'login.helpline': 'हेल्पलाइन: 1800-XXX-XXXX',
-    'login.supportEmail': 'सहायता के लिए: support@tkisanmitra.telangana.gov.in'
+    'login.supportEmail': 'सहायता के लिए: support@tkisanmitra.telangana.gov.in',
+    
+    // Education specific translations
+    'education.title': 'कृषि शिक्षा',
+    'education.subtitle': 'आधुनिक कृषि तकनीकों और सर्वोत्तम प्रथाओं को सीखें',
+    'education.allTopics': 'सभी विषय',
+    'education.organicFarming': 'जैविक खेती',
+    'education.soilTesting': 'मिट्टी परीक्षण',
+    'education.waterManagement': 'जल प्रबंधन',
+    'education.cropCultivation': 'फसल खेती',
+    'education.fertilizerUsage': 'उर्वरक उपयोग',
+    'education.pulses': 'दलहन',
+    'education.foodCrops': 'खाद्य फसलें',
+    'education.vegetables': 'सब्जियां',
+    'education.fruits': 'फल',
+    'education.animalHusbandry': 'पशुपालन',
+    'education.watchNow': 'अभी देखें',
+    'education.playAudio': 'ऑडियो चलाएं',
+    'education.download': 'डाउनलोड',
+    'education.video': 'वीडियो',
+    'education.playlist': 'प्लेलिस्ट',
+    'education.article': 'लेख',
+    'education.helpTitle': 'सहायता चाहिए?',
+    'education.helpDescription': 'कृषि तकनीकों और सर्वोत्तम प्रथाओं के बारे में और जानें',
+    'education.helpline': 'हेल्पलाइन: 1800-425-0691'
   }
 };
 
