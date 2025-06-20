@@ -110,6 +110,11 @@ const UserProfile = () => {
           ...prev,
           profileImage: imageUrl
         }));
+        
+        // Dispatch event to update navbar immediately
+        window.dispatchEvent(new CustomEvent('profileImageUpdated', { 
+          detail: { profileImage: imageUrl } 
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -157,6 +162,14 @@ const UserProfile = () => {
     setUserData(formData);
     setLastUpdated(new Date().toLocaleDateString());
     setIsEditing(false);
+    
+    // Dispatch event to update navbar
+    window.dispatchEvent(new CustomEvent('profileUpdated', { 
+      detail: { 
+        name: formData.name, 
+        profileImage: profileImage 
+      } 
+    }));
     
     toast({
       title: "Profile Updated",

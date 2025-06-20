@@ -108,7 +108,7 @@ const Navbar = () => {
   const { t } = useLanguage();
 
   // Get user data from localStorage if on dashboard
-  const userData = isDashboard ? JSON.parse(localStorage.getItem('kisanUser') || '{}') : null;
+  const [userData, setUserData] = useState(isDashboard ? JSON.parse(localStorage.getItem('kisanUser') || '{}') : null);
 
   // Load orders from localStorage
   const loadOrders = () => {
@@ -140,13 +140,43 @@ const Navbar = () => {
     return () => window.removeEventListener('orderUpdated', handleOrderUpdate);
   }, []);
 
-  // Load profile image from localStorage
+  // Load profile image from localStorage and listen for updates
   useEffect(() => {
     const savedImage = localStorage.getItem('userProfileImage');
     if (savedImage) {
       setProfileImage(savedImage);
     }
-  }, []);
+
+    // Listen for profile updates
+    const handleProfileUpdate = (event: CustomEvent) => {
+      const { name, profileImage: newImage } = event.detail;
+      
+      // Update local userData state
+      if (userData) {
+        const updatedUserData = { ...userData, name };
+        setUserData(updatedUserData);
+      }
+      
+      // Update profile image
+      if (newImage) {
+        setProfileImage(newImage);
+      }
+    };
+
+    // Listen for immediate image updates
+    const handleImageUpdate = (event: CustomEvent) => {
+      const { profileImage: newImage } = event.detail;
+      setProfileImage(newImage);
+    };
+
+    window.addEventListener('profileUpdated', handleProfileUpdate as EventListener);
+    window.addEventListener('profileImageUpdated', handleImageUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate as EventListener);
+      window.removeEventListener('profileImageUpdated', handleImageUpdate as EventListener);
+    };
+  }, [userData]);
 
   // Set global language in localStorage for other components to use
   useEffect(() => {
@@ -351,7 +381,7 @@ const Navbar = () => {
             </Link>
 
             {/* Hamburger Menu for logged-in users */}
-            {isDashboard && userData.name && (
+            {isDashboard && userData?.name && (
               <Popover open={isHamburgerOpen} onOpenChange={setIsHamburgerOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="sm" className="text-green-700 border-green-300">
@@ -486,7 +516,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation - Weather added back */}
+      {/* Mobile Navigation */}
       {isOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-2 pt-2 pb-3 space-y-1">
@@ -518,7 +548,7 @@ const Navbar = () => {
             ))}
             
             {/* Mobile User Menu */}
-            {isDashboard && userData.name && (
+            {isDashboard && userData?.name && (
               <div className="border-t border-gray-200 mt-2 pt-2">
                 <div className="flex items-center px-3 py-2 bg-green-50 rounded-lg mx-2 mb-2">
                   <Avatar className="h-8 w-8 mr-3">
@@ -530,6 +560,7 @@ const Navbar = () => {
                   <span className="text-sm font-medium text-gray-700">{userData.name}</span>
                 </div>
                 
+                {/* Mobile Address, Wallet, Track Order, and other buttons */}
                 <button 
                   onClick={() => {
                     setShowMyOrders(true);
@@ -546,7 +577,6 @@ const Navbar = () => {
                   )}
                 </button>
                 
-                {/* Mobile Address, Wallet, Track Order, and other buttons */}
                 <button 
                   onClick={() => {
                     setShowMyAddress(true);
