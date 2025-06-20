@@ -34,10 +34,10 @@ const WeatherDashboard = () => {
 
   const getSoilData = (temperature) => {
     const baseFields = [
-      { sensor: 'Field A', crop: 'Cotton', location: 'North Field' },
-      { sensor: 'Field B', crop: 'Cotton', location: 'South Field' },
-      { sensor: 'Field C', crop: 'Wheat', location: 'East Field' },
-      { sensor: 'Field D', crop: 'Sugarcane', location: 'West Field' },
+      { sensor: 'Field A', crop: 'Cotton', location: 'North Field', soilType: 'Black Soil' },
+      { sensor: 'Field B', crop: 'Cotton', location: 'South Field', soilType: 'Red Soil' },
+      { sensor: 'Field C', crop: 'Wheat', location: 'East Field', soilType: 'Alluvial Soil' },
+      { sensor: 'Field D', crop: 'Sugarcane', location: 'West Field', soilType: 'Clay Soil' },
     ];
 
     return baseFields.map((field, index) => {
@@ -228,7 +228,6 @@ const WeatherDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Current Weather Section */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Weather Cards Row */}
             {loading ? (
               <Card className="shadow-lg border border-gray-200 bg-white">
                 <CardContent className="p-8 text-center">
@@ -356,7 +355,7 @@ const WeatherDashboard = () => {
             </Card>
           </div>
 
-          {/* Right Sidebar */}
+          {/* Right Sidebar with AI Crop Recommendations and Planting Calendar */}
           <div className="space-y-8">
             {/* AI Crop Recommendations */}
             <Card className="shadow-lg border border-gray-200 bg-white">
@@ -449,7 +448,7 @@ const WeatherDashboard = () => {
           </div>
         </div>
 
-        {/* IoT Soil Monitoring */}
+        {/* IoT Soil Monitoring with Soil Types */}
         <Card className="shadow-lg border border-gray-200 bg-white">
           <CardHeader className="bg-green-600 text-white rounded-t-lg">
             <CardTitle className="text-2xl font-semibold flex items-center">
@@ -468,6 +467,7 @@ const WeatherDashboard = () => {
                         <div className="font-semibold text-lg text-gray-800">{field.sensor}</div>
                         <div className="text-sm text-gray-600 font-medium">🌾 Crop: {field.crop}</div>
                         <div className="text-sm text-gray-500">{field.location}</div>
+                        <div className="text-sm text-amber-600 font-medium">🏔️ Soil: {field.soilType}</div>
                       </div>
                       <Badge className={`text-sm border font-medium ${getStatusBadgeColor(field.status)}`}>
                         {field.status}
