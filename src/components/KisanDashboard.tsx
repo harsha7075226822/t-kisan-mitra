@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import HealYourCrop from '@/components/HealYourCrop';
+import ManageFields from '@/components/ManageFields';
 import MarketCards from '@/components/MarketCards';
 import FloatingVoiceButton from '@/components/FloatingVoiceButton';
 import { 
@@ -160,6 +162,9 @@ const KisanDashboard = () => {
 
         {/* Heal Your Crop Section */}
         <HealYourCrop />
+
+        {/* Manage Fields Section */}
+        <ManageFields />
 
         {/* Services Section */}
         <div className="mb-6 sm:mb-8">
