@@ -1,15 +1,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { cartManager } from '@/utils/cartManager';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  type: 'seeds' | 'crop' | 'product';
-  image?: string;
-}
+import { CartManager, CartItem } from '@/utils/cartManager';
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -20,9 +11,9 @@ export const useCart = () => {
   // Memoized functions to prevent unnecessary re-renders
   const updateCartState = useCallback(() => {
     try {
-      const currentCart = cartManager.getCart();
-      const items = cartManager.getTotalItems();
-      const price = cartManager.getTotalPrice();
+      const currentCart = CartManager.getCart();
+      const items = CartManager.getTotalItems();
+      const price = CartManager.getTotalPrice();
       
       setCart(currentCart);
       setTotalItems(items);
@@ -34,9 +25,9 @@ export const useCart = () => {
     }
   }, []);
 
-  const addItem = useCallback((item: CartItem) => {
+  const addItem = useCallback((item: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
     try {
-      cartManager.addItem(item);
+      CartManager.addToCart(item);
       updateCartState();
     } catch (error) {
       console.error('Error adding item to cart:', error);
@@ -45,7 +36,7 @@ export const useCart = () => {
 
   const removeItem = useCallback((itemId: string) => {
     try {
-      cartManager.removeItem(itemId);
+      CartManager.removeFromCart(itemId);
       updateCartState();
     } catch (error) {
       console.error('Error removing item from cart:', error);
@@ -54,7 +45,7 @@ export const useCart = () => {
 
   const clearCart = useCallback(() => {
     try {
-      cartManager.clearCart();
+      CartManager.clearCart();
       updateCartState();
     } catch (error) {
       console.error('Error clearing cart:', error);
