@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Cloud, MapPin, Thermometer, Droplets, Wind, Sun, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -62,11 +61,6 @@ const WeatherDashboard = () => {
     fetchWeatherData(selectedCity);
   }, [selectedCity]);
 
-  const handleCityChange = (city) => {
-    setSelectedCity(city);
-    setInputCity(''); // Clear input when dropdown is used
-  };
-
   const handleGetWeather = () => {
     if (inputCity.trim()) {
       setSelectedCity(inputCity.trim());
@@ -125,57 +119,32 @@ const WeatherDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* City Selector */}
+      {/* City Input */}
       <Card className="border-green-200">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <MapPin className="w-5 h-5 text-green-600" />
-            <span>Select City</span>
+            <span>Enter City Name</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Dropdown Selector */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Choose from popular cities:
-            </label>
-            <Select value={selectedCity} onValueChange={handleCityChange}>
-              <SelectTrigger className="w-full md:w-64">
-                <SelectValue placeholder="Choose your city" />
-              </SelectTrigger>
-              <SelectContent>
-                {cities.map((city) => (
-                  <SelectItem key={city} value={city}>
-                    {city}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Input Field for Custom City */}
-          <div className="border-t pt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Or enter city name:
-            </label>
-            <div className="flex space-x-2">
-              <Input
-                type="text"
-                placeholder="Enter Telangana City (e.g., Hyderabad)"
-                value={inputCity}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                className="flex-1"
-              />
-              <Button 
-                onClick={handleGetWeather}
-                disabled={loading}
-                className="flex items-center space-x-2"
-              >
-                <Search className="w-4 h-4" />
-                <span>Get Weather</span>
-              </Button>
-            </div>
+        <CardContent>
+          <div className="flex space-x-2">
+            <Input
+              type="text"
+              placeholder="Enter Telangana City (e.g., Hyderabad)"
+              value={inputCity}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
+              className="flex-1"
+            />
+            <Button 
+              onClick={handleGetWeather}
+              disabled={loading}
+              className="flex items-center space-x-2"
+            >
+              <Search className="w-4 w-4" />
+              <span>Get Weather</span>
+            </Button>
           </div>
         </CardContent>
       </Card>
