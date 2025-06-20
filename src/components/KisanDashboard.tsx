@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { 
   TrendingUp, 
   BookOpen, 
@@ -12,23 +14,22 @@ import {
   Mic, 
   Camera,
   Phone,
-  LogOut,
-  Bell,
-  Sprout,
-  MapPin,
   Navigation,
   IndianRupee,
-  Beaker
+  Beaker,
+  Sprout,
+  MapPin
 } from 'lucide-react';
 
 const KisanDashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [locationError, setLocationError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Mock data for nearest markets
-  const nearestMarkets = [
+  // Memoized market data to prevent unnecessary re-renders
+  const nearestMarkets = useMemo(() => [
     {
       id: 1,
       name: 'KPHB Agricultural Market',
@@ -73,41 +74,10 @@ const KisanDashboard = () => {
       contact: 'Helpdesk: 1800-XXX-5678',
       coordinates: { lat: 17.5167, lng: 78.2167 }
     }
-  ];
+  ], []);
 
-  useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem('kisanUser');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-
-    // Request location permission
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-          setLocationError('');
-        },
-        (error) => {
-          console.log('Location error:', error);
-          setLocationError('Turn on location to find nearest markets.');
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000
-        }
-      );
-    } else {
-      setLocationError('Location services not supported on this device.');
-    }
-  }, []);
-
-  const modules = [
+  // Memoized modules data
+  const modules = useMemo(() => [
     {
       title: 'Market Insights',
       description: 'Crop prices and market trends',
@@ -171,7 +141,74 @@ const KisanDashboard = () => {
       color: 'bg-rose-500',
       path: '/pesticides'
     }
-  ];
+  ], []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const initializeDashboard = async () => {
+      try {
+        // Get user data from localStorage
+        const userData = localStorage.getItem('kisanUser');
+        if (userData && mounted) {
+          setUser(JSON.parse(userData));
+        }
+
+        // Request location permission with timeout
+        if (navigator.geolocation && mounted) {
+          const timeoutId = setTimeout(() => {
+            if (mounted) {
+              setLocationError('Location request timed out. Please enable location services.');
+              setIsLoading(false);
+            }
+          }, 10000);
+
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              if (mounted) {
+                clearTimeout(timeoutId);
+                setLocation({
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude
+                });
+                setLocationError('');
+                setIsLoading(false);
+              }
+            },
+            (error) => {
+              if (mounted) {
+                clearTimeout(timeoutId);
+                console.log('Location error:', error);
+                setLocationError('Turn on location to find nearest markets.');
+                setIsLoading(false);
+              }
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 8000,
+              maximumAge: 300000
+            }
+          );
+        } else {
+          if (mounted) {
+            setLocationError('Location services not supported on this device.');
+            setIsLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error('Dashboard initialization error:', error);
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    initializeDashboard();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleModuleClick = (path: string) => {
     navigate(path);
@@ -191,12 +228,26 @@ const KisanDashboard = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <LoadingSpinner size="lg" text="Loading your dashboard..." />
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="text-center">
           <div className="text-6xl mb-4">🌾</div>
-          <h2 className="text-xl text-gray-600">Loading...</h2>
+          <h2 className="text-xl text-gray-600">Please log in to continue</h2>
+          <Button 
+            onClick={() => navigate('/login')} 
+            className="mt-4 bg-green-600 hover:bg-green-700"
+          >
+            Go to Login
+          </Button>
         </div>
       </div>
     );
