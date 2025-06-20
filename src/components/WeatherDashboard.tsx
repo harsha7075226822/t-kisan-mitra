@@ -179,7 +179,7 @@ const WeatherDashboard = () => {
                   {getWeatherIcon(weatherData.weather[0].description)}
                 </div>
                 <div className="text-3xl font-bold text-blue-800">
-                  {Math.round(weatherData.main.temp)}°C
+                  {Math.round(weatherData.main.temp - 1)}°C
                 </div>
                 <div className="text-gray-600 capitalize">
                   {weatherData.weather[0].description}
@@ -194,7 +194,7 @@ const WeatherDashboard = () => {
                 <div className="flex items-center space-x-2">
                   <Thermometer className="w-4 h-4 text-red-500" />
                   <span className="text-sm">
-                    Feels like: {Math.round(weatherData.main.feels_like)}°C
+                    Feels like: {Math.round(weatherData.main.feels_like - 1)}°C
                   </span>
                 </div>
               </div>
@@ -215,7 +215,7 @@ const WeatherDashboard = () => {
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <div className="text-sm font-medium text-yellow-800 mb-2">Farming Alert</div>
                 <div className="text-xs text-yellow-700">
-                  {getFarmingAlert(weatherData.main.temp, weatherData.main.humidity, weatherData.wind.speed)}
+                  {getFarmingAlert(weatherData.main.temp - 1, weatherData.main.humidity, weatherData.wind.speed)}
                 </div>
               </div>
             </div>
