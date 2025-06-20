@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Sprout, Plus, Loader2, Leaf, Droplets, Bug, Calendar } from 'lucide-react';
+import { Sprout, Plus, Loader2, Leaf, Droplets, Bug } from 'lucide-react';
 
 interface FieldData {
   id: string;
@@ -22,7 +22,6 @@ const ManageFields = () => {
   const [acres, setAcres] = useState('');
   const [crop, setCrop] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [guidance, setGuidance] = useState('');
   const [error, setError] = useState('');
   const [showAddFieldModal, setShowAddFieldModal] = useState(false);
   const [validationErrors, setValidationErrors] = useState({ acres: '', crop: '' });
@@ -78,98 +77,15 @@ const ManageFields = () => {
 
     setIsLoading(true);
     setError('');
-    setGuidance('');
 
     try {
-      const prompt = `You are an expert agricultural mentor providing comprehensive guidance for a farmer in Telangana, India. 
-
-Farmer's Details:
-- Crop: ${crop}
-- Land Area: ${acres} acres
-- Location: Telangana, India
-
-Please provide a detailed, step-by-step farming guide that covers the ENTIRE growth cycle from day one to harvest. Your response should include:
-
-1. **Growth Stages Timeline**: Key stages and approximate days for each phase
-2. **Soil Preparation**: Specific recommendations for land preparation
-3. **Seeding/Planting**: Best practices, spacing, and timing
-4. **Irrigation Schedule**: Water requirements at different growth stages
-5. **Fertilizer Plan**: NPK requirements, organic options, and application timing
-6. **Pest & Disease Management**: Common issues for ${crop} and prevention/treatment
-7. **Monitoring Tips**: What to watch for at each stage
-8. **Harvesting Guidelines**: When and how to harvest for best yield
-9. **Post-Harvest**: Storage and marketing tips
-
-Make this a practical, actionable guide that a farmer can follow throughout the growing season. Include specific quantities, timing, and local considerations for Telangana's climate.`;
-
-      // Simulate API call (replace with actual Gemini API call)
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Mock response for demonstration
-      const mockResponse = `# Complete Farming Guide for ${crop} (${acres} acres)
-
-## 🌱 Growth Stages Timeline (120-150 days total)
-- **Days 1-15**: Soil preparation and sowing
-- **Days 16-45**: Germination and early vegetative growth
-- **Days 46-90**: Active vegetative growth and tillering
-- **Days 91-120**: Reproductive phase and grain filling
-- **Days 121-150**: Maturation and harvesting
-
-## 🏞️ Soil Preparation
-- Deep plowing 2-3 weeks before sowing
-- Apply 5-7 tons of well-decomposed FYM per acre
-- Ensure proper drainage and leveling
-- Soil pH should be 6.0-7.0 for optimal growth
-
-## 🌾 Seeding & Planting
-- **Best time**: June-July (Kharif season) in Telangana
-- **Seed rate**: 15-20 kg per acre for transplanting
-- **Spacing**: 20cm x 15cm for optimal plant density
-- **Depth**: 2-3 cm for direct seeding
-
-## 💧 Irrigation Schedule
-- **Week 1-2**: Light irrigation every 2 days
-- **Week 3-6**: Irrigation every 4-5 days (vegetative stage)
-- **Week 7-12**: Critical period - irrigation every 3 days
-- **Week 13-16**: Reduce frequency, irrigation every 5-7 days
-- **Total water requirement**: 1200-1500mm for entire crop
-
-## 🧪 Fertilizer Plan
-- **Basal dose**: 60kg N + 30kg P2O5 + 30kg K2O per acre
-- **Top dressing**: 30kg N at tillering stage (30-35 days)
-- **Second top dressing**: 30kg N at panicle initiation (50-55 days)
-- **Organic option**: Vermicompost 2 tons/acre + neem cake 100kg/acre
-
-## 🐛 Pest & Disease Management
-- **Common pests**: Stem borer, brown planthopper, leaf folder
-- **Prevention**: Use pheromone traps, maintain field hygiene
-- **Organic treatment**: Neem oil spray (2ml/liter) weekly
-- **Chemical treatment**: Consult local agricultural officer for recommendations
-
-## 📊 Monitoring Tips
-- Check for yellowing leaves (nitrogen deficiency)
-- Monitor water levels in paddy fields
-- Watch for pest damage on leaf tips
-- Observe grain filling progress after flowering
-
-## 🌾 Harvesting Guidelines
-- **Timing**: When 80% of grains turn golden yellow
-- **Method**: Cut 15-20cm above ground level
-- **Drying**: Sun dry for 2-3 days to 14% moisture content
-- **Expected yield**: 25-30 quintals per acre with good management
-
-## 📦 Post-Harvest Tips
-- Store in moisture-free containers
-- Use proper gunny bags for storage
-- Check local mandi prices before selling
-- Consider value addition through processing
-
-**Expected Investment**: ₹15,000-20,000 per acre
-**Expected Returns**: ₹35,000-45,000 per acre (current market rates)
-
-Remember to maintain detailed records of all activities for future reference and insurance claims.`;
-
-      setGuidance(mockResponse);
+      // Just clear the form after successful submission
+      setAcres('');
+      setCrop('');
+      setValidationErrors({ acres: '', crop: '' });
     } catch (err) {
       setError('Failed to get AI guidance. Please try again later.');
       console.error('AI guidance error:', err);
@@ -314,25 +230,6 @@ Remember to maintain detailed records of all activities for future reference and
           </CardContent>
         </Card>
       </div>
-
-      {/* AI Guidance Output */}
-      {guidance && (
-        <Card className="mt-6 border-green-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-800">
-              <Calendar className="w-5 h-5" />
-              Your Personalized Farming Guide
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-sans">
-                {guidance}
-              </pre>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Field Cards Section */}
       <div className="mt-8">
