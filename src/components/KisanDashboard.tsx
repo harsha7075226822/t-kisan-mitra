@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import HealYourCrop from '@/components/HealYourCrop';
+import MarketCards from '@/components/MarketCards';
 import { 
   TrendingUp, 
   BookOpen, 
@@ -12,70 +14,17 @@ import {
   ShoppingCart, 
   Mic,
   Phone,
-  Navigation,
-  IndianRupee,
   Beaker,
   Sprout,
-  MapPin,
   CloudSun
 } from 'lucide-react';
 
 const KisanDashboard = () => {
   const [user, setUser] = useState<any>(null);
-  const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
-  const [locationError, setLocationError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Memoized market data to prevent unnecessary re-renders
-  const nearestMarkets = useMemo(() => [
-    {
-      id: 1,
-      name: 'KPHB Agricultural Market',
-      distance: 3.2,
-      crops: ['Paddy', 'Cotton', 'Turmeric'],
-      latestPrice: '₹2,850/quintal',
-      priceItem: 'Paddy',
-      address: 'KPHB Colony, Hyderabad',
-      contact: 'Market Officer: 9876543210',
-      coordinates: { lat: 17.4875, lng: 78.3953 }
-    },
-    {
-      id: 2,
-      name: 'Kompally Mandi',
-      distance: 5.7,
-      crops: ['Maize', 'Cotton', 'Chilli'],
-      latestPrice: '₹3,200/quintal',
-      priceItem: 'Maize',
-      address: 'Kompally, Medchal District',
-      contact: 'Helpdesk: 1800-XXX-1234',
-      coordinates: { lat: 17.5373, lng: 78.4891 }
-    },
-    {
-      id: 3,
-      name: 'Secunderabad Market Yard',
-      distance: 8.1,
-      crops: ['Vegetables', 'Fruits', 'Grains'],
-      latestPrice: '₹4,100/quintal',
-      priceItem: 'Mixed Vegetables',
-      address: 'Secunderabad, Telangana',
-      contact: 'Market Officer: 9988776655',
-      coordinates: { lat: 17.4399, lng: 78.4983 }
-    },
-    {
-      id: 4,
-      name: 'Shamirpet Agricultural Hub',
-      distance: 12.3,
-      crops: ['Rice', 'Sugarcane', 'Cotton'],
-      latestPrice: '₹2,950/quintal',
-      priceItem: 'Rice',
-      address: 'Shamirpet, Rangareddy District',
-      contact: 'Helpdesk: 1800-XXX-5678',
-      coordinates: { lat: 17.5167, lng: 78.2167 }
-    }
-  ], []);
-
-  // Memoized modules data - Weather added back
+  // Memoized modules data
   const modules = useMemo(() => [
     {
       title: 'Weather Insights',
@@ -145,47 +94,9 @@ const KisanDashboard = () => {
         if (userData && mounted) {
           setUser(JSON.parse(userData));
         }
-
-        // Request location permission with timeout
-        if (navigator.geolocation && mounted) {
-          const timeoutId = setTimeout(() => {
-            if (mounted) {
-              setLocationError('Location request timed out. Please enable location services.');
-              setIsLoading(false);
-            }
-          }, 10000);
-
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              if (mounted) {
-                clearTimeout(timeoutId);
-                setLocation({
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude
-                });
-                setLocationError('');
-                setIsLoading(false);
-              }
-            },
-            (error) => {
-              if (mounted) {
-                clearTimeout(timeoutId);
-                console.log('Location error:', error);
-                setLocationError('Turn on location to find nearest markets.');
-                setIsLoading(false);
-              }
-            },
-            {
-              enableHighAccuracy: true,
-              timeout: 8000,
-              maximumAge: 300000
-            }
-          );
-        } else {
-          if (mounted) {
-            setLocationError('Location services not supported on this device.');
-            setIsLoading(false);
-          }
+        
+        if (mounted) {
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Dashboard initialization error:', error);
@@ -204,20 +115,6 @@ const KisanDashboard = () => {
 
   const handleModuleClick = (path: string) => {
     navigate(path);
-  };
-
-  const handleMarketCall = (contact: string) => {
-    const phoneNumber = contact.match(/\d{10}/);
-    if (phoneNumber) {
-      window.open(`tel:${phoneNumber[0]}`);
-    }
-  };
-
-  const handleGetDirections = (coordinates: {lat: number, lng: number}) => {
-    if (location) {
-      const url = `https://www.google.com/maps/dir/${location.lat},${location.lng}/${coordinates.lat},${coordinates.lng}`;
-      window.open(url, '_blank');
-    }
   };
 
   if (isLoading) {
@@ -272,7 +169,7 @@ const KisanDashboard = () => {
         {/* Heal Your Crop Section */}
         <HealYourCrop />
 
-        {/* Services Section - Moved here */}
+        {/* Services Section */}
         <div className="mb-6 sm:mb-8">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
             Services
@@ -300,112 +197,9 @@ const KisanDashboard = () => {
           </div>
         </div>
 
-        {/* Nearest Markets Section */}
+        {/* Agricultural Markets Section */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3">
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center">
-              <Navigation className="w-5 h-5 mr-2 text-green-600" />
-              Nearest Agricultural Markets
-            </h3>
-            {location && (
-              <Badge variant="outline" className="text-green-700 border-green-300 w-fit">
-                📍 Location Enabled
-              </Badge>
-            )}
-          </div>
-
-          {locationError ? (
-            <Card className="border-orange-200 bg-orange-50">
-              <CardContent className="p-4 sm:p-6 text-center">
-                <div className="text-3xl sm:text-4xl mb-4">📍</div>
-                <p className="text-orange-700 font-medium text-sm sm:text-base">{locationError}</p>
-                <p className="text-xs sm:text-sm text-orange-600 mt-2">
-                  Enable location services to see markets sorted by distance
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-              {nearestMarkets.map((market) => (
-                <Card key={market.id} className="border-green-200 hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-base sm:text-lg text-gray-900 mb-1 truncate">
-                          🏪 {market.name}
-                        </CardTitle>
-                        <div className="flex items-center text-sm text-gray-600 mb-2">
-                          <Navigation className="w-4 h-4 mr-1 text-green-600 flex-shrink-0" />
-                          <span className="font-medium">{market.distance} km away</span>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="text-green-700 border-green-300 text-xs flex-shrink-0">
-                        Nearest
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="pt-0 space-y-3">
-                    {/* Crops Available */}
-                    <div>
-                      <div className="text-sm font-medium text-gray-700 mb-2">🌾 Crops Available:</div>
-                      <div className="flex flex-wrap gap-1">
-                        {market.crops.map((crop, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {crop}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Latest Price */}
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="flex items-center mb-1">
-                        <IndianRupee className="w-4 h-4 mr-1 text-green-600" />
-                        <span className="text-sm font-medium text-gray-700 mr-2">Latest Price:</span>
-                        <span className="font-bold text-green-700">{market.latestPrice}</span>
-                      </div>
-                      <div className="text-xs text-gray-500 ml-5">({market.priceItem})</div>
-                    </div>
-
-                    {/* Address */}
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-600 leading-relaxed">{market.address}</span>
-                    </div>
-
-                    {/* Contact */}
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                      <span className="text-sm text-gray-600 truncate">{market.contact}</span>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 pt-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="flex-1 text-xs h-9"
-                        onClick={() => handleMarketCall(market.contact)}
-                      >
-                        <Phone className="w-3 h-3 mr-1" />
-                        Call
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="flex-1 text-xs h-9 bg-green-600 hover:bg-green-700"
-                        onClick={() => handleGetDirections(market.coordinates)}
-                        disabled={!location}
-                      >
-                        <Navigation className="w-3 h-3 mr-1" />
-                        Directions
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <MarketCards />
         </div>
 
         {/* Footer */}
