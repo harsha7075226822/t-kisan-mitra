@@ -66,7 +66,8 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'cod' | 'wallet'>('cod');
   const [order, setOrder] = useState<Order | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
-  const [upiId, setUpiId] = useState('farmer@upi');
+  // Updated UPI ID to your specified one
+  const upiId = '7075226822@fam';
   const { toast } = useToast();
 
   useEffect(() => {
@@ -192,8 +193,18 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
 
   const generateUPIQR = () => {
     const amount = CartManager.getTotalPrice();
-    const upiString = `upi://pay?pa=${upiId}&pn=FarmService&am=${amount}&cu=INR&tn=Order Payment`;
-    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+    const merchantName = 'FarmService';
+    const transactionNote = `Order Payment - ${Date.now()}`;
+    const upiString = `upi://pay?pa=${upiId}&pn=${merchantName}&am=${amount}&cu=INR&tn=${transactionNote}`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+  };
+
+  const copyUPIId = () => {
+    navigator.clipboard.writeText(upiId);
+    toast({
+      title: "UPI ID Copied!",
+      description: `${upiId} copied to clipboard`,
+    });
   };
 
   const copyTrackingId = (trackingId: string) => {
@@ -396,7 +407,7 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
                     <Phone className="w-5 h-5 text-blue-600" />
                     <div>
                       <h4 className="font-medium">UPI Payment</h4>
-                      <p className="text-sm text-gray-600">Pay instantly via UPI</p>
+                      <p className="text-sm text-gray-600">Pay instantly via UPI to {upiId}</p>
                     </div>
                   </div>
                 </Card>
@@ -436,7 +447,7 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
           </div>
         )}
 
-        {/* QR Code Step for UPI */}
+        {/* Enhanced QR Code Step for UPI */}
         {step === 'qr' && (
           <div className="text-center space-y-4">
             <div className="bg-blue-50 rounded-lg p-4">
@@ -445,19 +456,44 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
             </div>
 
             <div className="flex justify-center">
-              <img 
-                src={generateUPIQR()} 
-                alt="UPI QR Code" 
-                className="border-2 border-gray-300 rounded-lg"
-              />
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <img 
+                  src={generateUPIQR()} 
+                  alt="UPI QR Code" 
+                  className="border-2 border-gray-300 rounded-lg mx-auto"
+                />
+              </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">Amount to Pay:</p>
-              <div className="flex items-center justify-center font-bold text-xl text-green-600">
-                <IndianRupee className="w-5 h-5" />
-                <span>{totalAmount.toLocaleString()}</span>
+            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Pay to UPI ID:</span>
+                <div className="flex items-center space-x-2">
+                  <code className="bg-white px-2 py-1 rounded text-sm font-mono">{upiId}</code>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={copyUPIId}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Copy className="w-3 h-3" />
+                  </Button>
+                </div>
               </div>
+              
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Amount to Pay:</p>
+                <div className="flex items-center justify-center font-bold text-xl text-green-600">
+                  <IndianRupee className="w-5 h-5" />
+                  <span>{totalAmount.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-800">
+                💡 After completing the payment, click "Payment Done" to confirm your order
+              </p>
             </div>
 
             <div className="flex space-x-3">
@@ -517,7 +553,7 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
               </div>
               <div className="flex justify-between">
                 <span>Payment Method:</span>
-                <span className="capitalize">{order.paymentMethod}</span>
+                <span className="capitalize">{order.paymentMethod === 'upi' ? `UPI (${upiId})` : order.paymentMethod}</span>
               </div>
               <div className="flex justify-between">
                 <span>Status:</span>
