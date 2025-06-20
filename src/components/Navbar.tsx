@@ -611,7 +611,7 @@ const Navbar = () => {
                   }}
                   className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
                 >
-                  <Camera className="w-4 h-4 mr-2" />
+                  <Upload className="w-4 h-4 mr-2" />
                   Change Photo
                 </button>
                 <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
@@ -767,7 +767,6 @@ const Navbar = () => {
               />
               
               <Button variant="outline" className="w-full">
-                <Camera className="w-4 h-4 mr-2" />
                 Take Photo
               </Button>
             </div>
