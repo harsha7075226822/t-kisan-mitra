@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +11,6 @@ import {
   BookOpen, 
   Building2, 
   ShoppingCart, 
-  Mic,
   Phone,
   Beaker,
   Sprout,
@@ -60,13 +58,6 @@ const KisanDashboard = () => {
       icon: ShoppingCart,
       color: 'bg-orange-500',
       path: '/mandi'
-    },
-    {
-      title: 'Voice AI',
-      description: 'Get help using voice (Telugu/English)',
-      icon: Mic,
-      color: 'bg-red-500',
-      path: '/voice'
     },
     {
       title: 'Seeds Container',
