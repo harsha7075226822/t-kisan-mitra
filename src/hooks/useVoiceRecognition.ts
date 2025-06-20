@@ -45,9 +45,10 @@ export const useVoiceRecognition = (
       recognition.continuous = continuous;
       recognition.interimResults = true;
       recognition.lang = getLanguageCode(language);
+      recognition.maxAlternatives = 3;
 
       recognition.onstart = () => {
-        console.log('Voice recognition started');
+        console.log('Voice recognition started for language:', recognition.lang);
         setIsListening(true);
       };
 
@@ -64,16 +65,27 @@ export const useVoiceRecognition = (
           }
         }
 
-        setTranscript(finalTranscript || interimTranscript);
+        const currentTranscript = finalTranscript || interimTranscript;
+        setTranscript(currentTranscript);
 
         if (finalTranscript && onResult) {
-          onResult(finalTranscript);
+          onResult(finalTranscript.trim());
         }
       };
 
       recognition.onerror = (event: any) => {
         console.error('Voice recognition error:', event.error);
         setIsListening(false);
+        
+        // Handle specific errors
+        if (event.error === 'not-allowed') {
+          console.error('Microphone access denied');
+        } else if (event.error === 'no-speech') {
+          console.warn('No speech detected');
+        } else if (event.error === 'network') {
+          console.error('Network error during recognition');
+        }
+        
         if (onError) {
           onError(event.error);
         }
@@ -82,6 +94,10 @@ export const useVoiceRecognition = (
       recognition.onend = () => {
         console.log('Voice recognition ended');
         setIsListening(false);
+      };
+
+      recognition.onnomatch = () => {
+        console.warn('Speech recognition: no match found');
       };
     } else {
       console.warn('Speech recognition not supported');
@@ -110,8 +126,16 @@ export const useVoiceRecognition = (
   const startListening = () => {
     if (recognitionRef.current && !isListening) {
       setTranscript('');
-      recognitionRef.current.lang = getLanguageCode(language);
-      recognitionRef.current.start();
+      const langCode = getLanguageCode(language);
+      recognitionRef.current.lang = langCode;
+      
+      try {
+        recognitionRef.current.start();
+        console.log('Starting voice recognition with language:', langCode);
+      } catch (error) {
+        console.error('Error starting voice recognition:', error);
+        setIsListening(false);
+      }
     }
   };
 
