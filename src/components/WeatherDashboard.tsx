@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Cloud, MapPin, Thermometer, Droplets, Wind, Sun, Search } from 'lucide-react';
+import { Cloud, MapPin, Thermometer, Droplets, Wind, Sun, Search, Heart, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -60,7 +59,7 @@ const WeatherDashboard = () => {
   const handleInputChange = (e) => {
     setInputCity(e.target.value);
     if (error && e.target.value.trim()) {
-      setError(''); // Clear error when user starts typing
+      setError('');
     }
   };
 
@@ -90,7 +89,7 @@ const WeatherDashboard = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Optimal': return 'text-green-600';
+      case 'Optimal': return 'text-emerald-600';
       case 'High': return 'text-blue-600';
       case 'Low': return 'text-red-600';
       default: return 'text-gray-600';
@@ -99,10 +98,10 @@ const WeatherDashboard = () => {
 
   const getStatusBadgeColor = (status) => {
     switch (status) {
-      case 'Optimal': return 'bg-green-100 text-green-800 border-green-200';
-      case 'High': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Low': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'Optimal': return 'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border-emerald-200';
+      case 'High': return 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 border-blue-200';
+      case 'Low': return 'bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-red-200';
+      default: return 'bg-gradient-to-r from-gray-100 to-slate-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -115,131 +114,140 @@ const WeatherDashboard = () => {
   };
 
   const cropRecommendations = [
-    { crop: 'Cotton', status: 'Recommended', reason: 'Suitable for current temperature range' },
-    { crop: 'Wheat', status: 'Recommended', reason: 'Good soil moisture levels detected' },
-    { crop: 'Maize', status: 'Recommended', reason: 'Optimal humidity conditions' }
+    { crop: '🌾 Cotton', status: 'Recommended', reason: 'Perfect for current temperature range', color: 'bg-gradient-to-r from-yellow-50 to-orange-50 border-orange-200' },
+    { crop: '🌱 Wheat', status: 'Recommended', reason: 'Excellent soil moisture detected', color: 'bg-gradient-to-r from-green-50 to-emerald-50 border-emerald-200' },
+    { crop: '🌽 Maize', status: 'Recommended', reason: 'Optimal humidity conditions', color: 'bg-gradient-to-r from-blue-50 to-indigo-50 border-indigo-200' }
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
         {/* City Input Section */}
-        <Card className="shadow-sm">
+        <Card className="shadow-xl border-0 bg-gradient-to-r from-white via-blue-50 to-indigo-50 backdrop-blur-sm">
           <CardHeader className="pb-4">
-            <CardTitle className="flex items-center space-x-2 text-lg">
-              <MapPin className="w-5 h-5 text-blue-600" />
-              <span>Select City</span>
+            <CardTitle className="flex items-center space-x-3 text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <MapPin className="w-6 h-6 text-blue-600 animate-pulse" />
+              <span className="font-bold">🌍 Discover Your City's Weather</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex space-x-3">
+            <div className="flex space-x-4">
               <Input
                 type="text"
-                placeholder="vikarabad"
+                placeholder="Enter your dream destination..."
                 value={inputCity}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
-                className="flex-1 h-10"
+                className="flex-1 h-12 text-lg border-2 border-blue-200 focus:border-purple-400 rounded-xl bg-white/80 backdrop-blur-sm"
               />
               <Button 
                 onClick={handleGetWeather}
                 disabled={loading}
-                className="bg-green-600 hover:bg-green-700 px-6"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 h-12 rounded-xl font-semibold text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
               >
-                Get Weather
+                <Search className="w-5 h-5 mr-2" />
+                Explore Weather
               </Button>
             </div>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Current Weather Section */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Weather Cards Row */}
             {loading ? (
-              <Card className="shadow-sm">
-                <CardContent className="p-6 text-center">
-                  <div className="text-2xl mb-2">🔄</div>
-                  <p>Fetching weather data...</p>
+              <Card className="shadow-xl border-0 bg-gradient-to-r from-yellow-100 to-orange-100">
+                <CardContent className="p-8 text-center">
+                  <div className="text-4xl mb-4 animate-spin">🌟</div>
+                  <p className="text-lg font-semibold text-orange-800">Fetching magical weather data...</p>
                 </CardContent>
               </Card>
             ) : error ? (
-              <Card className="shadow-sm border-red-200 bg-red-50">
-                <CardContent className="p-6 text-center">
-                  <div className="text-2xl mb-2">⚠️</div>
-                  <p className="text-red-700">{error}</p>
+              <Card className="shadow-xl border-0 bg-gradient-to-r from-red-100 to-pink-100">
+                <CardContent className="p-8 text-center">
+                  <div className="text-4xl mb-4">⚠️</div>
+                  <p className="text-red-700 font-semibold text-lg">{error}</p>
                 </CardContent>
               </Card>
             ) : weatherData ? (
               <>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Card className="shadow-sm">
-                    <CardContent className="p-4 text-center">
-                      <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Current Location</div>
-                      <div className="text-lg font-semibold">{weatherData.name}</div>
+                  <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-100 to-pink-100 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <CardContent className="p-6 text-center">
+                      <div className="text-xs text-purple-600 uppercase tracking-wider mb-2 font-bold">📍 Current Location</div>
+                      <div className="text-xl font-bold text-purple-800">{weatherData.name}</div>
                     </CardContent>
                   </Card>
                   
-                  <Card className="shadow-sm">
-                    <CardContent className="p-4 text-center">
-                      <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Active Fields</div>
-                      <div className="text-lg font-semibold">4</div>
+                  <Card className="shadow-lg border-0 bg-gradient-to-br from-green-100 to-emerald-100 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <CardContent className="p-6 text-center">
+                      <div className="text-xs text-emerald-600 uppercase tracking-wider mb-2 font-bold">🌾 Active Fields</div>
+                      <div className="text-xl font-bold text-emerald-800">4</div>
                     </CardContent>
                   </Card>
                   
-                  <Card className="shadow-sm">
-                    <CardContent className="p-4 text-center">
-                      <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Temperature</div>
-                      <div className="text-lg font-semibold">{Math.round(weatherData.main.temp - 1)}°C</div>
+                  <Card className="shadow-lg border-0 bg-gradient-to-br from-orange-100 to-red-100 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <CardContent className="p-6 text-center">
+                      <div className="text-xs text-orange-600 uppercase tracking-wider mb-2 font-bold">🌡️ Temperature</div>
+                      <div className="text-xl font-bold text-orange-800">{Math.round(weatherData.main.temp - 1)}°C</div>
                     </CardContent>
                   </Card>
                   
-                  <Card className="shadow-sm">
-                    <CardContent className="p-4 text-center">
-                      <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Soil Moisture</div>
-                      <div className="text-lg font-semibold">58%</div>
+                  <Card className="shadow-lg border-0 bg-gradient-to-br from-blue-100 to-cyan-100 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <CardContent className="p-6 text-center">
+                      <div className="text-xs text-blue-600 uppercase tracking-wider mb-2 font-bold">💧 Soil Moisture</div>
+                      <div className="text-xl font-bold text-blue-800">58%</div>
                     </CardContent>
                   </Card>
                 </div>
 
                 {/* Current Weather Main Card */}
-                <Card className="shadow-sm">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Current Weather</CardTitle>
+                <Card className="shadow-2xl border-0 bg-gradient-to-br from-white via-blue-50 to-indigo-100 overflow-hidden">
+                  <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <CardTitle className="text-2xl font-bold flex items-center">
+                      <Sun className="w-8 h-8 mr-3 animate-pulse" />
+                      Current Weather Magic ✨
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="text-center">
-                        <div className="text-5xl mb-2">{Math.round(weatherData.main.temp - 1)}°C</div>
-                        <div className="text-gray-600 capitalize mb-4">{weatherData.weather[0].description}</div>
-                        <div className="text-sm text-green-600 font-medium">
-                          Weather conditions favorable for farming
+                  <CardContent className="p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="text-center bg-gradient-to-br from-yellow-100 to-orange-100 rounded-2xl p-6">
+                        <div className="text-7xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mb-2">
+                          {Math.round(weatherData.main.temp - 1)}°C
+                        </div>
+                        <div className="text-gray-700 capitalize mb-4 text-lg font-semibold">
+                          {getWeatherIcon(weatherData.weather[0].main)} {weatherData.weather[0].description}
+                        </div>
+                        <div className="text-sm text-emerald-600 font-bold bg-emerald-100 px-4 py-2 rounded-full">
+                          🌱 Perfect farming weather ahead!
                         </div>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <Droplets className="w-5 h-5 text-blue-500 mx-auto mb-1" />
-                          <div className="text-xs text-gray-500">Humidity</div>
-                          <div className="font-semibold">{weatherData.main.humidity}%</div>
+                        <div className="text-center p-4 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl shadow-md hover:shadow-lg transition-all">
+                          <Droplets className="w-8 h-8 text-blue-500 mx-auto mb-2 animate-bounce" />
+                          <div className="text-xs text-blue-600 font-bold">💧 Humidity</div>
+                          <div className="font-bold text-lg text-blue-800">{weatherData.main.humidity}%</div>
                         </div>
                         
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <Wind className="w-5 h-5 text-gray-500 mx-auto mb-1" />
-                          <div className="text-xs text-gray-500">Wind Speed</div>
-                          <div className="font-semibold">{weatherData.wind.speed} km/h</div>
+                        <div className="text-center p-4 bg-gradient-to-br from-gray-100 to-slate-100 rounded-xl shadow-md hover:shadow-lg transition-all">
+                          <Wind className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+                          <div className="text-xs text-gray-600 font-bold">💨 Wind Speed</div>
+                          <div className="font-bold text-lg text-gray-800">{weatherData.wind.speed} km/h</div>
                         </div>
                         
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <Thermometer className="w-5 h-5 text-red-500 mx-auto mb-1" />
-                          <div className="text-xs text-gray-500">Feels Like</div>
-                          <div className="font-semibold">{Math.round(weatherData.main.feels_like - 1)}°C</div>
+                        <div className="text-center p-4 bg-gradient-to-br from-red-100 to-pink-100 rounded-xl shadow-md hover:shadow-lg transition-all">
+                          <Thermometer className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                          <div className="text-xs text-red-600 font-bold">🌡️ Feels Like</div>
+                          <div className="font-bold text-lg text-red-800">{Math.round(weatherData.main.feels_like - 1)}°C</div>
                         </div>
                         
-                        <div className="text-center p-3 bg-gray-50 rounded-lg">
-                          <Sun className="w-5 h-5 text-yellow-500 mx-auto mb-1" />
-                          <div className="text-xs text-gray-500">Visibility</div>
-                          <div className="font-semibold">{weatherData.visibility ? (weatherData.visibility / 1000).toFixed(1) : 'N/A'} km</div>
+                        <div className="text-center p-4 bg-gradient-to-br from-yellow-100 to-amber-100 rounded-xl shadow-md hover:shadow-lg transition-all">
+                          <Sun className="w-8 h-8 text-yellow-500 mx-auto mb-2 animate-pulse" />
+                          <div className="text-xs text-yellow-600 font-bold">👁️ Visibility</div>
+                          <div className="font-bold text-lg text-yellow-800">{weatherData.visibility ? (weatherData.visibility / 1000).toFixed(1) : 'N/A'} km</div>
                         </div>
                       </div>
                     </div>
@@ -249,23 +257,26 @@ const WeatherDashboard = () => {
             ) : null}
 
             {/* Active Farming Alerts */}
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                  Active Farming Alerts (1)
+            <Card className="shadow-xl border-0 bg-gradient-to-r from-red-50 to-pink-50">
+              <CardHeader className="bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-t-lg">
+                <CardTitle className="text-xl font-bold flex items-center">
+                  <Heart className="w-6 h-6 mr-3 animate-pulse" />
+                  🚨 Passionate Farming Alerts (1)
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <CardContent className="p-6">
+                <div className="bg-gradient-to-r from-red-100 to-rose-100 border-2 border-red-300 rounded-xl p-6 shadow-lg">
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="font-medium text-red-800 mb-1">Low Soil Moisture - Alert</div>
-                      <div className="text-sm text-red-700">1 field(s) need immediate irrigation (South Field)</div>
-                      <div className="text-xs text-red-600 mt-1">Active: See irrigation →</div>
+                      <div className="font-bold text-red-800 mb-2 text-lg flex items-center">
+                        <Zap className="w-5 h-5 mr-2 animate-pulse" />
+                        💧 Critical: Low Soil Moisture Alert!
+                      </div>
+                      <div className="text-sm text-red-700 font-semibold">1 field desperately needs irrigation (South Field) 🌾</div>
+                      <div className="text-xs text-red-600 mt-2 font-bold">⚡ Immediate action required →</div>
                     </div>
-                    <Button size="sm" className="bg-red-600 hover:bg-red-700 text-xs">
-                      See Action
+                    <Button size="sm" className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-sm font-bold shadow-lg transform hover:scale-105 transition-all">
+                      Take Action Now! 🚀
                     </Button>
                   </div>
                 </div>
@@ -274,54 +285,77 @@ const WeatherDashboard = () => {
           </div>
 
           {/* Right Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* AI Crop Recommendations */}
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <span className="text-orange-500 mr-2">🤖</span>
-                  AI Crop Recommendations
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-orange-50 to-yellow-50">
+              <CardHeader className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-t-lg">
+                <CardTitle className="text-xl font-bold flex items-center">
+                  <span className="text-2xl mr-3">🤖</span>
+                  AI Crop Recommendations ✨
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="text-sm text-gray-600 mb-4">Recommended Crops</div>
+              <CardContent className="space-y-4 p-6">
+                <div className="text-sm text-gray-700 mb-4 font-semibold">🌟 Recommended Passionate Crops</div>
                 {cropRecommendations.map((item, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-3">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="font-medium">{item.crop}</div>
-                      <Badge className="bg-green-100 text-green-800 text-xs">Recommended</Badge>
+                  <div key={index} className={`border-2 rounded-xl p-4 shadow-md hover:shadow-lg transition-all transform hover:scale-105 ${item.color}`}>
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="font-bold text-lg">{item.crop}</div>
+                      <Badge className="bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 text-sm font-bold border-emerald-300">
+                        ✅ Recommended
+                      </Badge>
                     </div>
-                    <div className="text-xs text-gray-600">{item.reason}</div>
+                    <div className="text-sm text-gray-700 font-semibold">{item.reason}</div>
                   </div>
                 ))}
                 
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-4">
-                  <div className="text-sm font-medium text-yellow-800 mb-1">Farming Tips</div>
-                  <div className="text-xs text-yellow-700 space-y-1">
-                    <div>• Soil nutrients detection</div>
-                    <div>• Detect market demand</div>
-                    <div>• Calculate for recommendations</div>
+                <div className="bg-gradient-to-r from-yellow-100 to-amber-100 border-2 border-yellow-300 rounded-xl p-4 mt-6 shadow-lg">
+                  <div className="text-lg font-bold text-yellow-800 mb-2 flex items-center">
+                    <span className="mr-2">💡</span>
+                    Passionate Farming Tips
+                  </div>
+                  <div className="text-sm text-yellow-700 space-y-2 font-semibold">
+                    <div className="flex items-center">
+                      <span className="mr-2">🧪</span>
+                      Advanced soil nutrients detection
+                    </div>
+                    <div className="flex items-center">
+                      <span className="mr-2">📈</span>
+                      Real-time market demand analysis
+                    </div>
+                    <div className="flex items-center">
+                      <span className="mr-2">🎯</span>
+                      AI-powered yield predictions
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Planting Calendar */}
-            <Card className="shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">Planting Calendar</CardTitle>
+            <Card className="shadow-xl border-0 bg-gradient-to-br from-green-50 to-emerald-50">
+              <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-t-lg">
+                <CardTitle className="text-xl font-bold flex items-center">
+                  <span className="mr-3">📅</span>
+                  Planting Calendar Magic
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="text-sm font-medium mb-1">Next Planting Window</div>
-                  <div className="text-xs text-gray-600">Based on weather forecast</div>
-                  <div className="text-lg font-semibold text-blue-600">2-5 days</div>
+              <CardContent className="space-y-6 p-6">
+                <div className="bg-gradient-to-r from-blue-100 to-indigo-100 rounded-xl p-4 shadow-md">
+                  <div className="text-lg font-bold mb-2 text-blue-800 flex items-center">
+                    <span className="mr-2">🌱</span>
+                    Next Planting Window
+                  </div>
+                  <div className="text-sm text-blue-600 font-semibold">Based on passionate weather forecast</div>
+                  <div className="text-2xl font-bold text-blue-700 mt-2">2-5 days ⏰</div>
                 </div>
                 
-                <div>
-                  <div className="text-sm font-medium mb-1">Harvest Season</div>
-                  <div className="text-xs text-gray-600">Estimated timeline</div>
-                  <div className="text-lg font-semibold text-green-600">90-120 days</div>
+                <div className="bg-gradient-to-r from-emerald-100 to-green-100 rounded-xl p-4 shadow-md">
+                  <div className="text-lg font-bold mb-2 text-emerald-800 flex items-center">
+                    <span className="mr-2">🌾</span>
+                    Harvest Season
+                  </div>
+                  <div className="text-sm text-emerald-600 font-semibold">Estimated golden timeline</div>
+                  <div className="text-2xl font-bold text-emerald-700 mt-2">90-120 days 🎉</div>
                 </div>
               </CardContent>
             </Card>
@@ -329,40 +363,40 @@ const WeatherDashboard = () => {
         </div>
 
         {/* IoT Soil Monitoring */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center">
-              <span className="text-green-600 mr-2">🌱</span>
-              IoT Soil Monitoring
+        <Card className="shadow-2xl border-0 bg-gradient-to-br from-white via-green-50 to-emerald-50">
+          <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-lg">
+            <CardTitle className="text-2xl font-bold flex items-center">
+              <span className="text-3xl mr-4">🌱</span>
+              IoT Soil Monitoring Paradise
             </CardTitle>
-            <p className="text-sm text-gray-600">Real-time soil moisture levels across your fields</p>
+            <p className="text-green-100 font-semibold">Real-time passionate soil monitoring across your dream fields</p>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardContent className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {soilData.map((field, index) => (
-                <Card key={index} className="shadow-sm border">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-3">
+                <Card key={index} className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-4">
                       <div>
-                        <div className="font-medium text-sm">{field.sensor}</div>
-                        <div className="text-xs text-gray-600">Crop: {field.crop}</div>
-                        <div className="text-xs text-gray-500">{field.location}</div>
+                        <div className="font-bold text-lg text-gray-800">{field.sensor}</div>
+                        <div className="text-sm text-gray-600 font-semibold">🌾 Crop: {field.crop}</div>
+                        <div className="text-sm text-gray-500">{field.location}</div>
                       </div>
-                      <Badge className={`text-xs border ${getStatusBadgeColor(field.status)}`}>
+                      <Badge className={`text-sm border-2 font-bold ${getStatusBadgeColor(field.status)}`}>
                         {field.status}
                       </Badge>
                     </div>
                     
-                    <div className="mb-3">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>Soil Moisture</span>
-                        <span className="font-medium">{field.moisture}%</span>
+                    <div className="mb-4">
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="font-bold text-gray-700">💧 Soil Moisture</span>
+                        <span className="font-bold text-lg">{field.moisture}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
                         <div 
-                          className={`h-2 rounded-full ${
-                            field.moisture < 40 ? 'bg-red-500' :
-                            field.moisture > 60 ? 'bg-blue-500' : 'bg-green-500'
+                          className={`h-3 rounded-full shadow-lg transition-all duration-500 ${
+                            field.moisture < 40 ? 'bg-gradient-to-r from-red-400 to-red-600' :
+                            field.moisture > 60 ? 'bg-gradient-to-r from-blue-400 to-blue-600' : 'bg-gradient-to-r from-green-400 to-green-600'
                           }`}
                           style={{ width: `${field.moisture}%` }}
                         ></div>
@@ -371,21 +405,21 @@ const WeatherDashboard = () => {
                     
                     <Button 
                       size="sm" 
-                      className={`w-full text-xs ${
-                        field.status === 'Low' ? 'bg-red-600 hover:bg-red-700' :
-                        field.status === 'High' ? 'bg-blue-600 hover:bg-blue-700' :
-                        'bg-green-600 hover:bg-green-700'
+                      className={`w-full text-sm font-bold shadow-lg transform hover:scale-105 transition-all duration-200 ${
+                        field.status === 'Low' ? 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700' :
+                        field.status === 'High' ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700' :
+                        'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700'
                       }`}
                     >
-                      {field.status === 'Low' ? 'Trigger Now' :
-                       field.status === 'High' ? 'Reduce Water' :
-                       'Maintain Level'}
+                      {field.status === 'Low' ? '🚀 Trigger Now!' :
+                       field.status === 'High' ? '💧 Reduce Water' :
+                       '✨ Maintain Perfect Level'}
                     </Button>
                     
-                    <div className="text-center mt-2">
-                      <div className="text-lg font-bold">{index === 1 ? '1' : index === 0 ? '2' : '1'}</div>
-                      <div className="text-xs text-gray-500">
-                        {index === 1 ? 'Needs Irrigation' : index === 0 ? 'Fields Optimal' : 'Excess Moisture'}
+                    <div className="text-center mt-4 bg-gradient-to-r from-gray-100 to-slate-100 rounded-lg p-3">
+                      <div className="text-2xl font-bold text-gray-800">{index === 1 ? '1' : index === 0 ? '2' : '1'}</div>
+                      <div className="text-xs text-gray-600 font-semibold">
+                        {index === 1 ? '⚡ Needs Irrigation' : index === 0 ? '🌟 Fields Optimal' : '💧 Excess Moisture'}
                       </div>
                     </div>
                   </CardContent>
