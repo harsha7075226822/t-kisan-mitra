@@ -24,6 +24,7 @@ import MyOrders from './MyOrders';
 import MyAddress from './MyAddress';
 import MyWallet from './MyWallet';
 import UniversalCart from './UniversalCart';
+import UserProfile from './UserProfile';
 
 interface Transaction {
   id: string;
@@ -43,6 +44,7 @@ const Navbar = () => {
   const [showMyWallet, setShowMyWallet] = useState(false);
   const [showTrackOrder, setShowTrackOrder] = useState(false);
   const [showProfileUpload, setShowProfileUpload] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const [trackingId, setTrackingId] = useState('');
   const [profileImage, setProfileImage] = useState('');
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
@@ -432,7 +434,13 @@ const Navbar = () => {
                       {t('orders.trackOrder')}
                     </button>
 
-                    <button className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md">
+                    <button
+                      onClick={() => {
+                        setShowUserProfile(true);
+                        setIsHamburgerOpen(false);
+                      }}
+                      className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md"
+                    >
                       <User className="w-4 h-4 mr-3" />
                       View Profile
                     </button>
@@ -581,7 +589,13 @@ const Navbar = () => {
                   <Upload className="w-4 h-4 mr-2" />
                   Change Photo
                 </button>
-                <button className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50">
+                <button 
+                  onClick={() => {
+                    setShowUserProfile(true);
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
+                >
                   <User className="w-4 h-4 mr-2" />
                   View Profile
                 </button>
@@ -742,6 +756,16 @@ const Navbar = () => {
               Supported formats: JPG, PNG, GIF (Max 5MB)
             </p>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* User Profile Dialog */}
+      <Dialog open={showUserProfile} onOpenChange={setShowUserProfile}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>User Profile</DialogTitle>
+          </DialogHeader>
+          <UserProfile />
         </DialogContent>
       </Dialog>
     </nav>
