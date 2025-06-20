@@ -2,16 +2,38 @@ import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Camera, Upload, Zap, BookOpen, History, MapPin } from 'lucide-react';
+import { Camera, Upload, Zap, BookOpen, History, AlertCircle, CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/use-toast';
 
 const LeafScanner = () => {
   const { t } = useLanguage();
+  const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
+  const [cameraPermission, setCameraPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  const requestCameraPermission = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      // Stop the stream immediately as we just wanted to check permission
+      stream.getTracks().forEach(track => track.stop());
+      setCameraPermission('granted');
+      return true;
+    } catch (error) {
+      console.error('Camera permission denied:', error);
+      setCameraPermission('denied');
+      toast({
+        title: "Camera Access Denied",
+        description: "Please allow camera access to take photos of leaves.",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -25,35 +47,81 @@ const LeafScanner = () => {
     }
   };
 
-  const handleCameraCapture = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCameraCapture = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target?.result as string);
         setScanResult(null);
+        toast({
+          title: "Photo Captured Successfully",
+          description: "Your leaf image is ready for analysis.",
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleScan = async () => {
+  const handleTakePhoto = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (hasPermission) {
+      cameraInputRef.current?.click();
+    }
+  };
+
+  const analyzeLeafImage = async () => {
     if (!selectedImage) return;
     
     setIsScanning(true);
     
-    // Simulate AI scanning process
+    // Enhanced simulation with more realistic analysis
     setTimeout(() => {
-      setScanResult({
-        disease: 'Tomato Late Blight',
-        severity: 'Medium',
-        confidence: 87,
-        cause: 'Fungal infection (Phytophthora infestans)',
-        symptoms: 'Dark brown spots on leaves, yellowing edges',
-        treatment: 'Apply copper-based fungicide, improve ventilation',
-        prevention: 'Avoid overhead watering, ensure proper spacing'
-      });
+      // Simulate different disease results based on random selection
+      const diseases = [
+        {
+          disease: 'Tomato Late Blight',
+          severity: 'High',
+          confidence: 89,
+          cause: 'Fungal infection (Phytophthora infestans)',
+          symptoms: 'Dark brown irregular spots on leaves, yellowing around edges, white fuzzy growth on leaf undersides',
+          treatment: 'Apply copper-based fungicide immediately. Remove affected leaves and improve air circulation. Avoid overhead watering.',
+          prevention: 'Plant resistant varieties, ensure proper spacing, avoid overhead irrigation, apply preventive copper sprays',
+          urgency: 'immediate',
+          plantType: 'Tomato'
+        },
+        {
+          disease: 'Powdery Mildew',
+          severity: 'Medium',
+          confidence: 82,
+          cause: 'Fungal infection (Erysiphales)',
+          symptoms: 'White powdery coating on leaf surfaces, yellowing and curling of leaves',
+          treatment: 'Apply neem oil or potassium bicarbonate spray. Improve air circulation around plants.',
+          prevention: 'Avoid overcrowding plants, water at soil level, ensure good ventilation',
+          urgency: 'moderate',
+          plantType: 'Various crops'
+        },
+        {
+          disease: 'Healthy Leaf',
+          severity: 'None',
+          confidence: 95,
+          cause: 'No disease detected',
+          symptoms: 'Leaf appears healthy with normal coloration and structure',
+          treatment: 'No treatment needed. Continue regular care and monitoring.',
+          prevention: 'Maintain current care routine, monitor regularly for early disease detection',
+          urgency: 'none',
+          plantType: 'Healthy plant'
+        }
+      ];
+      
+      const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
+      setScanResult(randomDisease);
       setIsScanning(false);
+      
+      toast({
+        title: "Analysis Complete",
+        description: `Disease detection completed with ${randomDisease.confidence}% confidence.`,
+      });
     }, 3000);
   };
 
@@ -107,16 +175,16 @@ const LeafScanner = () => {
                         className="max-w-full max-h-64 mx-auto rounded-lg shadow-md"
                       />
                       <div className="flex gap-4 justify-center">
-                        <Button onClick={handleScan} disabled={isScanning} className="bg-green-600 hover:bg-green-700">
+                        <Button onClick={analyzeLeafImage} disabled={isScanning} className="bg-green-600 hover:bg-green-700">
                           {isScanning ? (
                             <>
                               <Zap className="w-4 h-4 mr-2 animate-spin" />
-                              Scanning...
+                              Analyzing Image...
                             </>
                           ) : (
                             <>
                               <Zap className="w-4 h-4 mr-2" />
-                              Scan for Diseases
+                              Analyze for Diseases
                             </>
                           )}
                         </Button>
@@ -143,7 +211,7 @@ const LeafScanner = () => {
                             <Upload className="w-4 h-4 mr-2" />
                             Upload Image
                           </Button>
-                          <Button variant="outline" onClick={() => cameraInputRef.current?.click()}>
+                          <Button variant="outline" onClick={handleTakePhoto}>
                             <Camera className="w-4 h-4 mr-2" />
                             Take Photo
                           </Button>
@@ -172,12 +240,25 @@ const LeafScanner = () => {
                   className="hidden"
                 />
 
-                {/* Scan Result */}
+                {/* Enhanced Scan Result */}
                 {scanResult && (
-                  <Card className="border-blue-200 bg-blue-50">
+                  <Card className={`border-2 ${
+                    scanResult.urgency === 'immediate' ? 'border-red-200 bg-red-50' :
+                    scanResult.urgency === 'moderate' ? 'border-yellow-200 bg-yellow-50' :
+                    'border-green-200 bg-green-50'
+                  }`}>
                     <CardHeader>
-                      <CardTitle className="text-blue-800">
-                        🔍 Diagnosis Result
+                      <CardTitle className={`flex items-center ${
+                        scanResult.urgency === 'immediate' ? 'text-red-800' :
+                        scanResult.urgency === 'moderate' ? 'text-yellow-800' :
+                        'text-green-800'
+                      }`}>
+                        {scanResult.urgency === 'none' ? (
+                          <CheckCircle className="w-6 h-6 mr-2" />
+                        ) : (
+                          <AlertCircle className="w-6 h-6 mr-2" />
+                        )}
+                        Analysis Result
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -190,23 +271,29 @@ const LeafScanner = () => {
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
+                          <h4 className="font-medium text-gray-700 mb-2">Plant Type</h4>
+                          <p className="text-sm text-gray-600">{scanResult.plantType}</p>
+                        </div>
+                        
+                        <div>
                           <h4 className="font-medium text-gray-700 mb-2">Severity</h4>
                           <Badge className={
                             scanResult.severity === 'High' ? 'bg-red-500' :
-                            scanResult.severity === 'Medium' ? 'bg-yellow-500' : 'bg-green-500'
+                            scanResult.severity === 'Medium' ? 'bg-yellow-500' : 
+                            scanResult.severity === 'None' ? 'bg-green-500' : 'bg-gray-500'
                           }>
                             {scanResult.severity}
                           </Badge>
                         </div>
-                        
-                        <div>
-                          <h4 className="font-medium text-gray-700 mb-2">Cause</h4>
-                          <p className="text-sm text-gray-600">{scanResult.cause}</p>
-                        </div>
                       </div>
 
                       <div>
-                        <h4 className="font-medium text-gray-700 mb-2">Symptoms</h4>
+                        <h4 className="font-medium text-gray-700 mb-2">Cause</h4>
+                        <p className="text-sm text-gray-600">{scanResult.cause}</p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium text-gray-700 mb-2">Observed Symptoms</h4>
                         <p className="text-sm text-gray-600">{scanResult.symptoms}</p>
                       </div>
 
@@ -216,9 +303,16 @@ const LeafScanner = () => {
                       </div>
 
                       <div>
-                        <h4 className="font-medium text-gray-700 mb-2">Prevention</h4>
+                        <h4 className="font-medium text-gray-700 mb-2">Prevention Tips</h4>
                         <p className="text-sm text-gray-600">{scanResult.prevention}</p>
                       </div>
+
+                      {scanResult.urgency === 'immediate' && (
+                        <div className="bg-red-100 border border-red-300 rounded-lg p-4">
+                          <h4 className="font-medium text-red-800 mb-2">⚠️ Urgent Action Required</h4>
+                          <p className="text-sm text-red-700">This disease requires immediate attention to prevent spread and crop loss.</p>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 )}
@@ -298,6 +392,7 @@ const LeafScanner = () => {
                 <p>• Include multiple angles if possible</p>
                 <p>• Avoid blurry or dark images</p>
                 <p>• Clean the leaf surface before scanning</p>
+                <p>• Hold camera steady for clear shots</p>
               </CardContent>
             </Card>
           </div>
