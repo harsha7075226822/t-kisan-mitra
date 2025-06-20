@@ -1,12 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
-import { Cloud, MapPin, Thermometer, Droplets, Wind, Sun } from 'lucide-react';
+import { Cloud, MapPin, Thermometer, Droplets, Wind, Sun, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const WeatherDashboard = () => {
   const [selectedCity, setSelectedCity] = useState('Hyderabad');
+  const [inputCity, setInputCity] = useState('');
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -25,6 +27,11 @@ const WeatherDashboard = () => {
   ];
 
   const fetchWeatherData = async (city) => {
+    if (!city || city.trim() === '') {
+      setError('Please enter a city name');
+      return;
+    }
+
     setLoading(true);
     setError('');
     
@@ -34,6 +41,9 @@ const WeatherDashboard = () => {
       );
       
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('City not found. Please check the spelling and try again.');
+        }
         throw new Error('Weather data not available');
       }
       
@@ -41,7 +51,7 @@ const WeatherDashboard = () => {
       setWeatherData(data);
       console.log('Weather data fetched:', data);
     } catch (err) {
-      setError('Failed to fetch weather data. Please try again.');
+      setError(err.message || 'Failed to fetch weather data. Please try again.');
       console.error('Weather API error:', err);
     } finally {
       setLoading(false);
@@ -54,6 +64,28 @@ const WeatherDashboard = () => {
 
   const handleCityChange = (city) => {
     setSelectedCity(city);
+    setInputCity(''); // Clear input when dropdown is used
+  };
+
+  const handleGetWeather = () => {
+    if (inputCity.trim()) {
+      setSelectedCity(inputCity.trim());
+    } else {
+      setError('Please enter a city name');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setInputCity(e.target.value);
+    if (error && e.target.value.trim()) {
+      setError(''); // Clear error when user starts typing
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleGetWeather();
+    }
   };
 
   const getWeatherIcon = (condition) => {
@@ -101,19 +133,50 @@ const WeatherDashboard = () => {
             <span>Select City</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <Select value={selectedCity} onValueChange={handleCityChange}>
-            <SelectTrigger className="w-full md:w-64">
-              <SelectValue placeholder="Choose your city" />
-            </SelectTrigger>
-            <SelectContent>
-              {cities.map((city) => (
-                <SelectItem key={city} value={city}>
-                  {city}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <CardContent className="space-y-4">
+          {/* Dropdown Selector */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Choose from popular cities:
+            </label>
+            <Select value={selectedCity} onValueChange={handleCityChange}>
+              <SelectTrigger className="w-full md:w-64">
+                <SelectValue placeholder="Choose your city" />
+              </SelectTrigger>
+              <SelectContent>
+                {cities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Input Field for Custom City */}
+          <div className="border-t pt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Or enter city name:
+            </label>
+            <div className="flex space-x-2">
+              <Input
+                type="text"
+                placeholder="Enter Telangana City (e.g., Hyderabad)"
+                value={inputCity}
+                onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
+                className="flex-1"
+              />
+              <Button 
+                onClick={handleGetWeather}
+                disabled={loading}
+                className="flex items-center space-x-2"
+              >
+                <Search className="w-4 h-4" />
+                <span>Get Weather</span>
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
