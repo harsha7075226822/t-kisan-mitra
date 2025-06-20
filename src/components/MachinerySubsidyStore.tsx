@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +11,8 @@ import {
   Star,
   Phone,
   Info,
-  ArrowLeft
+  ArrowLeft,
+  History
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import MachineryApplicationForm from './MachineryApplicationForm';
@@ -35,9 +36,23 @@ const MachinerySubsidyStore = () => {
   const { toast } = useToast();
   const [selectedMachine, setSelectedMachine] = useState<Machinery | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
-  const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [submittedApplications, setSubmittedApplications] = useState<any[]>([]);
   const [currentView, setCurrentView] = useState<'store' | 'application' | 'status'>('store');
+
+  // Load existing applications from localStorage on component mount
+  useEffect(() => {
+    const loadExistingApplications = () => {
+      try {
+        const existingApps = JSON.parse(localStorage.getItem('machineryApplications') || '[]');
+        setSubmittedApplications(existingApps);
+        console.log('Loaded existing applications:', existingApps);
+      } catch (error) {
+        console.error('Error loading applications:', error);
+      }
+    };
+
+    loadExistingApplications();
+  }, []);
 
   const machinery: Machinery[] = [
     {
@@ -151,12 +166,13 @@ const MachinerySubsidyStore = () => {
   };
 
   const handleApplicationSubmit = (applicationData: any) => {
-    setSubmittedApplications(prev => [...prev, applicationData]);
+    const updatedApplications = [...submittedApplications, applicationData];
+    setSubmittedApplications(updatedApplications);
     setCurrentView('status');
     
     // Save to localStorage for persistence
-    const existingApps = JSON.parse(localStorage.getItem('machineryApplications') || '[]');
-    localStorage.setItem('machineryApplications', JSON.stringify([...existingApps, applicationData]));
+    localStorage.setItem('machineryApplications', JSON.stringify(updatedApplications));
+    console.log('Application saved:', applicationData);
   };
 
   const handleCallSupport = () => {
@@ -166,97 +182,139 @@ const MachinerySubsidyStore = () => {
     });
   };
 
+  const handleViewApplications = () => {
+    if (submittedApplications.length > 0) {
+      setCurrentView('status');
+    } else {
+      toast({
+        title: "No Applications Found",
+        description: "You haven't submitted any machinery subsidy applications yet.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const renderStoreView = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {machinery.map((machine) => (
-        <Card key={machine.id} className="border-orange-200 hover:shadow-lg transition-all duration-200 hover:scale-105">
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="text-4xl mb-2 text-center">{machine.image}</div>
-                <CardTitle className="text-lg text-gray-900 mb-2 text-center">
-                  {machine.name}
-                </CardTitle>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Badge variant="outline" className="text-sm">
-                    {getTypeIcon(machine.type)} {machine.type}
-                  </Badge>
+    <div className="space-y-6">
+      {/* Show applications summary if any exist */}
+      {submittedApplications.length > 0 && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <History className="w-5 h-5 text-blue-600" />
+                <div>
+                  <p className="font-medium text-blue-900">Your Applications</p>
+                  <p className="text-sm text-blue-700">
+                    You have {submittedApplications.length} submitted application{submittedApplications.length > 1 ? 's' : ''}
+                  </p>
                 </div>
               </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="space-y-4">
-            {/* Pricing */}
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-center space-y-1">
-                <div className="text-sm text-gray-500 line-through">
-                  Original: ₹{machine.originalPrice.toLocaleString()}
-                </div>
-                <div className="flex items-center justify-center font-bold text-orange-600 text-lg">
-                  <IndianRupee className="w-4 h-4" />
-                  <span>{machine.subsidizedPrice.toLocaleString()}</span>
-                </div>
-                <Badge className="bg-green-100 text-green-700 text-xs">
-                  <Star className="w-3 h-3 mr-1" />
-                  {machine.subsidyPercentage} Subsidy
-                </Badge>
-              </div>
-            </div>
-
-            {/* Eligibility */}
-            <div>
-              <div className="text-sm font-medium text-gray-700 mb-2">Eligibility:</div>
-              <div className="flex flex-wrap gap-1">
-                {machine.eligibility.map((tag, index) => (
-                  <Badge key={index} className={`text-xs ${getEligibilityColor(tag)}`}>
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* Availability */}
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Status:</span>
-              <div className="flex items-center gap-1">
-                {machine.availability === 'Available' ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-green-600 font-medium">Available</span>
-                  </>
-                ) : (
-                  <>
-                    <AlertCircle className="w-4 h-4 text-red-500" />
-                    <span className="text-red-600 font-medium">Out of Stock</span>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Buttons */}
-            <div className="space-y-2">
               <Button 
-                className="w-full bg-orange-600 hover:bg-orange-700"
-                onClick={() => handleApplySubsidy(machine)}
-                disabled={machine.availability === 'Out of Stock'}
+                variant="outline" 
+                onClick={handleViewApplications}
+                className="border-blue-300 text-blue-700 hover:bg-blue-100"
               >
                 <FileText className="w-4 h-4 mr-2" />
-                {machine.availability === 'Out of Stock' ? 'Currently Unavailable' : 'Apply for Subsidy'}
-              </Button>
-              
-              <Button 
-                variant="outline"
-                className="w-full"
-                onClick={() => handleViewDetails(machine)}
-              >
-                <Info className="w-4 h-4 mr-2" />
-                View Details
+                View Status
               </Button>
             </div>
           </CardContent>
         </Card>
-      ))}
+      )}
+
+      {/* Machinery cards grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {machinery.map((machine) => (
+          <Card key={machine.id} className="border-orange-200 hover:shadow-lg transition-all duration-200 hover:scale-105">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-4xl mb-2 text-center">{machine.image}</div>
+                  <CardTitle className="text-lg text-gray-900 mb-2 text-center">
+                    {machine.name}
+                  </CardTitle>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Badge variant="outline" className="text-sm">
+                      {getTypeIcon(machine.type)} {machine.type}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="space-y-4">
+              {/* Pricing */}
+              <div className="bg-gray-50 rounded-lg p-3">
+                <div className="text-center space-y-1">
+                  <div className="text-sm text-gray-500 line-through">
+                    Original: ₹{machine.originalPrice.toLocaleString()}
+                  </div>
+                  <div className="flex items-center justify-center font-bold text-orange-600 text-lg">
+                    <IndianRupee className="w-4 h-4" />
+                    <span>{machine.subsidizedPrice.toLocaleString()}</span>
+                  </div>
+                  <Badge className="bg-green-100 text-green-700 text-xs">
+                    <Star className="w-3 h-3 mr-1" />
+                    {machine.subsidyPercentage} Subsidy
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Eligibility */}
+              <div>
+                <div className="text-sm font-medium text-gray-700 mb-2">Eligibility:</div>
+                <div className="flex flex-wrap gap-1">
+                  {machine.eligibility.map((tag, index) => (
+                    <Badge key={index} className={`text-xs ${getEligibilityColor(tag)}`}>
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Availability */}
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Status:</span>
+                <div className="flex items-center gap-1">
+                  {machine.availability === 'Available' ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span className="text-green-600 font-medium">Available</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="w-4 h-4 text-red-500" />
+                      <span className="text-red-600 font-medium">Out of Stock</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="space-y-2">
+                <Button 
+                  className="w-full bg-orange-600 hover:bg-orange-700"
+                  onClick={() => handleApplySubsidy(machine)}
+                  disabled={machine.availability === 'Out of Stock'}
+                >
+                  <FileText className="w-4 h-4 mr-2" />
+                  {machine.availability === 'Out of Stock' ? 'Currently Unavailable' : 'Apply for Subsidy'}
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => handleViewDetails(machine)}
+                >
+                  <Info className="w-4 h-4 mr-2" />
+                  View Details
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 
@@ -291,8 +349,23 @@ const MachinerySubsidyStore = () => {
         </Button>
       </div>
       
-      {submittedApplications.length > 0 && (
-        <ApplicationStatusCard applicationData={submittedApplications[submittedApplications.length - 1]} />
+      {submittedApplications.length > 0 ? (
+        <div className="space-y-4">
+          {submittedApplications.map((application, index) => (
+            <ApplicationStatusCard key={index} applicationData={application} />
+          ))}
+        </div>
+      ) : (
+        <Card className="text-center p-8">
+          <CardContent>
+            <FileText className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-medium mb-2">No Applications Found</h3>
+            <p className="text-gray-600 mb-4">You haven't submitted any machinery subsidy applications yet.</p>
+            <Button onClick={() => setCurrentView('store')}>
+              Browse Machinery
+            </Button>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
