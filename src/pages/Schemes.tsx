@@ -1,13 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Building2, Banknote, ExternalLink, FileText, Phone, ArrowLeft } from 'lucide-react';
+import SchemeApplicationForm from '@/components/SchemeApplicationForm';
+import { useToast } from '@/hooks/use-toast';
 
 const Schemes = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [selectedScheme, setSelectedScheme] = useState(null);
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
 
   const schemes = [
     {
@@ -89,6 +94,30 @@ const Schemes = () => {
       applicationProcess: 'Apply through banks or insurance companies, visit pmfby.gov.in for details'
     }
   ];
+
+  const handleApplyNow = (scheme) => {
+    setSelectedScheme(scheme);
+    setShowApplicationForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowApplicationForm(false);
+    setSelectedScheme(null);
+  };
+
+  const handleSubmitApplication = async (formData) => {
+    console.log('Application submitted:', formData);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    toast({
+      title: "Application Submitted Successfully!",
+      description: `Your application for ${selectedScheme.name} has been submitted. You will receive a confirmation SMS shortly.`,
+    });
+    
+    handleCloseForm();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-cream-50 p-6">
@@ -180,7 +209,10 @@ const Schemes = () => {
                 </div>
 
                 {/* Apply Button */}
-                <Button className="w-full bg-green-600 hover:bg-green-700">
+                <Button 
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  onClick={() => handleApplyNow(scheme)}
+                >
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Apply Now
                 </Button>
@@ -207,6 +239,15 @@ const Schemes = () => {
           </Card>
         </div>
       </div>
+
+      {/* Application Form Modal */}
+      {showApplicationForm && selectedScheme && (
+        <SchemeApplicationForm
+          scheme={selectedScheme}
+          onClose={handleCloseForm}
+          onSubmit={handleSubmitApplication}
+        />
+      )}
     </div>
   );
 };
