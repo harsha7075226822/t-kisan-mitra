@@ -1,10 +1,9 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Banknote, ExternalLink, FileText, Phone, ArrowLeft } from 'lucide-react';
+import { Building2, Banknote, ExternalLink, FileText, Phone, ArrowLeft, Clock, CheckCircle, XCircle } from 'lucide-react';
 import SchemeApplicationForm from '@/components/SchemeApplicationForm';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,6 +12,20 @@ const Schemes = () => {
   const { toast } = useToast();
   const [selectedScheme, setSelectedScheme] = useState(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [submittedApplications, setSubmittedApplications] = useState([]);
+
+  // Load applications from localStorage on component mount
+  useEffect(() => {
+    const savedApplications = localStorage.getItem('schemeApplications');
+    if (savedApplications) {
+      setSubmittedApplications(JSON.parse(savedApplications));
+    }
+  }, []);
+
+  // Save applications to localStorage whenever applications change
+  useEffect(() => {
+    localStorage.setItem('schemeApplications', JSON.stringify(submittedApplications));
+  }, [submittedApplications]);
 
   const schemes = [
     {
@@ -111,12 +124,55 @@ const Schemes = () => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
+    // Create new application record
+    const newApplication = {
+      id: Date.now(),
+      schemeId: selectedScheme.id,
+      schemeName: selectedScheme.name,
+      applicantName: formData.fullName,
+      submissionDate: new Date().toLocaleDateString(),
+      status: 'pending', // pending, approved, rejected
+      applicationNumber: `APP${Date.now().toString().slice(-6)}`
+    };
+
+    // Add to applications list
+    setSubmittedApplications(prev => [...prev, newApplication]);
+    
     toast({
       title: "Application Submitted Successfully!",
-      description: `Your application for ${selectedScheme.name} has been submitted. You will receive a confirmation SMS shortly.`,
+      description: `Your application for ${selectedScheme.name} has been submitted. Application Number: ${newApplication.applicationNumber}`,
     });
     
     handleCloseForm();
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'pending':
+        return <Clock className="w-4 h-4 text-yellow-600" />;
+      case 'approved':
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case 'rejected':
+        return <XCircle className="w-4 h-4 text-red-600" />;
+      default:
+        return <Clock className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      pending: { color: 'bg-yellow-100 text-yellow-800', text: 'Pending' },
+      approved: { color: 'bg-green-100 text-green-800', text: 'Approved' },
+      rejected: { color: 'bg-red-100 text-red-800', text: 'Rejected' }
+    };
+    
+    const config = statusConfig[status] || statusConfig.pending;
+    return (
+      <Badge className={config.color}>
+        {getStatusIcon(status)}
+        <span className="ml-1">{config.text}</span>
+      </Badge>
+    );
   };
 
   return (
@@ -144,7 +200,7 @@ const Schemes = () => {
         </div>
 
         {/* Schemes Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {schemes.map((scheme) => (
             <Card key={scheme.id} className="border-green-200 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-4">
@@ -220,6 +276,47 @@ const Schemes = () => {
             </Card>
           ))}
         </div>
+
+        {/* Application Status Section */}
+        {submittedApplications.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-green-800 mb-4">
+              My Applications
+            </h2>
+            <div className="space-y-4">
+              {submittedApplications.map((application) => (
+                <Card key={application.id} className="border-blue-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">
+                          {application.schemeName}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Applicant: {application.applicantName}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Application Number: {application.applicationNumber}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Submitted: {application.submissionDate}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end space-y-2">
+                        {getStatusBadge(application.status)}
+                        {application.status === 'pending' && (
+                          <p className="text-xs text-gray-500">
+                            Processing time: 7-14 days
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Help Section */}
         <div className="mt-8 text-center">
