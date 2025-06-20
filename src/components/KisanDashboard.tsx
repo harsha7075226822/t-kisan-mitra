@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import HealYourCrop from '@/components/HealYourCrop';
 import { 
   TrendingUp, 
   BookOpen, 
@@ -267,6 +268,9 @@ const KisanDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Heal Your Crop Section */}
+        <HealYourCrop />
 
         {/* Nearest Markets Section */}
         <div className="mb-6 sm:mb-8">
