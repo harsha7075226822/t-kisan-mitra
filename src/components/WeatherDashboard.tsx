@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Cloud, MapPin, Thermometer, Droplets, Wind, Sun, Search, Heart, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -355,30 +356,29 @@ const WeatherDashboard = () => {
             </Card>
 
             {/* Weather & Field Visual Section */}
-            <Card className="shadow-lg border border-gray-200 bg-white overflow-hidden">
+            <Card className="shadow-lg border border-gray-200 bg-white">
               <CardContent className="p-0">
-                <div className="relative">
+                <div>
                   <img 
                     src="https://thumbs.dreamstime.com/b/green-field-small-forest-against-cloudy-sky-sunny-weather-193347700.jpg"
                     alt="Green agricultural field with cloudy sky representing weather and farming conditions"
-                    className="w-full h-64 md:h-80 object-cover"
+                    className="w-full h-48 md:h-56 object-cover rounded-t-lg"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <div className="text-white text-center">
-                      <p className="text-lg font-medium mb-2">
+                  <div className="p-6 bg-white">
+                    <div className="text-center">
+                      <p className="text-lg font-medium mb-4 text-gray-800">
                         🌾 Visualizing real-time weather and field status for smarter farming decisions
                       </p>
-                      <div className="flex justify-center items-center space-x-4 text-sm">
-                        <span className="flex items-center bg-white/20 px-3 py-1 rounded-full">
+                      <div className="flex flex-wrap justify-center items-center gap-3 text-sm">
+                        <span className="flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-full border border-blue-200">
                           <span className="mr-2">🌡️</span>
                           {weatherData ? Math.round(weatherData.main.temp - 1) : 25}°C
                         </span>
-                        <span className="flex items-center bg-white/20 px-3 py-1 rounded-full">
+                        <span className="flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-full border border-blue-200">
                           <span className="mr-2">💧</span>
                           {Math.round(soilData.reduce((acc, field) => acc + field.moisture, 0) / soilData.length)}% Moisture
                         </span>
-                        <span className="flex items-center bg-white/20 px-3 py-1 rounded-full">
+                        <span className="flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-full border border-green-200">
                           <span className="mr-2">🌾</span>
                           {optimalFields} Fields Optimal
                         </span>
