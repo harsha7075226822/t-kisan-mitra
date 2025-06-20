@@ -27,7 +27,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   const [messages, setMessages] = useState<Message[]>([]);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState(language);
+  const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'te' | 'hi'>(language);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const responseEngine = new AIResponseEngine();
 
@@ -38,9 +38,9 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   });
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸', voiceLang: 'en-US' },
-    { code: 'te', name: 'తెలుగు', flag: '🇮🇳', voiceLang: 'te-IN' },
-    { code: 'hi', name: 'हिंदी', flag: '🇮🇳', voiceLang: 'hi-IN' }
+    { code: 'en' as const, name: 'English', flag: '🇺🇸', voiceLang: 'en-US' },
+    { code: 'te' as const, name: 'తెలుగు', flag: '🇮🇳', voiceLang: 'te-IN' },
+    { code: 'hi' as const, name: 'हिंदी', flag: '🇮🇳', voiceLang: 'hi-IN' }
   ];
 
   const quickCommands = {
@@ -181,6 +181,11 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     handleVoiceResult(command);
   };
 
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLanguage = e.target.value as 'en' | 'te' | 'hi';
+    setSelectedLanguage(newLanguage);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -196,7 +201,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
             <div className="flex items-center space-x-2">
               <select
                 value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                onChange={handleLanguageChange}
                 className="px-2 py-1 border rounded text-sm"
               >
                 {languages.map(lang => (
