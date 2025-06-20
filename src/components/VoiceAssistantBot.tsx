@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Mic, MicOff, Volume2, Bot, User, Settings, X } from 'lucide-react';
+import { Mic, MicOff, Volume2, Bot, User, Settings, X, RotateCcw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
 import { AIResponseEngine } from '@/utils/aiResponseEngine';
@@ -28,6 +28,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'te' | 'hi'>(language);
+  const [lastResponse, setLastResponse] = useState<Message | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const responseEngine = new AIResponseEngine();
 
@@ -76,10 +77,13 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
 
   const addWelcomeMessage = () => {
     const user = JSON.parse(localStorage.getItem('kisanUser') || '{}');
+    const currentHour = new Date().getHours();
+    const timeGreeting = currentHour < 12 ? 'Good morning' : currentHour < 17 ? 'Good afternoon' : 'Good evening';
+    
     const welcomeTexts = {
-      en: `Hello ${user.name || 'Farmer'}! I'm your voice assistant. How can I help you today?`,
-      te: `నమస్కారం ${user.name || 'రైతు గారు'}! నేను మీ వాయిస్ అసిస్టెంట్. నేడు మీకు ఎలా సహాయం చేయగలను?`,
-      hi: `नमस्ते ${user.name || 'किसान जी'}! मैं आपका वॉइस असिस्टेंट हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?`
+      en: `${timeGreeting} ${user.name || 'Farmer'}! I'm your voice assistant. How can I help you today?`,
+      te: `${timeGreeting === 'Good morning' ? 'శుభోదయం' : timeGreeting === 'Good afternoon' ? 'శుభ మధ్యాహ్నం' : 'శుభ సాయంత్రం'} ${user.name || 'రైతు గారు'}! నేను మీ వాయిస్ అసిస్టెంట్. నేడు మీకు ఎలా సహాయం చేయగలను?`,
+      hi: `${timeGreeting === 'Good morning' ? 'सुप्रभात' : timeGreeting === 'Good afternoon' ? 'नमस्कार' : 'शुभ संध्या'} ${user.name || 'किसान जी'}! मैं आपका वॉइस असिस्टेंट हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?`
     };
 
     const welcomeMessage: Message = {
@@ -91,6 +95,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     };
 
     setMessages([welcomeMessage]);
+    setLastResponse(welcomeMessage);
     speakMessage(welcomeMessage.text, selectedLanguage);
   };
 
@@ -122,17 +127,20 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      setLastResponse(assistantMessage);
       speakMessage(response, selectedLanguage);
     } catch (error) {
       console.error('Error processing user input:', error);
       const errorMessage = getErrorMessage();
-      setMessages(prev => [...prev, {
+      const errorResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
         text: errorMessage,
         language: selectedLanguage,
         timestamp: new Date()
-      }]);
+      };
+      setMessages(prev => [...prev, errorResponse]);
+      setLastResponse(errorResponse);
     }
   };
 
@@ -186,17 +194,24 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     setSelectedLanguage(newLanguage);
   };
 
+  const replayLastResponse = () => {
+    if (lastResponse) {
+      speakMessage(lastResponse.text, lastResponse.language);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl h-[600px] flex flex-col">
+      <Card className="w-full max-w-2xl h-[700px] flex flex-col">
         <CardHeader className="border-b">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
               <Bot className="w-6 h-6 text-green-600" />
-              <span>{t('voice.title')}</span>
+              <span>Voice Assistant</span>
               {isSpeaking && <Badge variant="secondary" className="animate-pulse">Speaking</Badge>}
+              {isListening && <Badge variant="destructive" className="animate-pulse">Listening</Badge>}
             </CardTitle>
             <div className="flex items-center space-x-2">
               <select
@@ -210,6 +225,11 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
                   </option>
                 ))}
               </select>
+              {lastResponse && (
+                <Button variant="ghost" size="sm" onClick={replayLastResponse}>
+                  <RotateCcw className="w-4 h-4" />
+                </Button>
+              )}
               <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="w-4 h-4" />
               </Button>
@@ -218,7 +238,18 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
         </CardHeader>
 
         <CardContent className="flex-1 flex flex-col p-0">
-          {/* Messages */}
+          {/* Live Transcription Display */}
+          {transcript && isListening && (
+            <div className="bg-blue-50 border-b p-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-600">Live Transcription:</span>
+              </div>
+              <p className="text-blue-700 font-medium mt-1">"{transcript}"</p>
+            </div>
+          )}
+
+          {/* Conversation Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
               <div
@@ -226,32 +257,34 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] p-3 rounded-lg ${
+                  className={`max-w-[80%] p-4 rounded-lg shadow-sm ${
                     message.type === 'user'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 text-gray-800'
+                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
+                      : 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-800 border'
                   }`}
                 >
                   <div className="flex items-start space-x-2">
-                    {message.type === 'assistant' && <Bot className="w-4 h-4 mt-0.5 text-green-600" />}
-                    {message.type === 'user' && <User className="w-4 h-4 mt-0.5" />}
-                    <div>
-                      <p className="text-sm">{message.text}</p>
-                      <span className="text-xs opacity-75">
-                        {message.timestamp.toLocaleTimeString()}
-                      </span>
+                    {message.type === 'assistant' && <Bot className="w-5 h-5 mt-0.5 text-green-600 flex-shrink-0" />}
+                    {message.type === 'user' && <User className="w-5 h-5 mt-0.5 flex-shrink-0" />}
+                    <div className="flex-1">
+                      <p className="text-sm leading-relaxed">{message.text}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs opacity-75">
+                          {message.timestamp.toLocaleTimeString()}
+                        </span>
+                        {message.type === 'assistant' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="p-1 h-auto hover:bg-white/20"
+                            onClick={() => speakMessage(message.text, message.language)}
+                          >
+                            <Volume2 className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  {message.type === 'assistant' && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-2 p-1 h-auto"
-                      onClick={() => speakMessage(message.text, message.language)}
-                    >
-                      <Volume2 className="w-3 h-3" />
-                    </Button>
-                  )}
                 </div>
               </div>
             ))}
@@ -259,8 +292,8 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
           </div>
 
           {/* Quick Commands */}
-          <div className="border-t p-4">
-            <p className="text-sm text-gray-600 mb-2">Quick Commands:</p>
+          <div className="border-t p-4 bg-gray-50">
+            <p className="text-sm text-gray-600 mb-3 font-medium">Quick Commands:</p>
             <div className="grid grid-cols-1 gap-2">
               {(quickCommands[selectedLanguage as keyof typeof quickCommands] || quickCommands.en)
                 .slice(0, 2).map((command, index) => (
@@ -268,25 +301,25 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
                   key={index}
                   variant="outline"
                   size="sm"
-                  className="text-xs justify-start"
+                  className="text-xs justify-start hover:bg-green-50 hover:border-green-300"
                   onClick={() => handleQuickCommand(command)}
                 >
-                  {command}
+                  💬 {command}
                 </Button>
               ))}
             </div>
           </div>
 
           {/* Voice Controls */}
-          <div className="border-t p-4">
+          <div className="border-t p-4 bg-white">
             <div className="flex items-center justify-center space-x-4">
               <Button
                 size="lg"
-                className={`w-16 h-16 rounded-full ${
+                className={`w-16 h-16 rounded-full transition-all duration-300 ${
                   isListening 
-                    ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
-                    : 'bg-green-600 hover:bg-green-700'
-                }`}
+                    ? 'bg-red-500 hover:bg-red-600 animate-pulse scale-110' 
+                    : 'bg-green-600 hover:bg-green-700 hover:scale-105'
+                } shadow-lg`}
                 onClick={toggleListening}
                 disabled={!isSupported}
               >
@@ -297,15 +330,15 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
                 )}
               </Button>
             </div>
-            <p className="text-center text-sm text-gray-600 mt-2">
+            <p className="text-center text-sm text-gray-600 mt-3 font-medium">
               {isListening 
-                ? 'Listening... Speak now' 
-                : 'Tap to speak or use quick commands'
+                ? '🎤 Listening... Speak now' 
+                : '👆 Tap to speak or use quick commands'
               }
             </p>
-            {transcript && (
-              <p className="text-center text-sm text-blue-600 mt-1">
-                "{transcript}"
+            {!isSupported && (
+              <p className="text-center text-xs text-red-500 mt-1">
+                Voice recognition not supported in this browser
               </p>
             )}
           </div>
