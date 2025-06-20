@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Camera, Upload, Home, Wallet } from 'lucide-react';
+import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Upload, Home, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -280,7 +280,6 @@ const Navbar = () => {
     { name: 'Government Schemes', path: '/schemes', icon: '🏛️' },
     { name: 'Online Mandi', path: '/mandi', icon: '🛒' },
     { name: 'Voice Assistant', path: '/voice', icon: '🎤' },
-    { name: 'Crop Scanner', path: '/scanner', icon: '📷' },
     { name: 'Seeds Container', path: '/seeds', icon: '🌱' },
   ];
 
@@ -505,7 +504,6 @@ const Navbar = () => {
               { name: 'Government Schemes', path: '/schemes', icon: '🏛️' },
               { name: 'Online Mandi', path: '/mandi', icon: '🛒' },
               { name: 'Voice Assistant', path: '/voice', icon: '🎤' },
-              { name: 'Crop Scanner', path: '/scanner', icon: '📷' },
               { name: 'Seeds Container', path: '/seeds', icon: '🌱' },
             ].map((item) => (
               <Link

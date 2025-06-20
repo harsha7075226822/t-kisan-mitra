@@ -17,7 +17,6 @@ import Market from "./pages/Market";
 import Education from "./pages/Education";
 import Schemes from "./pages/Schemes";
 import Mandi from "./pages/Mandi";
-import Scanner from "./pages/Scanner";
 import Seeds from "./pages/Seeds";
 import Pesticides from "./pages/Pesticides";
 import NotFound from "./pages/NotFound";
@@ -91,12 +90,6 @@ const App = () => (
                   <>
                     <Navbar />
                     <Mandi />
-                  </>
-                } />
-                <Route path="/scanner" element={
-                  <>
-                    <Navbar />
-                    <Scanner />
                   </>
                 } />
                 <Route path="/seeds" element={

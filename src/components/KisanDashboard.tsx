@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,8 +10,7 @@ import {
   Cloud, 
   Building2, 
   ShoppingCart, 
-  Mic, 
-  Camera,
+  Mic,
   Phone,
   Navigation,
   IndianRupee,
@@ -76,7 +74,7 @@ const KisanDashboard = () => {
     }
   ], []);
 
-  // Memoized modules data
+  // Memoized modules data - removed Crop Scanner
   const modules = useMemo(() => [
     {
       title: 'Market Insights',
@@ -119,13 +117,6 @@ const KisanDashboard = () => {
       icon: Mic,
       color: 'bg-red-500',
       path: '/voice'
-    },
-    {
-      title: 'Crop Scanner',
-      description: 'Diagnose crop diseases via image',
-      icon: Camera,
-      color: 'bg-indigo-500',
-      path: '/scanner'
     },
     {
       title: 'Seeds Container',
