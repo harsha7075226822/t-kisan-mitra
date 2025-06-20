@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mic, Globe, Settings, User, Sprout, Package, Truck, Upload, Home, Wallet } from 'lucide-react';
+import { Menu, X, Mic, Settings, User, Sprout, Package, Truck, Upload, Home, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,6 +18,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSelector from './LanguageSelector';
 import MyOrders from './MyOrders';
 import MyAddress from './MyAddress';
 import MyWallet from './MyWallet';
@@ -101,6 +103,7 @@ const Navbar = () => {
   const location = useLocation();
   const isDashboard = location.pathname === '/dashboard';
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   // Get user data from localStorage if on dashboard
   const userData = isDashboard ? JSON.parse(localStorage.getItem('kisanUser') || '{}') : null;
@@ -273,14 +276,14 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: '🌾' },
-    { name: 'Weather', path: '/weather', icon: '🌤️' },
-    { name: 'Market Insights', path: '/market', icon: '📊' },
-    { name: 'Education', path: '/education', icon: '📚' },
-    { name: 'Government Schemes', path: '/schemes', icon: '🏛️' },
-    { name: 'Online Mandi', path: '/mandi', icon: '🛒' },
-    { name: 'Voice Assistant', path: '/voice', icon: '🎤' },
-    { name: 'Seeds Container', path: '/seeds', icon: '🌱' },
+    { name: t('nav.dashboard'), path: '/dashboard', icon: '🌾' },
+    { name: t('nav.weather'), path: '/weather', icon: '🌤️' },
+    { name: t('nav.market'), path: '/market', icon: '📊' },
+    { name: t('nav.education'), path: '/education', icon: '📚' },
+    { name: t('nav.schemes'), path: '/schemes', icon: '🏛️' },
+    { name: t('nav.mandi'), path: '/mandi', icon: '🛒' },
+    { name: t('nav.voice'), path: '/voice', icon: '🎤' },
+    { name: t('nav.seeds'), path: '/seeds', icon: '🌱' },
   ];
 
   const languages = [
@@ -295,17 +298,17 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <div className="text-2xl">🌾</div>
-              <span className="text-xl font-bold text-green-800">Smart AgriConnect</span>
+              <span className="text-xl font-bold text-green-800">{t('hero.title')}</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             {[
-              { name: 'Dashboard', path: '/dashboard', icon: '🌾' },
-              { name: 'Weather', path: '/weather', icon: '🌤️' },
-              { name: 'Market Insights', path: '/market', icon: '📊' },
-              { name: 'Education', path: '/education', icon: '📚' }
+              { name: t('nav.dashboard'), path: '/dashboard', icon: '🌾' },
+              { name: t('nav.weather'), path: '/weather', icon: '🌤️' },
+              { name: t('nav.market'), path: '/market', icon: '📊' },
+              { name: t('nav.education'), path: '/education', icon: '📚' }
             ].map((item) => (
               <Link
                 key={item.path}
@@ -326,41 +329,19 @@ const Navbar = () => {
             {/* Universal Cart Button */}
             <UniversalCart />
 
-            {/* Global Language Selector */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="text-green-700 border-green-300">
-                  <Globe className="w-4 h-4 mr-2" />
-                  {selectedLanguage}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white">
-                {[
-                  { code: 'en', name: 'English', flag: '🇺🇸' },
-                  { code: 'te', name: 'Telugu', flag: '🇮🇳' }
-                ].map((lang) => (
-                  <DropdownMenuItem
-                    key={lang.code}
-                    onClick={() => setSelectedLanguage(lang.name)}
-                    className="cursor-pointer"
-                  >
-                    <span className="mr-2">{lang.flag}</span>
-                    {lang.name}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Language Selector */}
+            <LanguageSelector />
 
             {/* Voice Assistant Button */}
             <Link to="/voice">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" title={t('nav.voice')}>
                 <Mic className="w-4 h-4" />
               </Button>
             </Link>
 
             {/* Seeds Container Button */}
             <Link to="/seeds">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" title={t('nav.seeds')}>
                 <Sprout className="w-4 h-4" />
               </Button>
             </Link>
@@ -408,7 +389,7 @@ const Navbar = () => {
                       className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md"
                     >
                       <Package className="w-4 h-4 mr-3" />
-                      My Orders
+                      {t('orders.title')}
                       {orders.length > 0 && (
                         <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-auto">
                           {orders.length}
@@ -446,7 +427,7 @@ const Navbar = () => {
                       className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md"
                     >
                       <Truck className="w-4 h-4 mr-3" />
-                      Track Order
+                      {t('orders.trackOrder')}
                     </button>
 
                     <button className="flex items-center w-full px-3 py-2 text-left text-gray-700 hover:bg-green-50 rounded-md">
@@ -481,6 +462,9 @@ const Navbar = () => {
             {/* Mobile Universal Cart Button */}
             <UniversalCart isMobile />
 
+            {/* Mobile Language Selector */}
+            <LanguageSelector showLabel={false} />
+
             <Button
               variant="ghost"
               size="sm"
@@ -497,14 +481,14 @@ const Navbar = () => {
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {[
-              { name: 'Dashboard', path: '/dashboard', icon: '🌾' },
-              { name: 'Weather', path: '/weather', icon: '🌤️' },
-              { name: 'Market Insights', path: '/market', icon: '📊' },
-              { name: 'Education', path: '/education', icon: '📚' },
-              { name: 'Government Schemes', path: '/schemes', icon: '🏛️' },
-              { name: 'Online Mandi', path: '/mandi', icon: '🛒' },
-              { name: 'Voice Assistant', path: '/voice', icon: '🎤' },
-              { name: 'Seeds Container', path: '/seeds', icon: '🌱' },
+              { name: t('nav.dashboard'), path: '/dashboard', icon: '🌾' },
+              { name: t('nav.weather'), path: '/weather', icon: '🌤️' },
+              { name: t('nav.market'), path: '/market', icon: '📊' },
+              { name: t('nav.education'), path: '/education', icon: '📚' },
+              { name: t('nav.schemes'), path: '/schemes', icon: '🏛️' },
+              { name: t('nav.mandi'), path: '/mandi', icon: '🛒' },
+              { name: t('nav.voice'), path: '/voice', icon: '🎤' },
+              { name: t('nav.seeds'), path: '/seeds', icon: '🌱' },
             ].map((item) => (
               <Link
                 key={item.path}
@@ -520,27 +504,6 @@ const Navbar = () => {
                 <span>{item.name}</span>
               </Link>
             ))}
-            
-            {/* Mobile Language Options */}
-            <div className="border-t border-gray-200 mt-2 pt-2">
-              <div className="px-3 py-2 text-sm font-medium text-gray-500">Language</div>
-              {[
-                { code: 'en', name: 'English', flag: '🇺🇸' },
-                { code: 'te', name: 'Telugu', flag: '🇮🇳' }
-              ].map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    setSelectedLanguage(lang.name);
-                    setIsOpen(false);
-                  }}
-                  className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
-                >
-                  <span className="mr-2">{lang.flag}</span>
-                  {lang.name}
-                </button>
-              ))}
-            </div>
             
             {/* Mobile User Menu */}
             {isDashboard && userData.name && (
@@ -563,7 +526,7 @@ const Navbar = () => {
                   className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
                 >
                   <Package className="w-4 h-4 mr-2" />
-                  My Orders
+                  {t('orders.title')}
                   {orders.length > 0 && (
                     <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-auto">
                       {orders.length}
@@ -602,7 +565,7 @@ const Navbar = () => {
                   className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-green-50"
                 >
                   <Truck className="w-4 h-4 mr-2" />
-                  Track Order
+                  {t('orders.trackOrder')}
                 </button>
                 <button
                   onClick={() => {

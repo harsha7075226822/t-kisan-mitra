@@ -20,7 +20,8 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ className = '', sho
 
   const languages = [
     { code: 'en' as const, name: t('lang.english'), flag: '🇺🇸' },
-    { code: 'te' as const, name: t('lang.telugu'), flag: '🇮🇳' }
+    { code: 'te' as const, name: t('lang.telugu'), flag: '🇮🇳' },
+    { code: 'hi' as const, name: t('lang.hindi'), flag: '🇮🇳' }
   ];
 
   const currentLanguage = languages.find(lang => lang.code === language) || languages[0];
@@ -38,7 +39,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({ className = '', sho
           {showLabel && currentLanguage.name}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-white" align="end">
+      <DropdownMenuContent className="bg-white z-50" align="end">
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
