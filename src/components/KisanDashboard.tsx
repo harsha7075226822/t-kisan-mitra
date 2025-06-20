@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +16,8 @@ import {
   IndianRupee,
   Beaker,
   Sprout,
-  MapPin
+  MapPin,
+  CloudSun
 } from 'lucide-react';
 
 const KisanDashboard = () => {
@@ -75,8 +75,15 @@ const KisanDashboard = () => {
     }
   ], []);
 
-  // Memoized modules data - Weather removed
+  // Memoized modules data - Weather added back
   const modules = useMemo(() => [
+    {
+      title: 'Weather Insights',
+      description: 'Live weather & soil monitoring',
+      icon: CloudSun,
+      color: 'bg-sky-500',
+      path: '/weather'
+    },
     {
       title: 'Market Insights',
       description: 'Crop prices and market trends',
@@ -270,7 +277,7 @@ const KisanDashboard = () => {
           <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
             Services
           </h3>
-          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {modules.map((module, index) => (
               <Card 
                 key={index} 

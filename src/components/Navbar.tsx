@@ -278,6 +278,7 @@ const Navbar = () => {
   const navItems = [
     { name: t('nav.dashboard'), path: '/dashboard', icon: '🏠' },
     { name: t('nav.leafScanner'), path: '/leaf-scanner', icon: '🌿' },
+    { name: t('nav.weather'), path: '/weather', icon: '🌦️' },
     { name: t('nav.market'), path: '/market', icon: '📊' },
     { name: t('nav.education'), path: '/education', icon: '📚' },
     { name: t('nav.schemes'), path: '/schemes', icon: '🏛️' },
@@ -303,10 +304,11 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation - Weather removed */}
+          {/* Desktop Navigation - Weather added back */}
           <div className="hidden md:flex items-center space-x-6">
             {[
               { name: t('nav.dashboard'), path: '/dashboard', icon: '🏠' },
+              { name: t('nav.weather'), path: '/weather', icon: '🌦️' },
               { name: t('nav.market'), path: '/market', icon: '📊' },
               { name: t('nav.education'), path: '/education', icon: '📚' }
             ].map((item) => (
@@ -476,13 +478,14 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation - Weather removed */}
+      {/* Mobile Navigation - Weather added back */}
       {isOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {[
               { name: t('nav.dashboard'), path: '/dashboard', icon: '🏠' },
               { name: t('nav.leafScanner'), path: '/leaf-scanner', icon: '🌿' },
+              { name: t('nav.weather'), path: '/weather', icon: '🌦️' },
               { name: t('nav.market'), path: '/market', icon: '📊' },
               { name: t('nav.education'), path: '/education', icon: '📚' },
               { name: t('nav.schemes'), path: '/schemes', icon: '🏛️' },
