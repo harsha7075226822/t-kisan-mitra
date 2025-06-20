@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,7 +28,6 @@ export const ScanHistory: React.FC<ScanHistoryProps> = ({ selectedLanguage }) =>
   const [selectedScan, setSelectedScan] = useState<ScanRecord | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
-  // Load scan history from localStorage on component mount
   useEffect(() => {
     const saved = localStorage.getItem('scanHistory');
     if (saved) {
@@ -321,6 +319,3 @@ export const ScanHistory: React.FC<ScanHistoryProps> = ({ selectedLanguage }) =>
     </div>
   );
 };
-
-// Export the addScanRecord function for use in the main Scanner component
-export { ScanHistory };
