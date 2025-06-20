@@ -16,8 +16,7 @@ import {
   IndianRupee,
   Beaker,
   Sprout,
-  MapPin,
-  Leaf
+  MapPin
 } from 'lucide-react';
 
 const KisanDashboard = () => {
@@ -75,15 +74,8 @@ const KisanDashboard = () => {
     }
   ], []);
 
-  // Memoized modules data - added Leaf Scanner
+  // Memoized modules data - removed Leaf Scanner
   const modules = useMemo(() => [
-    {
-      title: 'Leaf Scanner AI',
-      description: 'AI-powered disease detection',
-      icon: Leaf,
-      color: 'bg-emerald-600',
-      path: '/leaf-scanner'
-    },
     {
       title: 'Market Insights',
       description: 'Crop prices and market trends',
