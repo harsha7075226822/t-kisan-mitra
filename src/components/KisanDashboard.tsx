@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import HealYourCrop from '@/components/HealYourCrop';
 import MarketCards from '@/components/MarketCards';
+import MachinerySubsidyStore from '@/components/MachinerySubsidyStore';
 import FloatingVoiceButton from '@/components/FloatingVoiceButton';
 import { 
   TrendingUp, 
@@ -188,6 +189,9 @@ const KisanDashboard = () => {
             ))}
           </div>
         </div>
+
+        {/* Machinery Subsidy Store Section */}
+        <MachinerySubsidyStore />
 
         {/* Agricultural Markets Section */}
         <div className="mb-6 sm:mb-8">
