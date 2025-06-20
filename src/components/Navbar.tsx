@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Mic, Settings, User, Sprout, Package, Truck, Upload, Home, Wallet } from 'lucide-react';
+import { Menu, X, Settings, User, Sprout, Package, Truck, Upload, Home, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -315,7 +315,6 @@ const Navbar = () => {
     { name: t('nav.education'), path: '/education', icon: '📚' },
     { name: t('nav.schemes'), path: '/schemes', icon: '🏛️' },
     { name: t('nav.mandi'), path: '/mandi', icon: '🛒' },
-    { name: t('nav.voice'), path: '/voice', icon: '🎤' },
     { name: t('nav.seeds'), path: '/seeds', icon: '🌱' },
     { name: t('nav.pesticides'), path: '/pesticides', icon: '🧪' }
   ];
@@ -365,13 +364,6 @@ const Navbar = () => {
 
             {/* Language Selector */}
             <LanguageSelector />
-
-            {/* Voice Assistant Button */}
-            <Link to="/voice">
-              <Button variant="outline" size="sm" title={t('nav.voice')}>
-                <Mic className="w-4 h-4" />
-              </Button>
-            </Link>
 
             {/* Seeds Container Button */}
             <Link to="/seeds">
@@ -528,7 +520,6 @@ const Navbar = () => {
               { name: t('nav.education'), path: '/education', icon: '📚' },
               { name: t('nav.schemes'), path: '/schemes', icon: '🏛️' },
               { name: t('nav.mandi'), path: '/mandi', icon: '🛒' },
-              { name: t('nav.voice'), path: '/voice', icon: '🎤' },
               { name: t('nav.seeds'), path: '/seeds', icon: '🌱' },
               { name: t('nav.pesticides'), path: '/pesticides', icon: '🧪' }
             ].map((item) => (
