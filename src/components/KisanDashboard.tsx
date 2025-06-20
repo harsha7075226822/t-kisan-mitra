@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import HealYourCrop from '@/components/HealYourCrop';
 import MarketCards from '@/components/MarketCards';
+import FloatingVoiceButton from '@/components/FloatingVoiceButton';
 import { 
   TrendingUp, 
   BookOpen, 
@@ -210,6 +211,9 @@ const KisanDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Floating Voice Assistant Button */}
+      <FloatingVoiceButton />
     </div>
   );
 };
