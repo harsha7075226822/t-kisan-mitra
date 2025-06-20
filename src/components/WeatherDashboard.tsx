@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Cloud, MapPin, Thermometer, Droplets, Wind, Sun, Search, Heart, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +11,52 @@ const WeatherDashboard = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Calculate soil moisture based on temperature
+  const calculateSoilMoisture = (temp, fieldIndex) => {
+    // Base moisture levels for different fields
+    const baseMoisture = [65, 35, 55, 75];
+    let adjustedMoisture = baseMoisture[fieldIndex];
+
+    // Adjust based on temperature
+    if (temp > 35) {
+      // High temperature reduces moisture
+      adjustedMoisture = Math.max(20, adjustedMoisture - 15);
+    } else if (temp > 30) {
+      adjustedMoisture = Math.max(25, adjustedMoisture - 10);
+    } else if (temp < 20) {
+      // Low temperature increases moisture retention
+      adjustedMoisture = Math.min(80, adjustedMoisture + 10);
+    }
+
+    return Math.round(adjustedMoisture);
+  };
+
+  const getSoilData = (temperature) => {
+    const baseFields = [
+      { sensor: 'Field A', crop: 'Cotton', location: 'North Field' },
+      { sensor: 'Field B', crop: 'Cotton', location: 'South Field' },
+      { sensor: 'Field C', crop: 'Wheat', location: 'East Field' },
+      { sensor: 'Field D', crop: 'Sugarcane', location: 'West Field' },
+    ];
+
+    return baseFields.map((field, index) => {
+      const moisture = calculateSoilMoisture(temperature, index);
+      let status = 'Optimal';
+      
+      if (moisture < 40) {
+        status = 'Low';
+      } else if (moisture > 70) {
+        status = 'High';
+      }
+
+      return {
+        ...field,
+        moisture,
+        status
+      };
+    });
+  };
 
   const fetchWeatherData = async (city) => {
     if (!city || city.trim() === '') {
@@ -81,13 +126,6 @@ const WeatherDashboard = () => {
     return '🌤️';
   };
 
-  const soilData = [
-    { sensor: 'Field A', crop: 'Cotton', moisture: 65, status: 'Optimal', location: 'North Field' },
-    { sensor: 'Field B', crop: 'Cotton', moisture: 35, status: 'Low', location: 'South Field' },
-    { sensor: 'Field C', crop: 'Wheat', moisture: 55, status: 'Optimal', location: 'East Field' },
-    { sensor: 'Field D', crop: 'Sugarcane', moisture: 75, status: 'High', location: 'West Field' },
-  ];
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'Optimal': return 'text-emerald-600';
@@ -105,6 +143,15 @@ const WeatherDashboard = () => {
       default: return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
+
+  // Get dynamic soil data based on current temperature
+  const currentTemp = weatherData ? Math.round(weatherData.main.temp) : 25;
+  const soilData = getSoilData(currentTemp);
+
+  // Calculate summary stats
+  const optimalFields = soilData.filter(field => field.status === 'Optimal').length;
+  const lowMoistureFields = soilData.filter(field => field.status === 'Low').length;
+  const highMoistureFields = soilData.filter(field => field.status === 'High').length;
 
   const getFarmingAlert = (temp, humidity, windSpeed) => {
     if (temp > 35) return "High temperature - provide shade for crops and increase irrigation";
@@ -223,7 +270,7 @@ const WeatherDashboard = () => {
                   <Card className="shadow-md border border-gray-200 bg-white hover:shadow-lg transition-all duration-300">
                     <CardContent className="p-6 text-center">
                       <div className="text-xs text-gray-600 uppercase tracking-wider mb-2 font-medium">💧 Soil Moisture</div>
-                      <div className="text-xl font-semibold text-gray-800">58%</div>
+                      <div className="text-xl font-semibold text-gray-800">{Math.round(soilData.reduce((acc, field) => acc + field.moisture, 0) / soilData.length)}%</div>
                     </CardContent>
                   </Card>
                 </div>
@@ -286,7 +333,7 @@ const WeatherDashboard = () => {
               <CardHeader className="bg-red-500 text-white rounded-t-lg">
                 <CardTitle className="text-xl font-semibold flex items-center">
                   <Heart className="w-6 h-6 mr-3" />
-                  🚨 Farming Alerts (1)
+                  🚨 Farming Alerts ({lowMoistureFields})
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
@@ -297,7 +344,7 @@ const WeatherDashboard = () => {
                         <Zap className="w-5 h-5 mr-2" />
                         💧 Low Soil Moisture Alert
                       </div>
-                      <div className="text-sm text-red-700 font-medium">1 field needs irrigation (South Field) 🌾</div>
+                      <div className="text-sm text-red-700 font-medium">{lowMoistureFields} field(s) need irrigation 🌾</div>
                       <div className="text-xs text-red-600 mt-2 font-medium">⚡ Action required</div>
                     </div>
                     <Button size="sm" className="bg-red-600 hover:bg-red-700 text-sm font-medium shadow-md">
