@@ -8,7 +8,6 @@ import HealYourCrop from '@/components/HealYourCrop';
 import { 
   TrendingUp, 
   BookOpen, 
-  Cloud, 
   Building2, 
   ShoppingCart, 
   Mic,
@@ -75,7 +74,7 @@ const KisanDashboard = () => {
     }
   ], []);
 
-  // Memoized modules data - removed Leaf Scanner
+  // Memoized modules data - Weather removed
   const modules = useMemo(() => [
     {
       title: 'Market Insights',
@@ -90,13 +89,6 @@ const KisanDashboard = () => {
       icon: BookOpen,
       color: 'bg-green-500',
       path: '/education'
-    },
-    {
-      title: 'Weather',
-      description: 'Localized alerts and forecasts',
-      icon: Cloud,
-      color: 'bg-sky-500',
-      path: '/weather'
     },
     {
       title: 'Government Schemes',
