@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,8 +11,21 @@ const LeafScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target?.result as string);
+        setScanResult(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCameraCapture = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -131,7 +143,7 @@ const LeafScanner = () => {
                             <Upload className="w-4 h-4 mr-2" />
                             Upload Image
                           </Button>
-                          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                          <Button variant="outline" onClick={() => cameraInputRef.current?.click()}>
                             <Camera className="w-4 h-4 mr-2" />
                             Take Photo
                           </Button>
@@ -141,11 +153,22 @@ const LeafScanner = () => {
                   )}
                 </div>
 
+                {/* File input for uploading */}
                 <input
                   type="file"
                   ref={fileInputRef}
                   onChange={handleImageUpload}
                   accept="image/*"
+                  className="hidden"
+                />
+
+                {/* Camera input for taking photos */}
+                <input
+                  type="file"
+                  ref={cameraInputRef}
+                  onChange={handleCameraCapture}
+                  accept="image/*"
+                  capture="environment"
                   className="hidden"
                 />
 
