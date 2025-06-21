@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -72,6 +71,14 @@ const Seeds = () => {
       price: 380,
       description: 'High-yield corn variety for all seasons',
       image: '🌽'
+    },
+    {
+      id: 'seed_7',
+      name: 'Red Gram Cart',
+      weight: 0.1,
+      price: 1,
+      description: 'Affordable red gram cart for small-scale farming',
+      image: '🛒'
     }
   ];
 
