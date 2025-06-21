@@ -24,7 +24,7 @@ interface Message {
 const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }) => {
   const { language, t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isListening, setIsListening] = useState(false);
+  const [isListeningState, setIsListeningState] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'te' | 'hi'>(language);
   const [lastResponse, setLastResponse] = useState<Message | null>(null);
@@ -35,7 +35,32 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const responseEngine = new AIResponseEngine();
 
+  const handleVoiceResult = (transcript: string) => {
+    console.log('Voice result received:', transcript);
+    if (transcript.trim()) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        type: 'user',
+        text: transcript,
+        language: selectedLanguage,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, userMessage]);
+      setIsListeningState(false);
+      resetTranscript();
+      processUserInput(transcript);
+    }
+  };
+
+  const handleVoiceError = (error: string) => {
+    console.error('Voice recognition error:', error);
+    setIsListeningState(false);
+    setError(error);
+  };
+
   const { 
+    isListening: hookIsListening,
     startListening, 
     stopListening, 
     transcript, 
@@ -47,6 +72,11 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     onResult: handleVoiceResult,
     onError: handleVoiceError
   });
+
+  // Sync the hook's listening state with our local state
+  useEffect(() => {
+    setIsListeningState(hookIsListening);
+  }, [hookIsListening]);
 
   const languages = [
     { code: 'en' as const, name: 'English', flag: '🇺🇸', voiceLang: 'en-IN' },
@@ -102,7 +132,9 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
 
   const requestMicrophoneAccess = async () => {
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Stop the stream immediately as we just needed permission
+      stream.getTracks().forEach(track => track.stop());
       setMicrophonePermission('granted');
       setError(null);
       return true;
@@ -134,30 +166,6 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
       speakMessage(welcomeMessage.text, selectedLanguage);
     }, 500);
   };
-
-  function handleVoiceResult(transcript: string) {
-    console.log('Voice result received:', transcript);
-    if (transcript.trim()) {
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        type: 'user',
-        text: transcript,
-        language: selectedLanguage,
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, userMessage]);
-      setIsListening(false);
-      resetTranscript();
-      processUserInput(transcript);
-    }
-  }
-
-  function handleVoiceError(error: string) {
-    console.error('Voice recognition error:', error);
-    setIsListening(false);
-    setError(`Voice recognition error: ${error}`);
-  }
 
   const processUserInput = async (input: string) => {
     setIsProcessing(true);
@@ -249,19 +257,38 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   };
 
   const toggleListening = async () => {
-    if (isListening) {
+    console.log('Toggle listening clicked. Current state:', isListeningState);
+    
+    if (isListeningState) {
+      console.log('Stopping listening...');
       stopListening();
-      setIsListening(false);
+      setIsListeningState(false);
     } else {
+      console.log('Starting listening...');
+      
+      // Check microphone permission first
       if (microphonePermission !== 'granted') {
+        console.log('Requesting microphone access...');
         const granted = await requestMicrophoneAccess();
         if (!granted) {
+          console.log('Microphone access denied');
           return;
         }
       }
+      
       setError(null);
-      startListening();
-      setIsListening(true);
+      resetTranscript();
+      
+      try {
+        console.log('Calling startListening...');
+        startListening();
+        setIsListeningState(true);
+        console.log('Started listening successfully');
+      } catch (error) {
+        console.error('Error starting listening:', error);
+        setError('Failed to start voice recognition. Please try again.');
+        setIsListeningState(false);
+      }
     }
   };
 
@@ -320,7 +347,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
               <Bot className="w-6 h-6 text-green-600" />
               <span className="text-green-800">Telugu-English Voice Assistant</span>
               {isSpeaking && <Badge variant="secondary" className="animate-pulse bg-blue-100 text-blue-800">Speaking</Badge>}
-              {isListening && <Badge variant="destructive" className="animate-pulse bg-red-100 text-red-800">Listening</Badge>}
+              {isListeningState && <Badge variant="destructive" className="animate-pulse bg-red-100 text-red-800">Listening</Badge>}
               {isProcessing && <Badge variant="outline" className="animate-pulse bg-yellow-100 text-yellow-800">Processing</Badge>}
             </CardTitle>
             <div className="flex items-center space-x-2">
@@ -362,7 +389,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
           )}
 
           {/* Live Transcription Display */}
-          {transcript && isListening && (
+          {transcript && isListeningState && (
             <div className="bg-blue-50 border-b p-3 border-l-4 border-l-blue-500">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
@@ -443,14 +470,14 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
               <Button
                 size="lg"
                 className={`w-16 h-16 rounded-full transition-all duration-300 ${
-                  isListening 
+                  isListeningState 
                     ? 'bg-red-500 hover:bg-red-600 animate-pulse scale-110 shadow-lg shadow-red-200' 
                     : 'bg-green-600 hover:bg-green-700 hover:scale-105 shadow-lg shadow-green-200'
                 }`}
                 onClick={toggleListening}
                 disabled={!isSupported || microphonePermission === 'denied' || isProcessing}
               >
-                {isListening ? (
+                {isListeningState ? (
                   <MicOff className="w-8 h-8 text-white" />
                 ) : (
                   <Mic className="w-8 h-8 text-white" />
@@ -459,7 +486,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
             </div>
             <div className="text-center mt-3">
               <p className="text-sm text-gray-700 font-medium">
-                {isListening 
+                {isListeningState 
                   ? (selectedLanguage === 'te' ? '🎤 మాట్లాడండి... వింటున్నాను' : selectedLanguage === 'hi' ? '🎤 बोलिए... सुन रहा हूँ' : '🎤 Speak now... Listening') 
                   : microphonePermission === 'denied'
                   ? '❌ Microphone access denied'
