@@ -20,6 +20,7 @@ import Mandi from "./pages/Mandi";
 import Seeds from "./pages/Seeds";
 import Pesticides from "./pages/Pesticides";
 import LeafScanner from "./pages/LeafScanner";
+import VoiceAssistant from "./pages/VoiceAssistant";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -104,6 +105,12 @@ const App = () => (
                     <>
                       <Navbar />
                       <LeafScanner />
+                    </>
+                  } />
+                  <Route path="/voice-assistant" element={
+                    <>
+                      <Navbar />
+                      <VoiceAssistant />
                     </>
                   } />
                   <Route path="*" element={<NotFound />} />

@@ -157,7 +157,7 @@ const KisanDashboard = () => {
     } else if (action === 'crop-insurance') {
       setShowCropInsurance(true);
     } else if (action === 'voice-ai') {
-      setShowVoiceAI(true);
+      navigate('/voice-assistant');
     } else if (path) {
       navigate(path);
     }
