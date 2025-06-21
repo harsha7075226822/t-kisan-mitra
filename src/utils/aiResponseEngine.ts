@@ -137,9 +137,9 @@ export class AIResponseEngine {
     };
 
     const greetingText = {
-      en: `${timeGreeting.en} ${userName || 'Farmer'}! I'm your Telugu-English voice assistant. How can I help you today?`,
-      te: `${timeGreeting.te} ${userName || 'రైతు గారు'}! నేను మీ తెలుగు-ఇంగ్లీష్ వాయిస్ అసిస్టెంట్. నేడు మీకు ఎలా సహాయం చేయగలను?`,
-      hi: `${timeGreeting.hi} ${userName || 'किसान जी'}! मैं आपका तेलुगु-अंग्रेजी वॉइस असिस्टेंट हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?`
+      en: `${timeGreeting.en} ${userName || 'Farmer'}! I'm your Kisan Mitra voice assistant. How can I help you today?`,
+      te: `${timeGreeting.te} ${userName || 'రైతు గారు'}! నేను మీ కిసాన్ మిత్ర వాయిస్ అసిస్టెంట్. నేడు మీకు ఎలా సహాయం చేయగలను?`,
+      hi: `${timeGreeting.hi} ${userName || 'किसान जी'}! मैं आपका किसान मित्र वॉइस असिस्टेंट हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?`
     };
 
     return greetingText[language];

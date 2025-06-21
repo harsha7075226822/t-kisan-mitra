@@ -328,7 +328,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
               <Bot className="w-6 h-6 text-green-600" />
-              <span className="text-green-800">Telugu-English Voice Assistant</span>
+              <span className="text-green-800">Kisan Mitra Voice Assistant</span>
               {isSpeaking && <Badge variant="secondary" className="animate-pulse bg-blue-100 text-blue-800">Speaking</Badge>}
               {isListening && <Badge variant="destructive" className="animate-pulse bg-red-100 text-red-800">Listening</Badge>}
               {isProcessing && <Badge variant="outline" className="animate-pulse bg-yellow-100 text-yellow-800">Processing</Badge>}
