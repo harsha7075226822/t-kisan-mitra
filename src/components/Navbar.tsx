@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Settings, User, Sprout, Package, Truck, Upload, Home, Wallet, Bell } from 'lucide-react';
@@ -335,7 +336,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <div className="text-2xl">🌾</div>
-              <span className="text-xl font-bold text-green-800">T Kisan Setu</span>
+              <span className="text-xl font-bold text-green-800">T Kisan Mitra</span>
             </Link>
           </div>
 
