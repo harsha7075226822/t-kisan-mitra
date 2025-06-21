@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +8,7 @@ import HealYourCrop from '@/components/HealYourCrop';
 import SmartCropAssistant from '@/components/SmartCropAssistant';
 import MarketCards from '@/components/MarketCards';
 import MachinerySubsidyStore from '@/components/MachinerySubsidyStore';
+import AgricultureLoan from '@/components/AgricultureLoan';
 import FloatingVoiceButton from '@/components/FloatingVoiceButton';
 import { 
   TrendingUp, 
@@ -19,13 +19,15 @@ import {
   Beaker,
   Sprout,
   CloudSun,
-  Wrench
+  Wrench,
+  Banknote
 } from 'lucide-react';
 
 const KisanDashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showMachineryStore, setShowMachineryStore] = useState(false);
+  const [showAgricultureLoan, setShowAgricultureLoan] = useState(false);
   const navigate = useNavigate();
 
   // Memoized modules data
@@ -84,8 +86,16 @@ const KisanDashboard = () => {
       description: 'Government-subsidized farm machinery',
       icon: Wrench,
       color: 'bg-amber-500',
-      path: null, // No navigation, opens modal instead
+      path: null,
       action: 'machinery-store'
+    },
+    {
+      title: 'Agriculture Loan',
+      description: 'Loans and credit support for farmers',
+      icon: Banknote,
+      color: 'bg-indigo-500',
+      path: null,
+      action: 'agriculture-loan'
     }
   ], []);
 
@@ -121,6 +131,8 @@ const KisanDashboard = () => {
   const handleModuleClick = (path: string | null, action?: string) => {
     if (action === 'machinery-store') {
       setShowMachineryStore(true);
+    } else if (action === 'agriculture-loan') {
+      setShowAgricultureLoan(true);
     } else if (path) {
       navigate(path);
     }
@@ -186,7 +198,7 @@ const KisanDashboard = () => {
           <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
             Services
           </h3>
-          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {modules.map((module, index) => (
               <Card 
                 key={index} 
@@ -251,6 +263,27 @@ const KisanDashboard = () => {
             </div>
             <div className="p-4">
               <MachinerySubsidyStore />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Agriculture Loan Modal */}
+      {showAgricultureLoan && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold">Agriculture Loan Services</h2>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowAgricultureLoan(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕ Close
+              </Button>
+            </div>
+            <div className="p-4">
+              <AgricultureLoan />
             </div>
           </div>
         </div>
