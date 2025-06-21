@@ -11,6 +11,7 @@ import MachinerySubsidyStore from '@/components/MachinerySubsidyStore';
 import AgricultureLoan from '@/components/AgricultureLoan';
 import CropInsurance from '@/components/CropInsurance';
 import VoiceAI from '@/components/VoiceAI';
+import AgricultureChatbot from '@/components/AgricultureChatbot';
 import { 
   TrendingUp, 
   BookOpen, 
@@ -268,6 +269,9 @@ const KisanDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Agriculture Chatbot - Always visible */}
+      <AgricultureChatbot />
 
       {/* Voice AI Assistant Modal */}
       {showVoiceAI && (
