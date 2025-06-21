@@ -10,7 +10,6 @@ import MarketCards from '@/components/MarketCards';
 import MachinerySubsidyStore from '@/components/MachinerySubsidyStore';
 import AgricultureLoan from '@/components/AgricultureLoan';
 import CropInsurance from '@/components/CropInsurance';
-import FloatingVoiceButton from '@/components/FloatingVoiceButton';
 import { 
   TrendingUp, 
   BookOpen, 
@@ -256,9 +255,6 @@ const KisanDashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Floating Voice Assistant Button */}
-      <FloatingVoiceButton />
 
       {/* Machinery Subsidy Store Modal */}
       {showMachineryStore && (

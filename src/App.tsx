@@ -13,7 +13,6 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Weather from "./pages/Weather";
 import Analytics from "./pages/Analytics";
-import Voice from "./pages/Voice";
 import Market from "./pages/Market";
 import Education from "./pages/Education";
 import Schemes from "./pages/Schemes";
@@ -63,12 +62,6 @@ const App = () => (
                     <>
                       <Navbar />
                       <Analytics />
-                    </>
-                  } />
-                  <Route path="/voice" element={
-                    <>
-                      <Navbar />
-                      <Voice />
                     </>
                   } />
                   <Route path="/market" element={

@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, Mic } from 'lucide-react';
+import { ArrowLeft, Home } from 'lucide-react';
 
 interface NavigationProps {
   showBackButton?: boolean;
@@ -11,7 +11,6 @@ interface NavigationProps {
 
 const Navigation: React.FC<NavigationProps> = ({ showBackButton = true, title }) => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <div className="flex items-center justify-between p-4 bg-white border-b border-gray-200">
@@ -41,18 +40,6 @@ const Navigation: React.FC<NavigationProps> = ({ showBackButton = true, title })
           <Home className="w-4 h-4 mr-2" />
           Dashboard
         </Button>
-        
-        {location.pathname !== '/voice' && (
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => navigate('/voice')}
-            className="hover:bg-green-50"
-          >
-            <Mic className="w-4 h-4 mr-2" />
-            Voice AI
-          </Button>
-        )}
       </div>
     </div>
   );
