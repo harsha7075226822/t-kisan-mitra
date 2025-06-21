@@ -27,6 +27,7 @@ import MyWallet from './MyWallet';
 import UniversalCart from './UniversalCart';
 import UserProfile from './UserProfile';
 import NotificationPanel from './NotificationPanel';
+import NotificationDropdown from './NotificationDropdown';
 
 interface Transaction {
   id: string;
@@ -334,7 +335,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <div className="text-2xl">🌾</div>
-              <span className="text-xl font-bold text-green-800">{t('hero.title')}</span>
+              <span className="text-xl font-bold text-green-800">T Kisan Setu</span>
             </Link>
           </div>
 
@@ -368,19 +369,8 @@ const Navbar = () => {
             {/* Language Selector */}
             <LanguageSelector />
 
-            {/* Notification Button */}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="relative"
-              onClick={() => setShowNotifications(true)}
-              title="Notifications"
-            >
-              <Bell className="w-4 h-4" />
-              <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full p-0 flex items-center justify-center">
-                3
-              </Badge>
-            </Button>
+            {/* New Notification Dropdown */}
+            <NotificationDropdown />
 
             {/* Seeds Container Button */}
             <Link to="/seeds">
@@ -514,18 +504,8 @@ const Navbar = () => {
             {/* Mobile Language Selector */}
             <LanguageSelector showLabel={false} />
 
-            {/* Mobile Notification Button */}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="relative"
-              onClick={() => setShowNotifications(true)}
-            >
-              <Bell className="w-4 h-4" />
-              <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 rounded-full p-0 flex items-center justify-center">
-                3
-              </Badge>
-            </Button>
+            {/* Mobile Notification Dropdown */}
+            <NotificationDropdown />
 
             <Button
               variant="ghost"
