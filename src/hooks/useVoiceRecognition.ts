@@ -5,7 +5,7 @@ interface UseVoiceRecognitionOptions {
   language?: string;
   continuous?: boolean;
   onResult?: (transcript: string) => void;
-  onError?: (error: any) => void;
+  onError?: (error: string) => void;
 }
 
 interface UseVoiceRecognitionReturn {
@@ -32,6 +32,7 @@ export const useVoiceRecognition = (
   const [isSupported, setIsSupported] = useState(false);
   
   const recognitionRef = useRef<any>(null);
+  const restartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Check if speech recognition is supported
@@ -77,27 +78,50 @@ export const useVoiceRecognition = (
         console.error('Voice recognition error:', event.error);
         setIsListening(false);
         
-        // Handle specific errors
-        if (event.error === 'not-allowed') {
-          console.error('Microphone access denied');
-        } else if (event.error === 'no-speech') {
-          console.warn('No speech detected');
-        } else if (event.error === 'network') {
-          console.error('Network error during recognition');
+        let errorMessage = 'Unknown error';
+        
+        // Handle specific errors with user-friendly messages
+        switch (event.error) {
+          case 'not-allowed':
+            errorMessage = 'Microphone access denied. Please allow microphone access and try again.';
+            break;
+          case 'no-speech':
+            errorMessage = 'No speech detected. Please try speaking louder.';
+            break;
+          case 'network':
+            errorMessage = 'Network error. Please check your internet connection.';
+            break;
+          case 'audio-capture':
+            errorMessage = 'Audio capture failed. Please check your microphone.';
+            break;
+          case 'aborted':
+            errorMessage = 'Speech recognition was aborted.';
+            break;
+          default:
+            errorMessage = `Speech recognition error: ${event.error}`;
         }
         
         if (onError) {
-          onError(event.error);
+          onError(errorMessage);
         }
       };
 
       recognition.onend = () => {
         console.log('Voice recognition ended');
         setIsListening(false);
+        
+        // Clear any pending restart timeout
+        if (restartTimeoutRef.current) {
+          clearTimeout(restartTimeoutRef.current);
+          restartTimeoutRef.current = null;
+        }
       };
 
       recognition.onnomatch = () => {
         console.warn('Speech recognition: no match found');
+        if (onError) {
+          onError('Could not understand the speech. Please try again.');
+        }
       };
     } else {
       console.warn('Speech recognition not supported');
@@ -108,19 +132,23 @@ export const useVoiceRecognition = (
       if (recognitionRef.current) {
         recognitionRef.current.abort();
       }
+      if (restartTimeoutRef.current) {
+        clearTimeout(restartTimeoutRef.current);
+      }
     };
   }, [language, continuous, onResult, onError]);
 
   const getLanguageCode = (lang: string): string => {
     const languageMap: { [key: string]: string } = {
-      'en': 'en-US',
+      'en': 'en-IN',
       'te': 'te-IN',
       'hi': 'hi-IN',
-      'en-US': 'en-US',
+      'en-US': 'en-IN',  // Change to Indian English
+      'en-IN': 'en-IN',
       'te-IN': 'te-IN',
       'hi-IN': 'hi-IN'
     };
-    return languageMap[lang] || 'en-US';
+    return languageMap[lang] || 'en-IN';
   };
 
   const startListening = () => {
@@ -135,6 +163,9 @@ export const useVoiceRecognition = (
       } catch (error) {
         console.error('Error starting voice recognition:', error);
         setIsListening(false);
+        if (onError) {
+          onError('Failed to start voice recognition. Please try again.');
+        }
       }
     }
   };
@@ -142,6 +173,12 @@ export const useVoiceRecognition = (
   const stopListening = () => {
     if (recognitionRef.current && isListening) {
       recognitionRef.current.stop();
+      
+      // Clear any pending restart timeout
+      if (restartTimeoutRef.current) {
+        clearTimeout(restartTimeoutRef.current);
+        restartTimeoutRef.current = null;
+      }
     }
   };
 

@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Mic, MicOff, Volume2, Bot, User, Settings, X, RotateCcw } from 'lucide-react';
+import { Mic, MicOff, Volume2, Bot, User, X, RotateCcw, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useVoiceRecognition } from '@/hooks/useVoiceRecognition';
 import { AIResponseEngine } from '@/utils/aiResponseEngine';
@@ -30,17 +30,26 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'te' | 'hi'>(language);
   const [lastResponse, setLastResponse] = useState<Message | null>(null);
   const [microphonePermission, setMicrophonePermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const responseEngine = new AIResponseEngine();
 
-  const { startListening, stopListening, transcript, isSupported } = useVoiceRecognition({
+  const { 
+    startListening, 
+    stopListening, 
+    transcript, 
+    isSupported,
+    resetTranscript 
+  } = useVoiceRecognition({
     language: selectedLanguage,
     continuous: false,
     onResult: handleVoiceResult,
+    onError: handleVoiceError
   });
 
   const languages = [
-    { code: 'en' as const, name: 'English', flag: '🇺🇸', voiceLang: 'en-US' },
+    { code: 'en' as const, name: 'English', flag: '🇺🇸', voiceLang: 'en-IN' },
     { code: 'te' as const, name: 'తెలుగు', flag: '🇮🇳', voiceLang: 'te-IN' },
     { code: 'hi' as const, name: 'हिंदी', flag: '🇮🇳', voiceLang: 'hi-IN' }
   ];
@@ -50,22 +59,19 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
       "What's the weather today?",
       "When should I plant tomatoes?",
       "How to control pests in cotton?",
-      "Set a reminder for watering crops"
+      "What are the current crop prices?"
     ],
     te: [
       "నేడు వాతావరణం ఎలా ఉంది?",
-      "ఉష్ణోగ్రత ఎంత?",
       "టమాటోలు ఎప్పుడు నాటాలి?",
       "పత్తిలో చీడపీడలను ఎలా నియంత్రించాలి?",
-      "పంటలకు నీరు పెట్టడానికి రిమైండర్ సెట్ చేయండి",
-      "మంచి విత్తనాలు ఎక్కడ దొరుకుతాయి?"
+      "ప్రస్తుత పంట ధరలు ఎంత?"
     ],
     hi: [
       "आज मौसम कैसा है?",
-      "तापमान कितना है?",
       "टमाटर कब लगाना चाहिए?",
       "कपास में कीट नियंत्रण कैसे करें?",
-      "फसल सिंचाई के लिए रिमाइंडर सेट करें"
+      "वर्तमान फसल की कीमतें क्या हैं?"
     ]
   };
 
@@ -97,10 +103,12 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
       setMicrophonePermission('granted');
+      setError(null);
       return true;
     } catch (error) {
       console.error('Microphone access denied:', error);
       setMicrophonePermission('denied');
+      setError('Microphone access is required for voice input. Please enable it in your browser settings.');
       return false;
     }
   };
@@ -110,15 +118,15 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     const currentHour = new Date().getHours();
     
     const welcomeTexts = {
-      en: `Good ${currentHour < 12 ? 'morning' : currentHour < 17 ? 'afternoon' : 'evening'} ${user.name || 'Farmer'}! I'm your voice assistant. How can I help you today?`,
-      te: `${currentHour < 12 ? 'శుభోదయం' : currentHour < 17 ? 'శుభ మధ్యాహ్నం' : 'శుభ సాయంత్రం'} ${user.name || 'రైతు గారు'}! నేను మీ వాయిస్ అసిస్టెంట్. నేడు మీకు ఎలా సహాయం చేయగలను?`,
-      hi: `${currentHour < 12 ? 'सुप्रभात' : currentHour < 17 ? 'नमस्कार' : 'शुभ संध्या'} ${user.name || 'किसान जी'}! मैं आपका वॉइस असिस्टेंट हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?`
+      en: `Good ${currentHour < 12 ? 'morning' : currentHour < 17 ? 'afternoon' : 'evening'} ${user.name || 'Farmer'}! I'm your Telugu-English voice assistant. How can I help you today?`,
+      te: `${currentHour < 12 ? 'శుభోదయం' : currentHour < 17 ? 'శుభ మధ్యాహ్నం' : 'శుభ సాయంత్రం'} ${user.name || 'రైతు గారు'}! నేను మీ తెలుగు-ఇంగ్లీష్ వాయిస్ అసిస్టెంట్. నేడు మీకు ఎలా సహాయం చేయగలను?`,
+      hi: `${currentHour < 12 ? 'सुप्रभात' : currentHour < 17 ? 'नमस्कार' : 'शुभ संध्या'} ${user.name || 'किसान जी'}! मैं आपका तेलुगु-अंग्रेजी वॉइस असिस्टेंट हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?`
     };
 
     const welcomeMessage: Message = {
       id: Date.now().toString(),
       type: 'assistant',
-      text: welcomeTexts[selectedLanguage as keyof typeof welcomeTexts] || welcomeTexts.en,
+      text: welcomeTexts[selectedLanguage] || welcomeTexts.en,
       language: selectedLanguage,
       timestamp: new Date()
     };
@@ -129,6 +137,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   };
 
   function handleVoiceResult(transcript: string) {
+    console.log('Voice result received:', transcript);
     if (transcript.trim()) {
       const userMessage: Message = {
         id: Date.now().toString(),
@@ -139,12 +148,24 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
       };
 
       setMessages(prev => [...prev, userMessage]);
+      setIsListening(false);
+      resetTranscript();
       processUserInput(transcript);
     }
   }
 
+  function handleVoiceError(error: string) {
+    console.error('Voice recognition error:', error);
+    setIsListening(false);
+    setError(`Voice recognition error: ${error}`);
+  }
+
   const processUserInput = async (input: string) => {
+    setIsProcessing(true);
+    setError(null);
+    
     try {
+      console.log('Processing user input:', input);
       const response = await responseEngine.generateResponse(input, selectedLanguage);
       
       const assistantMessage: Message = {
@@ -170,16 +191,19 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
       };
       setMessages(prev => [...prev, errorResponse]);
       setLastResponse(errorResponse);
+      setError('Failed to process your request. Please try again.');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const getErrorMessage = () => {
     const errorTexts = {
-      en: "Sorry, I couldn't understand that. Please try again.",
-      te: "క్షమించండి, నేను అర్థం చేసుకోలేకపోయాను. దయచేసి మళ్లీ ప్రయత్నించండి.",
-      hi: "माफ करें, मैं समझ नहीं पाया। कृपया फिर से कोशिश करें।"
+      en: "Sorry, I couldn't understand that. Please try speaking clearly or ask about farming, weather, or crop prices.",
+      te: "క్షమించండి, నేను అర్థం చేసుకోలేకపోయాను. దయచేసి స్పష్టంగా మాట్లాడండి లేదా వ్యవసాయం, వాతావరణం లేదా పంట ధరల గురించి అడగండి.",
+      hi: "माफ करें, मैं समझ नहीं पाया। कृपया स्पष्ट रूप से बोलें या खेती, मौसम या फसल की कीमतों के बारे में पूछें।"
     };
-    return errorTexts[selectedLanguage as keyof typeof errorTexts] || errorTexts.en;
+    return errorTexts[selectedLanguage] || errorTexts.en;
   };
 
   const speakMessage = (text: string, lang: string) => {
@@ -188,22 +212,29 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
       window.speechSynthesis.cancel();
       
       const utterance = new SpeechSynthesisUtterance(text);
-      const langMap = { en: 'en-US', te: 'te-IN', hi: 'hi-IN' };
-      utterance.lang = langMap[lang as keyof typeof langMap] || 'en-US';
+      const langMap = { en: 'en-IN', te: 'te-IN', hi: 'hi-IN' };
+      utterance.lang = langMap[lang as keyof typeof langMap] || 'en-IN';
       
-      // Better Telugu pronunciation settings
+      // Language-specific speech settings
       if (lang === 'te') {
         utterance.rate = 0.7;
         utterance.pitch = 1.1;
         utterance.volume = 1.0;
-      } else {
+      } else if (lang === 'hi') {
         utterance.rate = 0.8;
-        utterance.pitch = 1;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+      } else {
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
         utterance.volume = 1.0;
       }
       
       utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+        setIsSpeaking(false);
+      };
       
       window.speechSynthesis.speak(utterance);
     }
@@ -220,6 +251,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
           return;
         }
       }
+      setError(null);
       startListening();
       setIsListening(true);
     }
@@ -236,12 +268,20 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLanguage = e.target.value as 'en' | 'te' | 'hi';
     setSelectedLanguage(newLanguage);
+    setError(null);
   };
 
   const replayLastResponse = () => {
-    if (lastResponse) {
+    if (lastResponse && !isSpeaking) {
       speakMessage(lastResponse.text, lastResponse.language);
     }
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    setLastResponse(null);
+    setError(null);
+    addWelcomeMessage();
   };
 
   if (!isOpen) return null;
@@ -253,9 +293,10 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
               <Bot className="w-6 h-6 text-green-600" />
-              <span className="text-green-800">Voice Assistant</span>
+              <span className="text-green-800">Telugu-English Voice Assistant</span>
               {isSpeaking && <Badge variant="secondary" className="animate-pulse bg-blue-100 text-blue-800">Speaking</Badge>}
               {isListening && <Badge variant="destructive" className="animate-pulse bg-red-100 text-red-800">Listening</Badge>}
+              {isProcessing && <Badge variant="outline" className="animate-pulse bg-yellow-100 text-yellow-800">Processing</Badge>}
             </CardTitle>
             <div className="flex items-center space-x-2">
               <select
@@ -270,10 +311,13 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
                 ))}
               </select>
               {lastResponse && (
-                <Button variant="ghost" size="sm" onClick={replayLastResponse} className="hover:bg-green-100">
+                <Button variant="ghost" size="sm" onClick={replayLastResponse} disabled={isSpeaking} className="hover:bg-green-100">
                   <RotateCcw className="w-4 h-4" />
                 </Button>
               )}
+              <Button variant="ghost" size="sm" onClick={clearChat} className="hover:bg-blue-100">
+                Clear
+              </Button>
               <Button variant="ghost" size="sm" onClick={onClose} className="hover:bg-red-100">
                 <X className="w-4 h-4" />
               </Button>
@@ -282,6 +326,16 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
         </CardHeader>
 
         <CardContent className="flex-1 flex flex-col p-0">
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border-b p-3 border-l-4 border-l-red-500">
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <span className="text-sm text-red-700 font-medium">{error}</span>
+              </div>
+            </div>
+          )}
+
           {/* Live Transcription Display */}
           {transcript && isListening && (
             <div className="bg-blue-50 border-b p-3 border-l-4 border-l-blue-500">
@@ -290,15 +344,6 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
                 <span className="text-sm text-gray-600 font-medium">Live Transcription:</span>
               </div>
               <p className="text-blue-700 font-medium mt-1 text-lg">"{transcript}"</p>
-            </div>
-          )}
-
-          {/* Microphone Permission Notice */}
-          {microphonePermission === 'denied' && (
-            <div className="bg-red-50 border-b p-3 border-l-4 border-l-red-500">
-              <p className="text-red-700 text-sm font-medium">
-                🎤 Microphone access is required for voice input. Please enable it in your browser settings.
-              </p>
             </div>
           )}
 
@@ -351,7 +396,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
           <div className="border-t p-4 bg-white">
             <p className="text-sm text-gray-600 mb-3 font-medium">Quick Commands:</p>
             <div className="grid grid-cols-1 gap-2 max-h-24 overflow-y-auto">
-              {(quickCommands[selectedLanguage as keyof typeof quickCommands] || quickCommands.en)
+              {quickCommands[selectedLanguage]
                 .slice(0, 3).map((command, index) => (
                 <Button
                   key={index}
@@ -359,6 +404,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
                   size="sm"
                   className="text-xs justify-start hover:bg-green-50 hover:border-green-300 border-gray-300"
                   onClick={() => handleQuickCommand(command)}
+                  disabled={isProcessing}
                 >
                   💬 {command}
                 </Button>
@@ -377,7 +423,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
                     : 'bg-green-600 hover:bg-green-700 hover:scale-105 shadow-lg shadow-green-200'
                 }`}
                 onClick={toggleListening}
-                disabled={!isSupported || microphonePermission === 'denied'}
+                disabled={!isSupported || microphonePermission === 'denied' || isProcessing}
               >
                 {isListening ? (
                   <MicOff className="w-8 h-8 text-white" />
@@ -389,10 +435,12 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
             <div className="text-center mt-3">
               <p className="text-sm text-gray-700 font-medium">
                 {isListening 
-                  ? '🎤 మాట్లాడండి... వింటున్నాను' 
+                  ? (selectedLanguage === 'te' ? '🎤 మాట్లాడండి... వింటున్నాను' : selectedLanguage === 'hi' ? '🎤 बोलिए... सुन रहा हूँ' : '🎤 Speak now... Listening') 
                   : microphonePermission === 'denied'
                   ? '❌ Microphone access denied'
-                  : '👆 మైక్ బటన్ నొక్కి మాట్లాడండి'
+                  : isProcessing
+                  ? '⏳ Processing your request...'
+                  : (selectedLanguage === 'te' ? '👆 మైక్ బటన్ నొక్కి మాట్లాడండి' : selectedLanguage === 'hi' ? '👆 माइक बटन दबाकर बोलें' : '👆 Press mic button to speak')
                 }
               </p>
               {!isSupported && (
