@@ -47,7 +47,7 @@ const MarketCards = () => {
       contact: 'Market Officer: 9876543210',
       coordinates: { lat: 17.4875, lng: 78.3953 },
       isOnline: true,
-      lastUpdated: '2 min ago'
+      lastUpdated: 'Just now'
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ const MarketCards = () => {
       contact: 'Helpdesk: 1800-XXX-1234',
       coordinates: { lat: 17.5373, lng: 78.4891 },
       isOnline: true,
-      lastUpdated: '5 min ago'
+      lastUpdated: 'Just now'
     },
     {
       id: 3,
@@ -73,7 +73,7 @@ const MarketCards = () => {
       contact: 'Market Officer: 9988776655',
       coordinates: { lat: 17.4399, lng: 78.4983 },
       isOnline: true,
-      lastUpdated: '1 min ago'
+      lastUpdated: 'Just now'
     },
     {
       id: 4,
@@ -86,7 +86,7 @@ const MarketCards = () => {
       contact: 'Helpdesk: 1800-XXX-5678',
       coordinates: { lat: 17.5167, lng: 78.2167 },
       isOnline: false,
-      lastUpdated: '15 min ago'
+      lastUpdated: 'Just now'
     },
     {
       id: 5,
@@ -99,7 +99,7 @@ const MarketCards = () => {
       contact: 'Market Officer: 9123456789',
       coordinates: { lat: 17.6243, lng: 78.4829 },
       isOnline: true,
-      lastUpdated: '3 min ago'
+      lastUpdated: 'Just now'
     },
     {
       id: 6,
@@ -112,7 +112,7 @@ const MarketCards = () => {
       contact: 'Helpdesk: 1800-XXX-9012',
       coordinates: { lat: 17.5104, lng: 78.3808 },
       isOnline: true,
-      lastUpdated: '7 min ago'
+      lastUpdated: 'Just now'
     }
   ];
 
@@ -165,7 +165,7 @@ const MarketCards = () => {
     const updatedMarkets = markets.map(market => ({
       ...market,
       latestPrice: generateRandomPrice(),
-      lastUpdated: Math.random() > 0.5 ? 'Just now' : `${Math.floor(Math.random() * 10) + 1} min ago`,
+      lastUpdated: 'Just now',
       isOnline: Math.random() > 0.1 // 90% chance to be online
     }));
     setMarkets(updatedMarkets);
