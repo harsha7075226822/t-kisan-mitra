@@ -46,7 +46,7 @@ export const useVoiceRecognition = (
       recognition.continuous = continuous;
       recognition.interimResults = true;
       recognition.lang = getLanguageCode(language);
-      recognition.maxAlternatives = 3;
+      recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
         console.log('Voice recognition started for language:', recognition.lang);
@@ -69,8 +69,11 @@ export const useVoiceRecognition = (
         const currentTranscript = finalTranscript || interimTranscript;
         setTranscript(currentTranscript);
 
+        // Call onResult for both interim and final results so UI updates in real-time
         if (finalTranscript && onResult) {
+          console.log('Final transcript:', finalTranscript);
           onResult(finalTranscript.trim());
+          setIsListening(false);
         }
       };
 
@@ -143,7 +146,7 @@ export const useVoiceRecognition = (
       'en': 'en-IN',
       'te': 'te-IN',
       'hi': 'hi-IN',
-      'en-US': 'en-IN',  // Change to Indian English
+      'en-US': 'en-IN',
       'en-IN': 'en-IN',
       'te-IN': 'te-IN',
       'hi-IN': 'hi-IN'

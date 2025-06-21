@@ -19,7 +19,6 @@ interface Message {
   text: string;
   language: string;
   timestamp: Date;
-  audioUrl?: string;
 }
 
 const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }) => {
@@ -32,6 +31,7 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   const [microphonePermission, setMicrophonePermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasGreeted, setHasGreeted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const responseEngine = new AIResponseEngine();
 
@@ -76,11 +76,12 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
   };
 
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    if (isOpen && !hasGreeted) {
       checkMicrophonePermission();
-      addWelcomeMessage();
+      showWelcomeMessage();
+      setHasGreeted(true);
     }
-  }, [isOpen]);
+  }, [isOpen, hasGreeted]);
 
   useEffect(() => {
     scrollToBottom();
@@ -113,27 +114,25 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     }
   };
 
-  const addWelcomeMessage = () => {
+  const showWelcomeMessage = () => {
     const user = JSON.parse(localStorage.getItem('kisanUser') || '{}');
-    const currentHour = new Date().getHours();
-    
-    const welcomeTexts = {
-      en: `Good ${currentHour < 12 ? 'morning' : currentHour < 17 ? 'afternoon' : 'evening'} ${user.name || 'Farmer'}! I'm your Telugu-English voice assistant. How can I help you today?`,
-      te: `${currentHour < 12 ? 'శుభోదయం' : currentHour < 17 ? 'శుభ మధ్యాహ్నం' : 'శుభ సాయంత్రం'} ${user.name || 'రైతు గారు'}! నేను మీ తెలుగు-ఇంగ్లీష్ వాయిస్ అసిస్టెంట్. నేడు మీకు ఎలా సహాయం చేయగలను?`,
-      hi: `${currentHour < 12 ? 'सुप्रभात' : currentHour < 17 ? 'नमस्कार' : 'शुभ संध्या'} ${user.name || 'किसान जी'}! मैं आपका तेलुगु-अंग्रेजी वॉइस असिस्टेंट हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?`
-    };
+    const welcomeText = responseEngine.generateWelcomeGreeting(selectedLanguage, user.name);
 
     const welcomeMessage: Message = {
       id: Date.now().toString(),
       type: 'assistant',
-      text: welcomeTexts[selectedLanguage] || welcomeTexts.en,
+      text: welcomeText,
       language: selectedLanguage,
       timestamp: new Date()
     };
 
     setMessages([welcomeMessage]);
     setLastResponse(welcomeMessage);
-    speakMessage(welcomeMessage.text, selectedLanguage);
+    
+    // Speak the welcome message
+    setTimeout(() => {
+      speakMessage(welcomeMessage.text, selectedLanguage);
+    }, 500);
   };
 
   function handleVoiceResult(transcript: string) {
@@ -178,7 +177,12 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
 
       setMessages(prev => [...prev, assistantMessage]);
       setLastResponse(assistantMessage);
-      speakMessage(response, selectedLanguage);
+      
+      // Speak the response
+      setTimeout(() => {
+        speakMessage(response, selectedLanguage);
+      }, 300);
+      
     } catch (error) {
       console.error('Error processing user input:', error);
       const errorMessage = getErrorMessage();
@@ -230,12 +234,16 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
         utterance.volume = 1.0;
       }
       
-      utterance.onend = () => setIsSpeaking(false);
+      utterance.onend = () => {
+        console.log('Speech synthesis ended');
+        setIsSpeaking(false);
+      };
       utterance.onerror = (event) => {
         console.error('Speech synthesis error:', event);
         setIsSpeaking(false);
       };
       
+      console.log(`Speaking in ${utterance.lang}: ${text}`);
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -269,6 +277,22 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     const newLanguage = e.target.value as 'en' | 'te' | 'hi';
     setSelectedLanguage(newLanguage);
     setError(null);
+    
+    // Show new welcome message in selected language
+    const user = JSON.parse(localStorage.getItem('kisanUser') || '{}');
+    const welcomeText = responseEngine.generateWelcomeGreeting(newLanguage, user.name);
+
+    const welcomeMessage: Message = {
+      id: Date.now().toString(),
+      type: 'assistant',
+      text: welcomeText,
+      language: newLanguage,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, welcomeMessage]);
+    setLastResponse(welcomeMessage);
+    speakMessage(welcomeMessage.text, newLanguage);
   };
 
   const replayLastResponse = () => {
@@ -281,7 +305,8 @@ const VoiceAssistantBot: React.FC<VoiceAssistantBotProps> = ({ isOpen, onClose }
     setMessages([]);
     setLastResponse(null);
     setError(null);
-    addWelcomeMessage();
+    setHasGreeted(false);
+    showWelcomeMessage();
   };
 
   if (!isOpen) return null;

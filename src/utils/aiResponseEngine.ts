@@ -85,7 +85,10 @@ export class AIResponseEngine {
   };
 
   async generateResponse(input: string, language: 'en' | 'te' | 'hi' = 'en'): Promise<string> {
-    console.log(`Generating response for: "${input}" in language: ${language}`);
+    console.log(`Generating AI response for: "${input}" in language: ${language}`);
+    
+    // Simulate processing delay for realistic AI behavior
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Normalize input for better matching
     const normalizedInput = input.toLowerCase().trim();
@@ -94,19 +97,19 @@ export class AIResponseEngine {
     let category = 'default';
     
     // Weather keywords
-    if (this.containsKeywords(normalizedInput, ['వాన', 'వాతావరణం', 'weather', 'rain', 'temperature', 'मौसम', 'बारिश', 'तापमान'])) {
+    if (this.containsKeywords(normalizedInput, ['వాన', 'వాతావరణం', 'weather', 'rain', 'temperature', 'climate', 'मौसम', 'बारिश', 'तापमान'])) {
       category = 'weather';
     }
     // Crop keywords  
-    else if (this.containsKeywords(normalizedInput, ['పంట', 'వ్యవసాయం', 'crop', 'farming', 'plant', 'फसल', 'कृषि', 'खेती'])) {
+    else if (this.containsKeywords(normalizedInput, ['పంట', 'వ్యవసాయం', 'crop', 'farming', 'plant', 'agriculture', 'फसल', 'कृषि', 'खेती'])) {
       category = 'crop';
     }
     // Price keywords
-    else if (this.containsKeywords(normalizedInput, ['ధర', 'మార్కెట్', 'price', 'market', 'cost', 'दाम', 'बाजार', 'कीमत'])) {
+    else if (this.containsKeywords(normalizedInput, ['ధర', 'మార్కెట్', 'price', 'market', 'cost', 'sell', 'दाम', 'बाजार', 'कीमत'])) {
       category = 'price';
     }
     // Greeting keywords
-    else if (this.containsKeywords(normalizedInput, ['నమస్కారం', 'హలో', 'hello', 'hi', 'नमस्कार', 'हैलो'])) {
+    else if (this.containsKeywords(normalizedInput, ['నమస్కారం', 'హలో', 'hello', 'hi', 'hey', 'नमस्कार', 'हैलो'])) {
       category = 'greeting';
     }
 
@@ -114,10 +117,31 @@ export class AIResponseEngine {
     const categoryResponses = this.responses[language][category as keyof typeof this.responses[typeof language]];
     const randomIndex = Math.floor(Math.random() * categoryResponses.length);
     
-    return categoryResponses[randomIndex];
+    const response = categoryResponses[randomIndex];
+    console.log(`Generated response: "${response}"`);
+    
+    return response;
   }
 
   private containsKeywords(input: string, keywords: string[]): boolean {
     return keywords.some(keyword => input.includes(keyword.toLowerCase()));
+  }
+
+  // Generate welcome greeting based on language
+  generateWelcomeGreeting(language: 'en' | 'te' | 'hi', userName?: string): string {
+    const currentHour = new Date().getHours();
+    const timeGreeting = {
+      en: currentHour < 12 ? 'Good morning' : currentHour < 17 ? 'Good afternoon' : 'Good evening',
+      te: currentHour < 12 ? 'శుభోదయం' : currentHour < 17 ? 'శుభ మధ్యాహ్నం' : 'శుభ సాయంత్రం',
+      hi: currentHour < 12 ? 'सुप्रभात' : currentHour < 17 ? 'नमस्कार' : 'शुभ संध्या'
+    };
+
+    const greetingText = {
+      en: `${timeGreeting.en} ${userName || 'Farmer'}! I'm your Telugu-English voice assistant. How can I help you today?`,
+      te: `${timeGreeting.te} ${userName || 'రైతు గారు'}! నేను మీ తెలుగు-ఇంగ్లీష్ వాయిస్ అసిస్టెంట్. నేడు మీకు ఎలా సహాయం చేయగలను?`,
+      hi: `${timeGreeting.hi} ${userName || 'किसान जी'}! मैं आपका तेलुगु-अंग्रेजी वॉइस असिस्टेंट हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?`
+    };
+
+    return greetingText[language];
   }
 }
