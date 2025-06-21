@@ -159,7 +159,42 @@ const translations = {
     'education.article': 'Article',
     'education.helpTitle': 'Need Help?',
     'education.helpDescription': 'Learn more about farming techniques and best practices',
-    'education.helpline': 'Helpline: 1800-425-0691'
+    'education.helpline': 'Helpline: 1800-425-0691',
+    
+    // Notifications
+    'notifications.title': 'Notifications',
+    'notifications.markAllRead': 'Mark all read',
+    'notifications.clearAll': 'Clear all',
+    'notifications.empty.title': 'No notifications',
+    'notifications.empty.description': "You're all caught up!",
+    'notifications.types.weather': 'Weather',
+    'notifications.types.scheme': 'Schemes',
+    'notifications.types.order': 'Orders',
+    'notifications.types.market': 'Market Insights',
+    
+    // Weather notifications
+    'notifications.weather.alert.title': 'Weather Alert',
+    'notifications.weather.alert.message': 'Heavy rain expected tomorrow. Consider harvesting ready crops and protecting seedlings.',
+    'notifications.weather.soilMoisture.title': 'Soil Moisture Alert',
+    'notifications.weather.soilMoisture.message': 'Soil moisture levels are optimal for wheat sowing in your region.',
+    
+    // Order notifications
+    'notifications.order.delivered.title': 'Order Delivered',
+    'notifications.order.delivered.message': 'Your order {orderId} ({product}) has been successfully delivered.',
+    'notifications.order.shipped.title': 'Order Shipped',
+    'notifications.order.shipped.message': 'Your order {orderId} ({product}) is out for delivery. Expected by tomorrow.',
+    
+    // Scheme notifications
+    'notifications.scheme.subsidy.title': 'New Government Scheme',
+    'notifications.scheme.subsidy.message': 'PM-KISAN subsidy of {amount} has been credited to your account. Check your wallet.',
+    'notifications.scheme.approved.title': 'Subsidy Application Approved',
+    'notifications.scheme.approved.message': 'Your application for agricultural equipment subsidy has been approved. Amount: {amount}.',
+    
+    // Market notifications
+    'notifications.market.priceUpdate.title': 'Market Price Update',
+    'notifications.market.priceUpdate.message': '{crop} prices increased by {increase} in {location} market. Current rate: {price}/quintal.',
+    'notifications.market.trend.title': 'Market Trend Alert',
+    'notifications.market.trend.message': 'Organic vegetables showing 15% price increase. Consider transitioning to organic farming.'
   },
   te: {
     // Header
@@ -299,7 +334,42 @@ const translations = {
     'education.article': 'వ్యాసం',
     'education.helpTitle': 'సహాయం కావాలా?',
     'education.helpDescription': 'వ్యవసాయ పద్ధతులు మరియు ఉత్తమ పద్ధతుల గురించి మరింత తెలుసుకోండి',
-    'education.helpline': 'హెల్ప్‌లైన్: 1800-425-0691'
+    'education.helpline': 'హెల్ప్‌లైన్: 1800-425-0691',
+    
+    // Notifications
+    'notifications.title': 'నోటిఫికేషన్లు',
+    'notifications.markAllRead': 'అన్నీ చదివినట్లు గుర్తించు',
+    'notifications.clearAll': 'అన్నీ క్లియర్ చేయి',
+    'notifications.empty.title': 'నోటిఫికేషన్లు లేవు',
+    'notifications.empty.description': 'మీరు అన్నీ చూశారు!',
+    'notifications.types.weather': 'వాతావరణం',
+    'notifications.types.scheme': 'పథకాలు',
+    'notifications.types.order': 'ఆర్డర్లు',
+    'notifications.types.market': 'మార్కెట్ అంతర్దృష్టులు',
+    
+    // Weather notifications
+    'notifications.weather.alert.title': 'వాతావరణ హెచ్చరిక',
+    'notifications.weather.alert.message': 'రేపు భారీ వర్షాలు అనుమానిస్తున్నారు. సిద్ధమైన పంటలను కోయడం మరియు మొలకలను రక్షించడం గురించి ఆలోచించండి.',
+    'notifications.weather.soilMoisture.title': 'మట్టి తేమ హెచ్చరిక',
+    'notifications.weather.soilMoisture.message': 'మీ ప్రాంతంలో గోధుమ విత్తనాలకు మట్టి తేమ స్థాయిలు అనుకూలంగా ఉన్నాయి.',
+    
+    // Order notifications
+    'notifications.order.delivered.title': 'ఆర్డర్ డెలివరీ అయింది',
+    'notifications.order.delivered.message': 'మీ ఆర్డర్ {orderId} ({product}) విజయవంతంగా డెలివరీ అయింది.',
+    'notifications.order.shipped.title': 'ఆర్డర్ పంపబడింది',
+    'notifications.order.shipped.message': 'మీ ఆర్డర్ {orderId} ({product}) డెలివరీకి బయలుదేరింది. రేపు వచ్చే అవకాశం ఉంది.',
+    
+    // Scheme notifications
+    'notifications.scheme.subsidy.title': 'కొత్త ప్రభుత్వ పథకం',
+    'notifications.scheme.subsidy.message': 'PM-KISAN సబ్సిడీ {amount} మీ ఖాతాలో జమ చేయబడింది. మీ వాలెట్ చూడండి.',
+    'notifications.scheme.approved.title': 'సబ్సిడీ దరఖాస్తు ఆమోదించబడింది',
+    'notifications.scheme.approved.message': 'వ్యవసాయ పరికరాల సబ్సిడీ కోసం మీ దరఖాస్తు ఆమోదించబడింది. మొత్తం: {amount}.',
+    
+    // Market notifications
+    'notifications.market.priceUpdate.title': 'మార్కెట్ ధర నవీకరణ',
+    'notifications.market.priceUpdate.message': '{location} మార్కెట్‌లో {crop} ధరలు {increase} పెరిగాయి. ప్రస్తుత రేటు: {price}/క్వింటల్.',
+    'notifications.market.trend.title': 'మార్కెట్ ట్రెండ్ హెచ్చరిక',
+    'notifications.market.trend.message': 'సేంద్రీయ కూరగాయలు 15% ధర పెరుగుదల చూపిస్తున్నాయి. సేంద్రీయ వ్యవసాయానికి మారడాన్ని పరిగణించండి.'
   },
   hi: {
     // Header
@@ -439,7 +509,42 @@ const translations = {
     'education.article': 'लेख',
     'education.helpTitle': 'सहायता चाहिए?',
     'education.helpDescription': 'कृषि तकनीकों और सर्वोत्तम प्रथाओं के बारे में और जानें',
-    'education.helpline': 'हेल्पलाइन: 1800-425-0691'
+    'education.helpline': 'हेल्पलाइन: 1800-425-0691',
+    
+    // Notifications
+    'notifications.title': 'सूचनाएं',
+    'notifications.markAllRead': 'सभी को पढ़ा हुआ चिह्नित करें',
+    'notifications.clearAll': 'सभी साफ़ करें',
+    'notifications.empty.title': 'कोई सूचना नहीं',
+    'notifications.empty.description': 'आप सभी देख चुके हैं!',
+    'notifications.types.weather': 'मौसम',
+    'notifications.types.scheme': 'योजनाएं',
+    'notifications.types.order': 'ऑर्डर',
+    'notifications.types.market': 'बाजार अंतर्दृष्टि',
+    
+    // Weather notifications
+    'notifications.weather.alert.title': 'मौसम चेतावनी',
+    'notifications.weather.alert.message': 'कल भारी बारिश की उम्मीद है। तैयार फसलों की कटाई और पौधों की सुरक्षा पर विचार करें।',
+    'notifications.weather.soilMoisture.title': 'मिट्टी की नमी चेतावनी',
+    'notifications.weather.soilMoisture.message': 'आपके क्षेत्र में गेहूं की बुआई के लिए मिट्टी की नमी का स्तर उपयुक्त है।',
+    
+    // Order notifications
+    'notifications.order.delivered.title': 'ऑर्डर डिलीवर किया गया',
+    'notifications.order.delivered.message': 'आपका ऑर्डर {orderId} ({product}) सफलतापूर्वक डिलीवर कर दिया गया है।',
+    'notifications.order.shipped.title': 'ऑर्डर भेजा गया',
+    'notifications.order.shipped.message': 'आपका ऑर्डर {orderId} ({product}) डिलीवरी के लिए निकल गया है। कल तक आने की उम्मीद है।',
+    
+    // Scheme notifications
+    'notifications.scheme.subsidy.title': 'नई सरकारी योजना',
+    'notifications.scheme.subsidy.message': 'PM-KISAN सब्सिडी {amount} आपके खाते में जमा कर दी गई है। अपना वॉलेट चेक करें।',
+    'notifications.scheme.approved.title': 'सब्सिडी आवेदन स्वीकृत',
+    'notifications.scheme.approved.message': 'कृषि उपकरण सब्सिडी के लिए आपका आवेदन स्वीकृत हो गया है। राशि: {amount}।',
+    
+    // Market notifications
+    'notifications.market.priceUpdate.title': 'बाजार मूल्य अपडेट',
+    'notifications.market.priceUpdate.message': '{location} बाजार में {crop} की कीमतें {increase} बढ़ गई हैं। वर्तमान दर: {price}/क्विंटल।',
+    'notifications.market.trend.title': 'बाजार ट्रेंड अलर्ट',
+    'notifications.market.trend.message': 'जैविक सब्जियां 15% मूल्य वृद्धि दिखा रही हैं। जैविक खेती में बदलाव पर विचार करें।'
   }
 };
 
