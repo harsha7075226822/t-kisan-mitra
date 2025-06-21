@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Settings, User, Sprout, Package, Truck, Upload, Home, Wallet } from 'lucide-react';
+import { Menu, X, Settings, User, Sprout, Package, Truck, Upload, Home, Wallet, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,7 @@ import MyAddress from './MyAddress';
 import MyWallet from './MyWallet';
 import UniversalCart from './UniversalCart';
 import UserProfile from './UserProfile';
+import NotificationPanel from './NotificationPanel';
 
 interface Transaction {
   id: string;
@@ -45,6 +47,7 @@ const Navbar = () => {
   const [showTrackOrder, setShowTrackOrder] = useState(false);
   const [showProfileUpload, setShowProfileUpload] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [trackingId, setTrackingId] = useState('');
   const [profileImage, setProfileImage] = useState('');
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
@@ -365,6 +368,20 @@ const Navbar = () => {
             {/* Language Selector */}
             <LanguageSelector />
 
+            {/* Notification Button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="relative"
+              onClick={() => setShowNotifications(true)}
+              title="Notifications"
+            >
+              <Bell className="w-4 h-4" />
+              <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full p-0 flex items-center justify-center">
+                3
+              </Badge>
+            </Button>
+
             {/* Seeds Container Button */}
             <Link to="/seeds">
               <Button variant="outline" size="sm" title={t('nav.seeds')}>
@@ -496,6 +513,19 @@ const Navbar = () => {
 
             {/* Mobile Language Selector */}
             <LanguageSelector showLabel={false} />
+
+            {/* Mobile Notification Button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="relative"
+              onClick={() => setShowNotifications(true)}
+            >
+              <Bell className="w-4 h-4" />
+              <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 rounded-full p-0 flex items-center justify-center">
+                3
+              </Badge>
+            </Button>
 
             <Button
               variant="ghost"
@@ -789,6 +819,12 @@ const Navbar = () => {
           <UserProfile />
         </DialogContent>
       </Dialog>
+
+      {/* Notification Panel Dialog */}
+      <NotificationPanel
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
     </nav>
   );
 };
