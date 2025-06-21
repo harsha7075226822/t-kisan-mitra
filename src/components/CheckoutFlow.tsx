@@ -67,7 +67,7 @@ const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ isOpen, onClose, cart }) =>
   const [order, setOrder] = useState<Order | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   // Updated UPI ID to your specified one
-  const upiId = '7075226822@fam';
+  const upiId = '8247723682@ybl';
   const { toast } = useToast();
 
   useEffect(() => {
