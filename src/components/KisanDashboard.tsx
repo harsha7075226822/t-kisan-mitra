@@ -9,6 +9,7 @@ import SmartCropAssistant from '@/components/SmartCropAssistant';
 import MarketCards from '@/components/MarketCards';
 import MachinerySubsidyStore from '@/components/MachinerySubsidyStore';
 import AgricultureLoan from '@/components/AgricultureLoan';
+import CropInsurance from '@/components/CropInsurance';
 import FloatingVoiceButton from '@/components/FloatingVoiceButton';
 import { 
   TrendingUp, 
@@ -20,7 +21,8 @@ import {
   Sprout,
   CloudSun,
   Wrench,
-  Banknote
+  Banknote,
+  Shield
 } from 'lucide-react';
 
 const KisanDashboard = () => {
@@ -28,6 +30,7 @@ const KisanDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showMachineryStore, setShowMachineryStore] = useState(false);
   const [showAgricultureLoan, setShowAgricultureLoan] = useState(false);
+  const [showCropInsurance, setShowCropInsurance] = useState(false);
   const navigate = useNavigate();
 
   // Memoized modules data
@@ -96,6 +99,14 @@ const KisanDashboard = () => {
       color: 'bg-indigo-500',
       path: null,
       action: 'agriculture-loan'
+    },
+    {
+      title: 'Crop Insurance',
+      description: 'Private crop insurance plans',
+      icon: Shield,
+      color: 'bg-teal-500',
+      path: null,
+      action: 'crop-insurance'
     }
   ], []);
 
@@ -133,6 +144,8 @@ const KisanDashboard = () => {
       setShowMachineryStore(true);
     } else if (action === 'agriculture-loan') {
       setShowAgricultureLoan(true);
+    } else if (action === 'crop-insurance') {
+      setShowCropInsurance(true);
     } else if (path) {
       navigate(path);
     }
@@ -284,6 +297,27 @@ const KisanDashboard = () => {
             </div>
             <div className="p-4">
               <AgricultureLoan />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Crop Insurance Modal */}
+      {showCropInsurance && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold">Apply for Crop Insurance</h2>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowCropInsurance(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕ Close
+              </Button>
+            </div>
+            <div className="p-4">
+              <CropInsurance />
             </div>
           </div>
         </div>
