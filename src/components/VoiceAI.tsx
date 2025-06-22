@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -228,7 +227,8 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
     return data.choices[0].message.content;
   };
 
-  const speakResponse = (text: string, voiceLang: 'en' | 'te' = detectedLanguage) => {
+  const speakResponse = (text: string, voiceLang: 'en' | 'te') => {
+    console.log('Speaking response in language:', voiceLang);
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
       
@@ -362,7 +362,8 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
           <ConversationDisplay
             transcript={transcript}
             response={response}
-            onSpeakResponse={(text) => speakResponse(text, detectedLanguage)}
+            detectedLanguage={detectedLanguage}
+            onSpeakResponse={speakResponse}
             t={t}
           />
 

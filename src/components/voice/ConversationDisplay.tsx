@@ -6,13 +6,15 @@ import { Bot, User, Volume2 } from 'lucide-react';
 interface ConversationDisplayProps {
   transcript: string;
   response: string;
-  onSpeakResponse: (text: string) => void;
+  detectedLanguage: 'en' | 'te';
+  onSpeakResponse: (text: string, language: 'en' | 'te') => void;
   t: any;
 }
 
 const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
   transcript,
   response,
+  detectedLanguage,
   onSpeakResponse,
   t
 }) => {
@@ -42,7 +44,7 @@ const ConversationDisplay: React.FC<ConversationDisplayProps> = ({
               <p className="text-sm text-gray-600 font-medium mb-2">{t.aiResponse}:</p>
               <p className="text-green-700 font-medium mb-3 whitespace-pre-wrap">{response}</p>
               <Button
-                onClick={() => onSpeakResponse(response)}
+                onClick={() => onSpeakResponse(response, detectedLanguage)}
                 size="sm"
                 className="bg-green-500 hover:bg-green-600"
               >
