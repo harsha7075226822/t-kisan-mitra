@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Mic, MicOff, Volume2, Bot, User, AlertCircle, Settings } from 'lucide-react';
+import { Bot, AlertCircle, Settings } from 'lucide-react';
 import { AIResponseEngine } from '@/utils/aiResponseEngine';
+import VoiceControls from '@/components/voice/VoiceControls';
+import SettingsPanel from '@/components/voice/SettingsPanel';
+import ConversationDisplay from '@/components/voice/ConversationDisplay';
+import ExamplesSection from '@/components/voice/ExamplesSection';
 
 interface VoiceAIProps {
   language?: string;
@@ -278,52 +280,17 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
         <p className="text-indigo-600">{t.subtitle}</p>
       </div>
 
-      {/* Settings Card */}
-      {showSettings && (
-        <Card className="border-blue-200">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Settings className="w-5 h-5" />
-              <span>{t.settings}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="apiKey">{t.apiKeyLabel}</Label>
-              <Input
-                id="apiKey"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-..."
-              />
-              <p className="text-sm text-gray-600">
-                {language === 'te' 
-                  ? 'ChatGPT ఉపయోగించడానికి OpenAI API కీ అవసరం'
-                  : 'OpenAI API key required to use ChatGPT'
-                }
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button
-                variant={useLocalAI ? "default" : "outline"}
-                onClick={() => setUseLocalAI(true)}
-              >
-                {t.useLocalAI}
-              </Button>
-              <Button
-                variant={!useLocalAI ? "default" : "outline"}
-                onClick={() => setUseLocalAI(false)}
-              >
-                {t.useChatGPT}
-              </Button>
-            </div>
-            <Button onClick={saveSettings} className="w-full">
-              {t.saveSettings}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      {/* Settings Panel */}
+      <SettingsPanel
+        showSettings={showSettings}
+        apiKey={apiKey}
+        useLocalAI={useLocalAI}
+        language={language}
+        onApiKeyChange={setApiKey}
+        onUseLocalAIChange={setUseLocalAI}
+        onSaveSettings={saveSettings}
+        t={t}
+      />
 
       {/* Voice Control Card */}
       <Card className="border-green-200">
@@ -355,148 +322,31 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
             </div>
           )}
 
-          {/* Voice Interface */}
-          <div className="text-center mb-6">
-            {/* Microphone Animation */}
-            <div className={`w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
-              isListening 
-                ? 'bg-red-100 animate-pulse' 
-                : isProcessing
-                ? 'bg-blue-100 animate-pulse'
-                : 'bg-indigo-100 hover:bg-indigo-200'
-            }`} onClick={isListening ? stopListening : startListening}>
-              <div className="text-6xl">
-                {isListening ? '🔴' : isProcessing ? '⚡' : '🎤'}
-              </div>
-            </div>
+          {/* Voice Controls */}
+          <VoiceControls
+            isListening={isListening}
+            isProcessing={isProcessing}
+            isSupported={isSupported}
+            useLocalAI={useLocalAI}
+            onStartListening={startListening}
+            onStopListening={stopListening}
+            onClearAll={clearAll}
+            t={t}
+          />
 
-            {/* Status */}
-            <div className="mb-6">
-              {isListening ? (
-                <div className="text-red-600 font-semibold text-lg">
-                  {t.listening}
-                  <div className="flex justify-center mt-2">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                    </div>
-                  </div>
-                </div>
-              ) : isProcessing ? (
-                <div className="text-blue-600 font-semibold text-lg">
-                  {t.processing}
-                  <div className="flex justify-center mt-2">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-gray-600">{t.speakNow}</p>
-              )}
-            </div>
+          {/* Conversation Display */}
+          <ConversationDisplay
+            transcript={transcript}
+            response={response}
+            onSpeakResponse={speakResponse}
+            t={t}
+          />
 
-            {/* Controls */}
-            <div className="flex justify-center space-x-4">
-              {!isListening ? (
-                <Button
-                  onClick={startListening}
-                  className="bg-indigo-500 hover:bg-indigo-600"
-                  disabled={!isSupported || isProcessing}
-                >
-                  <Mic className="w-4 h-4 mr-2" />
-                  {t.startListening}
-                </Button>
-              ) : (
-                <Button
-                  onClick={stopListening}
-                  className="bg-red-500 hover:bg-red-600"
-                >
-                  <MicOff className="w-4 h-4 mr-2" />
-                  {t.stopListening}
-                </Button>
-              )}
-              
-              <Button
-                onClick={clearAll}
-                variant="outline"
-                className="hover:bg-gray-50"
-                disabled={isProcessing}
-              >
-                {t.clearAll}
-              </Button>
-            </div>
-          </div>
-
-          {/* AI Mode Indicator */}
-          <div className="text-center mb-4">
-            <Badge variant={useLocalAI ? "secondary" : "default"}>
-              {useLocalAI ? 'Local AI Mode' : 'ChatGPT Mode'}
-            </Badge>
-          </div>
-
-          {/* Conversation */}
-          {(transcript || response) && (
-            <div className="space-y-4 mb-6">
-              {/* User Input */}
-              {transcript && (
-                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                  <div className="flex items-start space-x-3">
-                    <User className="w-5 h-5 text-blue-600 mt-1" />
-                    <div>
-                      <p className="text-sm text-gray-600 font-medium mb-2">{t.youSaid}:</p>
-                      <p className="text-blue-700 font-medium">{transcript}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* AI Response */}
-              {response && (
-                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                  <div className="flex items-start space-x-3">
-                    <Bot className="w-5 h-5 text-green-600 mt-1" />
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-600 font-medium mb-2">{t.aiResponse}:</p>
-                      <p className="text-green-700 font-medium mb-3 whitespace-pre-wrap">{response}</p>
-                      <Button
-                        onClick={() => speakResponse(response)}
-                        size="sm"
-                        className="bg-green-500 hover:bg-green-600"
-                      >
-                        <Volume2 className="w-4 h-4 mr-2" />
-                        Speak Again
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Examples */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-800 mb-3">{t.examples}:</h3>
-            <div className="space-y-2">
-              <div 
-                className="p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100 transition-colors border"
-                onClick={() => handleExampleClick(t.example1)}
-              >
-                <p className="text-gray-700">{t.example1}</p>
-              </div>
-              <div 
-                className="p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100 transition-colors border"
-                onClick={() => handleExampleClick(t.example2)}
-              >
-                <p className="text-gray-700">{t.example2}</p>
-              </div>
-              <div 
-                className="p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100 transition-colors border"
-                onClick={() => handleExampleClick(t.example3)}
-              >
-                <p className="text-gray-700">{t.example3}</p>
-              </div>
-            </div>
-          </div>
+          {/* Examples Section */}
+          <ExamplesSection
+            onExampleClick={handleExampleClick}
+            t={t}
+          />
         </CardContent>
       </Card>
     </div>
