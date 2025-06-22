@@ -1,165 +1,89 @@
-
 export class AIResponseEngine {
   private responses = {
     en: {
-      greeting: [
-        "Hello! I'm your farming assistant. How can I help you today?",
-        "Welcome to Agri Mitra! Ask me about crops, fertilizers, diseases, or any farming question.",
-        "Hi there! I'm here to help with all your agricultural needs. What would you like to know?"
-      ],
       weather: [
-        "Based on current weather patterns, ensure proper drainage during monsoon season. Check soil moisture levels regularly.",
-        "For hot weather: increase irrigation frequency, provide shade for sensitive crops, and apply mulching.",
-        "Weather forecast shows good conditions for field preparation. Perfect time for sowing season crops.",
-        "High humidity detected. Watch for fungal diseases in crops. Consider copper-based fungicides if needed."
+        "Based on current data, the weather in Telangana is generally favorable for farming. Temperature ranges from 25-35°C with moderate humidity. Check local forecasts for your specific district.",
+        "Today's weather conditions show clear skies with temperatures around 28°C. Good conditions for field work and irrigation activities.",
+        "Weather patterns indicate normal monsoon expectations. Prepare your fields for the upcoming season with proper soil preparation."
       ],
-      crop: [
-        "For healthy crop growth: maintain proper spacing, ensure adequate nutrition, and monitor for pests regularly.",
-        "Crop rotation is essential. Alternate between legumes and cereals to maintain soil fertility naturally.",
-        "Monitor your crops for early signs of stress - yellowing, wilting, or unusual growth patterns.",
-        "Organic farming tip: Use neem-based pesticides and encourage beneficial insects in your fields."
+      prices: [
+        "Current market prices in Telangana: Tomatoes ₹25-30/kg, Onions ₹20-25/kg, Rice ₹20-25/kg. Prices may vary by district and market conditions.",
+        "Today's mandi rates show stable prices for most vegetables. Tomatoes are trading at ₹28/kg average across major markets.",
+        "Market trends indicate steady demand for fresh produce. Consider timing your sales based on weekly market patterns."
       ],
-      price: [
-        "Current market trends show good demand for organic produce. Consider transitioning to organic farming.",
-        "Rice prices: ₹2800-3200/quintal, Cotton: ₹6200-6800/quintal, check local mandis for exact rates.",
-        "Best time to sell is just after harvest when quality is highest. Avoid selling during glut periods.",
-        "Government MSP rates have been updated. Check with local procurement centers for current prices."
+      crops: [
+        "Rice cultivation in Telangana is best during Kharif season (June-October). Ensure proper water management and use recommended varieties like BPT-5204 or MTU-1010.",
+        "For optimal rice yields, maintain 2-3 cm water level in fields, apply fertilizers in three splits, and monitor for pests regularly.",
+        "Cotton farming requires well-drained soil and proper spacing. Use Bt cotton varieties and follow integrated pest management practices."
       ],
-      fertilizer: [
-        "NPK ratio for rice: 120:60:40 kg/hectare. Apply in 3 splits - basal, tillering, and panicle stages.",
-        "Organic alternatives: Compost, vermicompost, and green manure can reduce chemical fertilizer dependency.",
-        "Soil testing is crucial. Test every 2-3 years to determine exact nutrient requirements.",
-        "Micronutrients like zinc and iron are often deficient. Consider foliar spray applications."
+      schemes: [
+        "PM-KISAN provides ₹6000 annual support. Rythu Bandhu offers ₹10,000 per acre investment support. Check eligibility through your village revenue officer.",
+        "Telangana government offers various schemes: Rythu Bandhu, Rythu Bima, and input subsidies. Visit your nearest agriculture office for applications.",
+        "Available schemes include crop insurance, equipment subsidies, and direct benefit transfers. Ensure your land records are updated for quick processing."
       ],
-      disease: [
-        "Common rice diseases: Blast, brown spot, sheath blight. Use resistant varieties and proper field sanitation.",
-        "Fungal diseases thrive in humid conditions. Ensure proper air circulation and avoid overhead irrigation.",
-        "IPM approach: Use biological control agents like Trichoderma and Pseudomonas for disease management.",
-        "Early detection is key. Remove infected plants immediately to prevent disease spread."
-      ],
-      government: [
-        "PM-KISAN scheme provides ₹6000/year. Check your eligibility and application status online.",
-        "Crop insurance under PMFBY covers weather risks. Enroll before the cut-off date each season.",
-        "KCC (Kisan Credit Card) offers easy agricultural loans. Visit your nearest bank for application.",
-        "Subsidies available for drip irrigation, solar pumps, and farm machinery. Check with agriculture department."
-      ],
-      default: [
-        "I understand your farming concern. Could you provide more specific details about your crop or problem?",
-        "Based on your query, I recommend consulting with local agricultural extension officers for region-specific advice.",
-        "That's a great agricultural question! For best results, consider soil conditions, local climate, and crop variety.",
-        "Farming practices vary by region. What's your location and crop type? This will help me give better advice."
+      general: [
+        "I'm here to help with your farming questions. You can ask about crops, weather, market prices, or government schemes.",
+        "As your agricultural assistant, I can provide information on farming techniques, government policies, and market insights for Telangana farmers.",
+        "Feel free to ask about any farming-related topics - from soil management to market prices and government support schemes."
       ]
     },
     te: {
-      greeting: [
-        "నమస్కారం! నేను మీ వ్యవసాయ సహాయకుడను. ఈ రోజు మీకు ఎలా సహాయం చేయగలను?",
-        "అగ్రి మిత్రకు స్వాగతం! పంటలు, ఎరువులు, వ్యాధులు లేదా ఏ వ్యవసాయ ప్రశ్న అయినా అడగండి.",
-        "హలో! మీ అన్ని వ్యవసాయ అవసరాలతో సహాయం చేయడానికి నేను ఇక్కడ ఉన్నాను. మీరు ఏమి తెలుసుకోవాలనుకుంటున్నారు?"
-      ],
       weather: [
-        "ప్రస్తుత వాతావరణ పరిస్థితుల ఆధారంగా, వర్షాకాలంలో సరైన నీటి వెదజల్లడం నిర్ధారించండి. నేల తేమ స్థాయిలను క్రమం తప్పకుండా తనిఖీ చేయండి.",
-        "వేడిమికి: నీటిపారుదల తరచుదనం పెంచండి, సున్నితమైన పంటలకు నీడ అందించండి, మరియు మల్చింగ్ చేయండి.",
-        "వాతావరణ సూచన మేరకు పొలం సిద్ధం చేయడానికి మంచి పరిస్థితులు కనిపిస్తున్నాయి. సీజన్ పంటలు విత్తడానికి సరైన సమయం.",
-        "అధిక తేమ గుర్తించబడింది. పంటలలో ఫంగల్ వ్యాధుల కోసం చూడండి. అవసరమైతే కాపర్-బేస్డ్ ఫంగిసైడ్లను పరిగణించండి."
+        "ప్రస్తుత డేటా ప్రకారం, తెలంగాణలో వాతావరణం వ్యవసాయానికి అనుకూలంగా ఉంది. ఉష్ణోగ్రత 25-35°C మధ్య ఉంది. మీ జిల్లా స్థానిక వాతావరణ సమాచారం చూడండి.",
+        "నేటి వాతావరణ పరిస్థితులు స్పష్టమైన ఆకాశంతో 28°C ఉష్ణోగ్రత చూపిస్తున్నాయి. పొలపు పనులు మరియు నీటిపారుదల కార్యకలాపాలకు మంచి పరిస్థితులు.",
+        "వాతావరణ నమూనాలు సాధారణ రుతుపవన అంచనాలను సూచిస్తున్నాయి. సరైన మట్టి తయారీతో రాబోయే సీజన్‌కు మీ పొలాలను సిద్ధం చేసుకోండి."
       ],
-      crop: [
-        "ఆరోగ్యకరమైన పంట పెరుగుదలకు: సరైన అంతరం ఉంచండి, తగిన పోషణ నిర్ధారించండి, మరియు తరచుగా చీడపీడలను పర్యవేక్షించండి.",
-        "పంట మార్పిడి అవసరం. నేల సంతానోత్పత్తిని సహజంగా కాపాడుకోవడానికి పప్పు ధాన్యాలు మరియు తృణధాన్యాల మధ్య మార్చండి.",
-        "మీ పంటలను ఒత్తిడి యొక్క ప్రారంభ సంకేతాల కోసం పర్యవేక్షించండి - పసుపు రంగు, వాడిపోవడం లేదా అసాధారణ పెరుగుదల.",
-        "సేంద్రీయ వ్యవసాయ చిట్కా: వేప-ఆధారిత పురుగుమందులను ఉపయోగించండి మరియు మీ పొలాల్లో లాభకరమైన కీటకాలను ప్రోత్సహించండి."
+      prices: [
+        "తెలంగాణలో ప్రస్తుత మార్కెట్ ధరలు: టమాటోలు ₹25-30/కిలో, ఉల్లిపాయలు ₹20-25/కిలో, బియ్యం ₹20-25/కిలో. ధరలు జిల్లా మరియు మార్కెట్ పరిస్థితుల ప్రకారం మారవచ్చు.",
+        "నేటి మండి రేట్లు చాలా కూరగాయలకు స్థిరమైన ధరలను చూపిస్తున్నాయి. టమాటోలు ప్రధాన మార్కెట్లలో సగటున ₹28/కిలో వర్తకం అవుతున్నాయి.",
+        "మార్కెట్ ట్రెండ్స్ తాజా ఉత్పాదనలకు స్థిరమైన డిమాండ్‌ని సూచిస్తున్నాయి. వారపు మార్కెట్ నమూనాల ఆధారంగా మీ అమ్మకాలను సమయం చూసి చేయండి."
       ],
-      price: [
-        "ప్రస్తుత మార్కెట్ ధోరణులు సేంద్రీయ ఉత్పత్తులకు మంచి డిమాండ్ చూపిస్తున్నాయి. సేంద్రీయ వ్యవసాయానికి మారడాన్ని పరిగణించండి.",
-        "వరి ధరలు: ₹2800-3200/క్వింటల్, పత్తి: ₹6200-6800/క్వింటల్, ఖచ్చితమైన రేట్లకు స్థానిక మార్కెట్లను తనిఖీ చేయండి.",
-        "అమ్మడానికి మంచి సమయం కోత తర్వాత నాణ్యత అధికంగా ఉన్నప్పుడు. అధిక ఉత్పత్తి సమయాల్లో అమ్మకాలను నివారించండి.",
-        "ప్రభుత్వ MSP రేట్లు నవీకరించబడ్డాయి. ప్రస్తుత ధరల కోసం స్థానిక సేకరణ కేంద్రాలను తనిఖీ చేయండి."
+      crops: [
+        "తెలంగాణలో వరి సాగు ఖరీఫ్ సీజన్‌లో (జూన్-అక్టోబర్) ఉత్తమం. సరైన నీటి నిర్వహణ మరియు BPT-5204 లేదా MTU-1010 వంటి సిఫార్సు చేసిన రకాలను ఉపయోగించండి.",
+        "అధిక వరి దిగుబడి కోసం, పొలాలలో 2-3 సెం.మీ నీటి స్థాయిని నిర్వహించండి, ఎరువులను మూడు విడతలుగా వేయండి మరియు తెగుళ్లను క్రమం తప్పకుండా పర్యవేక్షించండి.",
+        "పత్తి వ్యవసాయానికి బాగా నీరు పారే మట్టి మరియు సరైన అంతరం అవసరం. Bt పత్తి రకాలను ఉపయోగించండి మరియు సమగ్ర తెగులు నిర్వహణ పద్ధతులను అనుసరించండి."
       ],
-      fertilizer: [
-        "వరికి NPK నిష్పత్తి: 120:60:40 కిలోలు/హెక్టారు. 3 విడతలుగా వేయండి - బేసల్, టిల్లరింగ్, మరియు పానికిల్ దశలు.",
-        "సేంద్రీయ ప్రత్యామ్నాయాలు: కంపోస్ట్, పురుగుల ఎరువు, మరియు పచ్చి ఎరువు రసాయన ఎరువుల ఆధారపడటాన్ని తగ్గించవచ్చు.",
-        "నేల పరీక్ష కీలకం. ఖచ్చితమైన పోషక అవసరాలను నిర్ణయించడానికి ప్రతి 2-3 సంవత్సరాలకు పరీక్షించండి.",
-        "జింక్ మరియు ఇనుము వంటి సూక్ష్మ పోషకాలు తరచుగా లోపంగా ఉంటాయి. ఆకుల మీద స్ప్రే అప్లికేషన్లను పరిగణించండి."
+      schemes: [
+        "PM-KISAN ₹6000 వార్షిక మద్దతు అందిస్తుంది. రైతు బంధు ఎకరానికి ₹10,000 పెట్టుబడి మద్దతు అందిస్తుంది. మీ గ్రామ రెవిన్యూ అధికారి ద్వారా అర్హతను చూడండి.",
+        "తెలంగాణ ప్రభుత్వం వివిధ పథకాలను అందిస్తుంది: రైతు బంధు, రైతు బీమా, మరియు ఇన్‌పుట్ సబ్సిడీలు. దరఖాస్తుల కోసం మీ సమీప వ్యవసాయ కార్యాలయాన్ని సందర్శించండి.",
+        "అందుబాటులో ఉన్న పథకాలలో పంట బీమా, పరికరాల సబ్సిడీలు మరియు ప్రత్యక్ష లాభ బదిలీలు ఉన్నాయి. త్వరిత ప్రాసెసింగ్ కోసం మీ భూమి రికార్డులు అప్‌డేట్ చేయబడిందని నిర్ధారించుకోండి."
       ],
-      disease: [
-        "సాధారణ వరి వ్యాధులు: బ్లాస్ట్, గోధుమ రంగు మచ్చలు, కోశ కుళ్ళు. నిరోధక రకాలు మరియు సరైన పొలం పరిశుభ్రతను ఉపయోగించండి.",
-        "ఫంగల్ వ్యాధులు తేమతో కూడిన పరిస్థితుల్లో వృద్ధి చెందుతాయి. సరైన గాలి ప్రసరణ నిర్ధారించండి మరియు ఓవర్‌హెడ్ నీటిపారుదలను నివారించండి.",
-        "IPM విధానం: వ్యాధుల నిర్వహణ కోసం ట్రైకోడెర్మా మరియు సూడోమోనాస్ వంటి జీవ నియంత్రణ ఏజెంట్లను ఉపయోగించండి.",
-        "ముందస్తు గుర్తింపు కీలకం. వ్యాధి వ్యాప్తిని నిరోధించడానికి వెంటనే సోకిన మొక్కలను తొలగించండి."
-      ],
-      government: [
-        "PM-KISAN పథకం సంవత్సరానికి ₹6000 అందిస్తుంది. మీ అర్హత మరియు దరఖాస్తు స్థితిని ఆన్‌లైన్‌లో తనిఖీ చేయండి.",
-        "PMFBY కింద పంట బీమా వాతావరణ ప్రమాదాలను కవర్ చేస్తుంది. ప్రతి సీజన్ కట్-ఆఫ్ తేదీకి ముందు నమోదు చేసుకోండి.",
-        "KCC (కిసాన్ క్రెడిట్ కార్డ్) సులభమైన వ్యవసాయ రుణాలను అందిస్తుంది. దరఖాస్తు కోసం మీ సమీప బ్యాంకును సందర్శించండి.",
-        "డ్రిప్ ఇరిగేషన్, సోలార్ పంపులు, మరియు వ్యవసాయ యంత్రాలకు సబ్సిడీలు అందుబాటులో ఉన్నాయి. వ్యవసాయ విభాగంతో తనిఖీ చేయండి."
-      ],
-      default: [
-        "మీ వ్యవసాయ ఆందోళన నాకు అర్థమైంది. మీ పంట లేదా సమస్య గురించి మరింత నిర్దిష్ట వివరాలను అందించగలరా?",
-        "మీ ప్రశ్న ఆధారంగా, ప్రాంత-నిర్దిష్ట సలహా కోసం స్థానిక వ్యవసాయ విస్తరణ అధికారులతో సంప్రదించమని సిఫార్సు చేస్తున్నాను.",
-        "అది గొప్ప వ్యవసాయ ప్రశ్న! మంచి ఫలితాల కోసం, నేల పరిస్థితులు, స్థానిక వాతావరణం మరియు పంట రకాన్ని పరిగణించండి.",
-        "వ్యవసాయ పద్ధతులు ప్రాంతాన్ని బట్టి మారుతాయి. మీ స్థానం మరియు పంట రకం ఏమిటి? ఇది మంచి సలహా ఇవ్వడంలో సహాయపడుతుంది."
+      general: [
+        "మీ వ్యవసాయ ప్రశ్నలతో సహాయం చేయడానికి నేను ఇక్కడ ఉన్నాను. మీరు పంటలు, వాతావరణం, మార్కెట్ ధరలు లేదా ప్రభుత్వ పథకాల గురించి అడగవచ్చు.",
+        "మీ వ్యవసాయ సహాయకుడిగా, నేను తెలంగాణ రైతులకు వ్యవసాయ పద్ధతులు, ప్రభుత్వ విధానాలు మరియు మార్కెట్ అంతర్దృష్టులపై సమాచారం అందించగలను.",
+        "మట్టి నిర్వహణ నుండి మార్కెట్ ధరలు మరియు ప్రభుత్వ మద్దతు పథకాల వరకు ఏవైనా వ్యవసాయ సంబంధిత అంశాల గురించి అడగడానికి సంకోచించవద్దు."
       ]
     }
   };
 
   async generateResponse(input: string, language: 'en' | 'te' = 'en'): Promise<string> {
-    console.log(`Generating agricultural AI response for: "${input}" in language: ${language}`);
+    const query = input.toLowerCase();
+    const responses = this.responses[language];
     
-    // Simulate AI processing delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
     
-    const normalizedInput = input.toLowerCase().trim();
-    let category = 'default';
+    if (query.includes('weather') || query.includes('వాతావరణ')) {
+      return this.getRandomResponse(responses.weather);
+    }
     
-    // Enhanced keyword matching for agricultural topics
-    if (this.containsKeywords(normalizedInput, ['వాన', 'వాతావరణం', 'weather', 'rain', 'temperature', 'climate', 'humidity', 'మौసம', 'बारिश', 'तापमान'])) {
-      category = 'weather';
+    if (query.includes('price') || query.includes('cost') || query.includes('ధర') || query.includes('రేట్')) {
+      return this.getRandomResponse(responses.prices);
     }
-    else if (this.containsKeywords(normalizedInput, ['పంట',  'వ్యవసాయం', 'crop', 'farming', 'agriculture', 'cultivation', 'planting', 'फसल', 'कृषि', 'खेती', 'రైస్', 'వరి', 'rice', 'cotton', 'పత్తి', 'corn', 'wheat'])) {
-      category = 'crop';
-    }
-    else if (this.containsKeywords(normalizedInput, ['ధర', 'మార్కెట్', 'price', 'market', 'cost', 'sell', 'buy', 'दाम', 'बाजार', 'कीमत', 'MSP', 'mandi', 'మండి'])) {
-      category = 'price';
-    }
-    else if (this.containsKeywords(normalizedInput, ['ఎరువు', 'fertilizer', 'NPK', 'compost', 'organic', 'urea', 'खाद', 'उर्वरक', 'soil', 'nutrients', 'పోషకాలు'])) {
-      category = 'fertilizer';
-    }
-    else if (this.containsKeywords(normalizedInput, ['వ్యాధి', 'disease', 'pest', 'fungal', 'bacterial', 'virus', 'बीमारी', 'कीट', 'infection', 'చీడపీడలు', 'కుళ్ళు'])) {
-      category = 'disease';
-    }
-    else if (this.containsKeywords(normalizedInput, ['ప్రభుత్వం', 'government', 'scheme', 'subsidy', 'insurance', 'loan', 'योजना', 'सब्सिडी', 'बीमा', 'PM-KISAN', 'KCC', 'PMFBY'])) {
-      category = 'government';
-    }
-    else if (this.containsKeywords(normalizedInput, ['నమస్కారం', 'హలో', 'hello', 'hi', 'hey', 'नमस्कार', 'हैलो', 'help', 'assist'])) {
-      category = 'greeting';
-    }
-
-    // Get random response from selected category
-    const categoryResponses = this.responses[language][category as keyof typeof this.responses[typeof language]];
-    const randomIndex = Math.floor(Math.random() * categoryResponses.length);
     
-    const response = categoryResponses[randomIndex];
-    console.log(`Generated agricultural response: "${response}"`);
+    if (query.includes('crop') || query.includes('farming') || query.includes('cultivation') || 
+        query.includes('పంట') || query.includes('వ్యవసాయ') || query.includes('సాగు')) {
+      return this.getRandomResponse(responses.crops);
+    }
     
-    return response;
+    if (query.includes('scheme') || query.includes('subsidy') || query.includes('government') || 
+        query.includes('పథకం') || query.includes('సబ్సిడీ') || query.includes('ప్రభుత్వ')) {
+      return this.getRandomResponse(responses.schemes);
+    }
+    
+    return this.getRandomResponse(responses.general);
   }
 
-  private containsKeywords(input: string, keywords: string[]): boolean {
-    return keywords.some(keyword => input.includes(keyword.toLowerCase()));
-  }
-
-  // Generate context-aware greeting
-  generateWelcomeGreeting(language: 'en' | 'te', userName?: string): string {
-    const currentHour = new Date().getHours();
-    const timeGreeting = {
-      en: currentHour < 12 ? 'Good morning' : currentHour < 17 ? 'Good afternoon' : 'Good evening',
-      te: currentHour < 12 ? 'శుభోదయం' : currentHour < 17 ? 'శుభ మధ్యాహ్నం' : 'శుభ సాయంత్రం'
-    };
-
-    const greetingText = {
-      en: `${timeGreeting.en} ${userName || 'Farmer'}! I'm Agri Mitra, your intelligent farming assistant. Ask me about crops, weather, fertilizers, diseases, market prices, or government schemes. How can I help you grow better crops today?`,
-      te: `${timeGreeting.te} ${userName || 'రైతు గారు'}! నేను అగ్రి మిత్ర, మీ తెలివైన వ్యవసాయ సహాయకుడు. పంటలు, వాతావరణం, ఎరువులు, వ్యాధులు, మార్కెట్ ధరలు లేదా ప్రభుత్వ పథకాల గురించి అడగండి. మంచి పంటలు పండించడంలో ఈ రోజు మీకు ఎలా సహాయం చేయగలను?`
-    };
-
-    return greetingText[language];
+  private getRandomResponse(responses: string[]): string {
+    return responses[Math.floor(Math.random() * responses.length)];
   }
 }

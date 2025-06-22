@@ -28,6 +28,7 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [useLocalAI, setUseLocalAI] = useState(true);
   const [recognition, setRecognition] = useState<any>(null);
+  const [detectedLanguage, setDetectedLanguage] = useState<'en' | 'te'>('en');
   
   const aiEngine = new AIResponseEngine();
 
@@ -37,10 +38,8 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
       setUser(JSON.parse(userData));
     }
 
-    // Check if browser supports Web Speech API
     setIsSupported('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
     
-    // Load saved API key
     const savedApiKey = localStorage.getItem('openai_api_key');
     if (savedApiKey) {
       setApiKey(savedApiKey);
@@ -70,7 +69,8 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
       apiKeyLabel: 'OpenAI API కీ',
       useLocalAI: 'లోకల్ AI ఉపయోగించండి',
       useChatGPT: 'ChatGPT ఉపయోగించండి',
-      saveSettings: 'సెట్టింగ్స్ సేవ్ చేయండి'
+      saveSettings: 'సెట్టింగ్స్ సేవ్ చేయండి',
+      languageDetected: 'భాష గుర్తించబడింది'
     },
     en: {
       title: 'Voice AI Assistant',
@@ -93,11 +93,19 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
       apiKeyLabel: 'OpenAI API Key',
       useLocalAI: 'Use Local AI',
       useChatGPT: 'Use ChatGPT',
-      saveSettings: 'Save Settings'
+      saveSettings: 'Save Settings',
+      languageDetected: 'Language detected'
     }
   };
 
   const t = text[language as keyof typeof text] || text.en;
+
+  // Language detection function
+  const detectLanguage = (text: string): 'en' | 'te' => {
+    // Telugu Unicode range detection
+    const teluguPattern = /[ఁ-౿]/;
+    return teluguPattern.test(text) ? 'te' : 'en';
+  };
 
   const startListening = () => {
     if (!isSupported) {
@@ -108,6 +116,7 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const newRecognition = new SpeechRecognition();
 
+    // Set recognition language based on current UI language
     newRecognition.lang = language === 'te' ? 'te-IN' : 'en-IN';
     newRecognition.continuous = false;
     newRecognition.interimResults = false;
@@ -124,9 +133,15 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
     newRecognition.onresult = async (event: any) => {
       const spokenText = event.results[0][0].transcript;
       console.log('Voice input received:', spokenText);
+      
+      // Detect the actual language of spoken text
+      const detectedLang = detectLanguage(spokenText);
+      setDetectedLanguage(detectedLang);
+      console.log('Detected language:', detectedLang);
+      
       setTranscript(spokenText);
       setIsListening(false);
-      await processVoiceCommand(spokenText);
+      await processVoiceCommand(spokenText, detectedLang);
     };
 
     newRecognition.onerror = (event: any) => {
@@ -151,26 +166,24 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
     setIsListening(false);
   };
 
-  const processVoiceCommand = async (command: string) => {
+  const processVoiceCommand = async (command: string, detectedLang: 'en' | 'te') => {
     setIsProcessing(true);
-    console.log('Processing voice command:', command);
+    console.log('Processing voice command:', command, 'in language:', detectedLang);
     
     try {
       let aiResponse = '';
       
       if (useLocalAI || !apiKey) {
-        // Use local AI engine
-        aiResponse = await aiEngine.generateResponse(command, language as 'en' | 'te');
+        aiResponse = await aiEngine.generateResponse(command, detectedLang);
       } else {
-        // Use ChatGPT API
-        aiResponse = await getChatGPTResponse(command);
+        aiResponse = await getChatGPTResponse(command, detectedLang);
       }
       
       setResponse(aiResponse);
-      speakResponse(aiResponse);
+      speakResponse(aiResponse, detectedLang);
     } catch (error) {
       console.error('Error processing voice command:', error);
-      const errorMessage = language === 'te' 
+      const errorMessage = detectedLang === 'te' 
         ? 'క్షమించండి, ఏదో లోపం జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి.'
         : 'Sorry, something went wrong. Please try again.';
       setResponse(errorMessage);
@@ -180,14 +193,15 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
     }
   };
 
-  const getChatGPTResponse = async (input: string): Promise<string> => {
+  const getChatGPTResponse = async (input: string, detectedLang: 'en' | 'te'): Promise<string> => {
     if (!apiKey) {
       throw new Error('OpenAI API key is required');
     }
 
-    const systemPrompt = language === 'te' 
-      ? 'మీరు ఒక తెలుగు వ్యవసాయ సహాయకుడు. రైతులకు వ్యవసాయం, పంటలు, వాతావరణం, మార్కెట్ ధరలు, ప్రభుత్వ పథకాలు గురించి సహాయం చేయండి. తెలుగులో సమాధానం ఇవ్వండి.'
-      : 'You are an agricultural assistant for farmers. Help with farming, crops, weather, market prices, and government schemes. Provide helpful and accurate information in English.';
+    const systemPrompts = {
+      te: 'మీరు ఒక తెలుగు వ్యవసాయ సహాయకుడు. రైతులకు వ్యవసాయం, పంటలు, వాతావరణం, మార్కెట్ ధరలు, ప్రభుత్వ పథకాలు గురించి సహాయం చేయండి. తెలుగులో మాత్రమే సమాధానం ఇవ్వండి. సంక్షిప్తంగా మరియు స్పష్టంగా జవాబు ఇవ్వండి.',
+      en: 'You are an agricultural assistant for farmers in Telangana, India. Help with farming, crops, weather, market prices, and government schemes. Provide helpful and accurate information in English only. Keep responses concise and clear.'
+    };
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -198,7 +212,7 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
       body: JSON.stringify({
         model: 'gpt-4',
         messages: [
-          { role: 'system', content: systemPrompt },
+          { role: 'system', content: systemPrompts[detectedLang] },
           { role: 'user', content: input }
         ],
         max_tokens: 500,
@@ -214,18 +228,17 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
     return data.choices[0].message.content;
   };
 
-  const speakResponse = (text: string) => {
+  const speakResponse = (text: string, voiceLang: 'en' | 'te' = detectedLanguage) => {
     if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech
       speechSynthesis.cancel();
       
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = language === 'te' ? 'te-IN' : 'en-IN';
+      utterance.lang = voiceLang === 'te' ? 'te-IN' : 'en-IN';
       utterance.rate = 0.8;
       utterance.pitch = 1;
       utterance.volume = 1;
       
-      utterance.onstart = () => console.log('Speech started');
+      utterance.onstart = () => console.log('Speech started in', voiceLang);
       utterance.onend = () => console.log('Speech ended');
       utterance.onerror = (event) => console.error('Speech error:', event);
       
@@ -237,13 +250,16 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
     setTranscript('');
     setResponse('');
     setError(null);
+    setDetectedLanguage('en');
     speechSynthesis.cancel();
   };
 
   const handleExampleClick = (example: string) => {
     const cleanExample = example.replace(/"/g, '');
+    const exampleLang = detectLanguage(cleanExample);
+    setDetectedLanguage(exampleLang);
     setTranscript(cleanExample);
-    processVoiceCommand(cleanExample);
+    processVoiceCommand(cleanExample, exampleLang);
   };
 
   const saveSettings = () => {
@@ -278,6 +294,14 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-indigo-800 mb-4">{t.title}</h1>
         <p className="text-indigo-600">{t.subtitle}</p>
+        {/* Language Detection Indicator */}
+        {transcript && (
+          <div className="mt-2">
+            <Badge variant={detectedLanguage === 'te' ? 'default' : 'secondary'}>
+              {t.languageDetected}: {detectedLanguage === 'te' ? 'తెలుగు' : 'English'}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {/* Settings Panel */}
@@ -338,7 +362,7 @@ const VoiceAI: React.FC<VoiceAIProps> = ({ language = 'en' }) => {
           <ConversationDisplay
             transcript={transcript}
             response={response}
-            onSpeakResponse={speakResponse}
+            onSpeakResponse={(text) => speakResponse(text, detectedLanguage)}
             t={t}
           />
 
